@@ -1,15 +1,25 @@
-FROM node:20-alpine AS base
+# --- ESTÁGIO 1: Build (Opcional, caso tenha dependências do Node) ---
+FROM node:20-alpine AS builder
 WORKDIR /app
-
 COPY package*.json ./
-RUN npm install --omit=dev
+# Descomente a linha abaixo se realmente precisar instalar dependências no front
+# RUN npm install --omit=dev
+COPY . .
 
-COPY src ./src
+# --- ESTÁGIO 2: Servidor de Produção com Nginx ---
+FROM nginx:alpine
 
-RUN addgroup -S appgroup && adduser -S appuser -G appgroup
-USER appuser
+# Remove o arquivo de configuração padrão do Nginx
+RUN rm -rf /etc/nginx/conf.d/default.conf
 
-ENV PORT=3000
-EXPOSE 3000
+# Copia o nosso arquivo de configuração customizado (default.conf)
+COPY default.conf /etc/nginx/conf.d/
 
-CMD ["node", "src/server.js"]
+# CORREÇÃO: Copia o conteúdo de src/public diretamente para a pasta pública do Nginx
+COPY src/public /usr/share/nginx/html
+
+# O Nginx roda por padrão na porta 80 dentro do container
+EXPOSE 80
+
+# Inicia o Nginx
+CMD ["nginx", "-g", "daemon off;"]

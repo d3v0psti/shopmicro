@@ -1,24 +1,4 @@
-version: "3.9"
-
 services:
-  postgres:
-    image: postgres:16-alpine
-    container_name: postgres
-    restart: unless-stopped
-    environment:
-      POSTGRES_DB: shopdb
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-
   backend:
     build:
       context: ../backend
@@ -26,14 +6,10 @@ services:
     container_name: backend
     restart: unless-stopped
     environment:
-      DB_CONNECTION_STRING: "Host=postgres;Port=5432;Database=shopdb;Username=postgres;Password=postgres"
+      DB_CONNECTION_STRING: "Host=shopmicro.celueuy02qao.us-east-1.rds.amazonaws.com;Port=5432;Database=shopdb;Username=postgres;Password=postgres;SSL Mode=VerifyFull;Root Certificate=./global-bundle.pem"
       CORS_ALLOWED_ORIGINS: "*"
       ENABLE_SWAGGER: "true"
-    ports:
-      - "8080:8080"
-    depends_on:
-      postgres:
-        condition: service_healthy
+    # Removido o bloco 'ports' do backend para blindá-lo e torná-lo privado
 
   frontend:
     build:
@@ -41,13 +17,8 @@ services:
       dockerfile: Dockerfile
     container_name: frontend
     restart: unless-stopped
-    environment:
-      PORT: 3000
-      BACKEND_URL: "http://backend:8080"
     ports:
-      - "3000:3000"
+      - "80:80" # Mapeia a porta 80 da sua máquina/ALB para a porta 80 do Nginx no container
     depends_on:
       - backend
 
-volumes:
-  postgres_data:

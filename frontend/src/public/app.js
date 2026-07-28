@@ -1,5 +1,5 @@
 // --- CONFIGURAÇÃO DO BACKEND ---
-const API_URL = 'http://localhost:8080';
+const API_URL = '';
 
 // --- ESTADO DA APLICAÇÃO ---
 let cart = JSON.parse(localStorage.getItem('shopmicro_cart')) || [];
