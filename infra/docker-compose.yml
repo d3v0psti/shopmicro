@@ -6,7 +6,7 @@ services:
     container_name: backend
     restart: unless-stopped
     environment:
-      DB_CONNECTION_STRING: "Host=shopmicro.celueuy02qao.us-east-1.rds.amazonaws.com;Port=5432;Database=shopdb;Username=postgres;Password=postgres;SSL Mode=VerifyFull;Root Certificate=./global-bundle.pem"
+      DB_CONNECTION_STRING: "Host=rds.aws;Port=5432;Database=shopdb;Username=postgres;Password=postgres;SSL Mode=VerifyFull;Root Certificate=./global-bundle.pem"
       CORS_ALLOWED_ORIGINS: "*"
       ENABLE_SWAGGER: "true"
     # Removido o bloco 'ports' do backend para blindá-lo e torná-lo privado
