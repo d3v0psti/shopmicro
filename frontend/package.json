@@ -1,0 +1,16 @@
+{
+  "name": "shopmicro-frontend",
+  "version": "1.0.0",
+  "description": "Frontend Node.js (BFF) - agnóstico de nuvem",
+  "main": "src/server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "http-proxy-middleware": "^3.0.3",
+    "dotenv": "^16.4.5"
+  }
+}

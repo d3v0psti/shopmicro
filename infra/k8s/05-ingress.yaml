@@ -1,0 +1,25 @@
+# Este Ingress usa a API padrão do Kubernetes (networking.k8s.io/v1),
+# compatível com qualquer IngressController (NGINX, Traefik, HAProxy)
+# tanto em nuvem pública (ALB/EKS, App Gateway/AKS, GCLB/GKE) quanto
+# em cluster on-premises. Ajuste o "ingressClassName" conforme o
+# controller instalado no seu cluster.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: app-ingress
+  namespace: tasks-app
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: shop.example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: frontend-service
+                port:
+                  number: 80
