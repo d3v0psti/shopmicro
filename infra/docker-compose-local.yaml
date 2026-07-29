@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   postgres:
     image: postgres:16-alpine
@@ -18,7 +16,7 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
-
+  
   backend:
     build:
       context: ../backend
@@ -29,11 +27,7 @@ services:
       DB_CONNECTION_STRING: "Host=postgres;Port=5432;Database=shopdb;Username=postgres;Password=postgres"
       CORS_ALLOWED_ORIGINS: "*"
       ENABLE_SWAGGER: "true"
-    ports:
-      - "8080:8080"
-    depends_on:
-      postgres:
-        condition: service_healthy
+    # Removido o bloco 'ports' do backend para blindá-lo e torná-lo privado
 
   frontend:
     build:
@@ -41,11 +35,8 @@ services:
       dockerfile: Dockerfile
     container_name: frontend
     restart: unless-stopped
-    environment:
-      PORT: 3000
-      BACKEND_URL: "http://backend:8080"
     ports:
-      - "3000:3000"
+      - "80:80" # Mapeia a porta 80 da sua máquina/ALB para a porta 80 do Nginx no container
     depends_on:
       - backend
 
