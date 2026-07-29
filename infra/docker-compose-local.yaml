@@ -12,11 +12,12 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d shopdb"]
       interval: 5s
       timeout: 5s
-      retries: 5
-  
+      retries: 10
+      start_period: 15s
+
   backend:
     build:
       context: ../backend
@@ -27,7 +28,9 @@ services:
       DB_CONNECTION_STRING: "Host=postgres;Port=5432;Database=shopdb;Username=postgres;Password=postgres"
       CORS_ALLOWED_ORIGINS: "*"
       ENABLE_SWAGGER: "true"
-    # Removido o bloco 'ports' do backend para blindá-lo e torná-lo privado
+    depends_on:
+      postgres:
+        condition: service_healthy
 
   frontend:
     build:
@@ -36,9 +39,10 @@ services:
     container_name: frontend
     restart: unless-stopped
     ports:
-      - "80:80" # Mapeia a porta 80 da sua máquina/ALB para a porta 80 do Nginx no container
+      - "80:80"
     depends_on:
-      - backend
+      backend:
+        condition: service_started
 
 volumes:
   postgres_data:

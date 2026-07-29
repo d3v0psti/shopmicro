@@ -13,9 +13,6 @@ RUN dotnet publish -c Release -o /app/publish
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
 
-# Copia certificado AWS RDS
-COPY global-bundle.pem /app/global-bundle.pem
-
 # Usuário não-root (boa prática para qualquer ambiente, cloud ou on-prem)
 RUN adduser --disabled-password --gecos "" appuser
 USER appuser

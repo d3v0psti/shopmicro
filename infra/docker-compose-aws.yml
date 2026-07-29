@@ -5,11 +5,15 @@ services:
       dockerfile: Dockerfile
     container_name: backend
     restart: unless-stopped
+
     environment:
-      DB_CONNECTION_STRING: "Host=rds.aws;Port=5432;Database=shopdb;Username=postgres;Password=postgres;SSL Mode=VerifyFull;Root Certificate=./global-bundle.pem"
+      DB_CONNECTION_STRING: "Host=${DB_HOST};Port=5432;Database=${DB_NAME};Username=${DB_USER};Password=${DB_PASSWORD};SSL Mode=VerifyFull;Root Certificate=/app/global-bundle.pem"
+
       CORS_ALLOWED_ORIGINS: "*"
       ENABLE_SWAGGER: "true"
-    # Removido o bloco 'ports' do backend para blindá-lo e torná-lo privado
+
+    volumes:
+      - ./global-bundle.pem:/app/global-bundle.pem:ro
 
   frontend:
     build:
@@ -18,7 +22,6 @@ services:
     container_name: frontend
     restart: unless-stopped
     ports:
-      - "80:80" # Mapeia a porta 80 da sua máquina/ALB para a porta 80 do Nginx no container
+      - "80:80"
     depends_on:
       - backend
-
