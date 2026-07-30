@@ -38,6 +38,8 @@ services:
       dockerfile: Dockerfile
     container_name: frontend
     restart: unless-stopped
+    environment:
+      BACKEND_UPSTREAM: "http://backend:8080"
     ports:
       - "80:80"
     depends_on:

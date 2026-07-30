@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: postgres
-  namespace: tasks-app
+  namespace: shopmicro
 spec:
   serviceName: postgres-service
   replicas: 1
@@ -59,7 +59,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: postgres-service
-  namespace: tasks-app
+  namespace: shopmicro
 spec:
   clusterIP: None
   selector:

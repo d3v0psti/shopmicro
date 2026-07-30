@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/home/tiago_reis/shopmicro-project/backend/src/Api/Api.csproj": {}
+    "/home/tiago_reis/shopmicro/backend/src/Api/Api.csproj": {}
   },
   "projects": {
-    "/home/tiago_reis/shopmicro-project/backend/src/Api/Api.csproj": {
+    "/home/tiago_reis/shopmicro/backend/src/Api/Api.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/tiago_reis/shopmicro-project/backend/src/Api/Api.csproj",
+        "projectUniqueName": "/home/tiago_reis/shopmicro/backend/src/Api/Api.csproj",
         "projectName": "Api",
-        "projectPath": "/home/tiago_reis/shopmicro-project/backend/src/Api/Api.csproj",
+        "projectPath": "/home/tiago_reis/shopmicro/backend/src/Api/Api.csproj",
         "packagesPath": "/home/tiago_reis/.nuget/packages/",
-        "outputPath": "/home/tiago_reis/shopmicro-project/backend/src/Api/obj/",
+        "outputPath": "/home/tiago_reis/shopmicro/backend/src/Api/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/home/tiago_reis/.nuget/NuGet/NuGet.Config"
@@ -47,10 +47,6 @@
               "target": "Package",
               "version": "[8.0.2, )"
             },
-            "Microsoft.AspNetCore.Authentication.JwtBearer": {
-              "target": "Package",
-              "version": "[8.0.1, )"
-            },
             "Microsoft.AspNetCore.OpenApi": {
               "target": "Package",
               "version": "[8.0.8, )"
@@ -67,10 +63,6 @@
             "Swashbuckle.AspNetCore": {
               "target": "Package",
               "version": "[6.6.2, )"
-            },
-            "System.IdentityModel.Tokens.Jwt": {
-              "target": "Package",
-              "version": "[8.0.1, )"
             }
           },
           "imports": [

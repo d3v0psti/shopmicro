@@ -1,0 +1,51 @@
+# Compose para rodar backend + frontend localmente (ou em qualquer VM),
+# conectando a um banco PostgreSQL GERENCIADO na nuvem — RDS (AWS),
+# Azure Database for PostgreSQL, ou Cloud SQL (GCP). Não sobe Postgres
+# em container: quem fornece o banco é o provedor escolhido.
+#
+# A string de conexão completa (incluindo SSL, se o provedor exigir) vem
+# inteira de fora, via variável de ambiente DB_CONNECTION_STRING — assim
+# este arquivo não fica preso a nenhuma nuvem específica.
+#
+# Exemplos de DB_CONNECTION_STRING por provedor (defina num arquivo .env
+# ao lado deste compose, NUNCA versionado no Git):
+#
+#   AWS RDS:
+#   Host=xxx.rds.amazonaws.com;Port=5432;Database=shopdb;Username=postgres;Password=SENHA;SSL Mode=VerifyFull;Root Certificate=/app/certs/global-bundle.pem
+#
+#   Azure Database for PostgreSQL Flexible Server:
+#   Host=xxx.postgres.database.azure.com;Port=5432;Database=shopdb;Username=postgres;Password=SENHA;SSL Mode=VerifyFull;Root Certificate=/app/certs/DigiCertGlobalRootG2.crt.pem
+#
+#   GCP Cloud SQL (via IP público + SSL):
+#   Host=xxx.xxx.xxx.xxx;Port=5432;Database=shopdb;Username=postgres;Password=SENHA;SSL Mode=VerifyFull;Root Certificate=/app/certs/server-ca.pem
+#
+# Baixe o certificado raiz do seu provedor e coloque na pasta ./certs
+# (ao lado deste arquivo) antes de subir — o nome do arquivo é livre,
+# só precisa bater com o que você referenciar em DB_CONNECTION_STRING.
+
+services:
+  backend:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    container_name: backend
+    restart: unless-stopped
+    environment:
+      DB_CONNECTION_STRING: "${DB_CONNECTION_STRING}"
+      CORS_ALLOWED_ORIGINS: "*"
+      ENABLE_SWAGGER: "true"
+    volumes:
+      - ./certs:/app/certs:ro
+
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+    container_name: frontend
+    restart: unless-stopped
+    environment:
+      BACKEND_UPSTREAM: "http://backend:8080"
+    ports:
+      - "80:80"
+    depends_on:
+      - backend

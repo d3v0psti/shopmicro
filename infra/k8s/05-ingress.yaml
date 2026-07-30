@@ -7,7 +7,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: app-ingress
-  namespace: tasks-app
+  namespace: shopmicro
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:

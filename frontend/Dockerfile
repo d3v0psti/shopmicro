@@ -1,25 +1,22 @@
-# --- ESTÁGIO 1: Build (Opcional, caso tenha dependências do Node) ---
-FROM node:20-alpine AS builder
-WORKDIR /app
-COPY package*.json ./
-# Descomente a linha abaixo se realmente precisar instalar dependências no front
-# RUN npm install --omit=dev
-COPY . .
+FROM nginx:1.27-alpine
 
-# --- ESTÁGIO 2: Servidor de Produção com Nginx ---
-FROM nginx:alpine
-
-# Remove o arquivo de configuração padrão do Nginx
+# Remove o site padrão do Nginx
 RUN rm -rf /etc/nginx/conf.d/default.conf
 
-# Copia o nosso arquivo de configuração customizado (default.conf)
-COPY default.conf /etc/nginx/conf.d/
+# Template processado automaticamente pelo entrypoint oficial do Nginx
+# (envsubst nativo, sem precisar de scripts extras) — troca ${BACKEND_UPSTREAM}
+# pelo valor real da variável de ambiente no momento em que o container inicia.
+COPY templates/default.conf.template /etc/nginx/templates/default.conf.template
 
-# CORREÇÃO: Copia o conteúdo de src/public diretamente para a pasta pública do Nginx
+# Arquivos estáticos da vitrine (HTML/CSS/JS puro)
 COPY src/public /usr/share/nginx/html
 
-# O Nginx roda por padrão na porta 80 dentro do container
+# Valor padrão — funciona de imediato em Docker Compose local, onde o
+# serviço do backend se chama "backend". Em Kubernetes, sobrescreva essa
+# variável de ambiente no Deployment apontando para o Service
+# ("http://backend-service:8080").
+ENV BACKEND_UPSTREAM=http://backend:8080
+
 EXPOSE 80
 
-# Inicia o Nginx
 CMD ["nginx", "-g", "daemon off;"]
