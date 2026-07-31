@@ -1,0 +1,20 @@
+# .NET
+backend/**/bin/
+backend/**/obj/
+
+# Node (caso volte a existir alguma ferramenta de build no frontend)
+node_modules/
+
+# Segredos e ambiente local — nunca commitar
+.env
+.env.*
+!.env.*.example
+infra/certs/*.pem
+infra/certs/*.crt
+
+# Sistema
+.DS_Store
+*.log
+
+# Windows (Mark of the Web ao extrair zips baixados)
+*Zone.Identifier*
