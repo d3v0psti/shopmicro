@@ -129,8 +129,10 @@ body {
 
 /* Carrinho como Drawer lateral (estilo Mercado Livre / Americanas):
    fica fora do fluxo normal da página, escondido até o cliente clicar
-   no resumo do carrinho no header. */
-.cart-drawer {
+   no resumo do carrinho no header. Seletor combinado (.cart-section.cart-drawer)
+   para garantir prioridade sobre as regras de ".cart-section" sozinha,
+   não importa a ordem delas no arquivo. */
+.cart-section.cart-drawer {
   position: fixed;
   top: 0;
   right: -420px;
@@ -141,16 +143,18 @@ body {
   border-radius: 0;
   overflow-y: auto;
   transition: right 0.3s ease;
+  padding-top: 3rem; /* espaço reservado para o botão de fechar (✕) não sobrepor o conteúdo */
 }
 
-.cart-drawer.open {
+.cart-section.cart-drawer.open {
   right: 0;
 }
 
 .cart-drawer-close {
-  position: sticky;
-  top: 0;
-  float: right;
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 10;
 }
 
 .cart-overlay {
