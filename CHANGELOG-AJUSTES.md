@@ -145,3 +145,5 @@ Isso funciona sem alteração em EKS, AKS ou GKE — a única diferença entre
 eles é de onde vem o `StorageClass` (para o volume do Postgres, se você
 não estiver usando um banco gerenciado) e o Ingress Controller que você
 instalar no cluster.
+
+teste
