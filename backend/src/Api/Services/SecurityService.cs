@@ -58,7 +58,7 @@ public static class SecurityService
         return secretBytes;
     }
 
-    public static string GenerateJwtToken(string email, string fullName, string secret, TimeSpan expiresIn)
+    public static string GenerateJwtToken(string email, string fullName, string userType, string secret, TimeSpan expiresIn)
     {
         var key = new SymmetricSecurityKey(GetSigningKeyBytes(secret));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -67,6 +67,7 @@ public static class SecurityService
         {
             new Claim(JwtRegisteredClaimNames.Sub, email),
             new Claim("fullName", fullName),
+            new Claim(ClaimTypes.Role, userType),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
 

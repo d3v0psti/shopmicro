@@ -10,5 +10,6 @@ namespace Api.Models
         public string? Phone { get; set; }
         public string? Cep { get; set; }
         public string? Address { get; set; }
+        public string UserType { get; set; } = "Client";
     }
 }

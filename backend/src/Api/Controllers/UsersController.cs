@@ -46,7 +46,8 @@ namespace Api.Controllers
                 Cpf = dto.Cpf,
                 Phone = dto.Phone,
                 Cep = dto.Cep,
-                Address = dto.Address
+                Address = dto.Address,
+                UserType = "Client"
             };
 
             _context.Users.Add(user);
@@ -67,7 +68,7 @@ namespace Api.Controllers
             }
 
             var jwtSecret = Environment.GetEnvironmentVariable("JWT_SECRET") ?? "shopmicro_dev_secret_12345";
-            var accessToken = SecurityService.GenerateJwtToken(user.Email, user.FullName, jwtSecret, TimeSpan.FromHours(1));
+            var accessToken = SecurityService.GenerateJwtToken(user.Email, user.FullName, user.UserType, jwtSecret, TimeSpan.FromHours(1));
             var refreshToken = SecurityService.GenerateRefreshToken();
             var refreshTokenHash = SecurityService.HashRefreshToken(refreshToken);
 
@@ -99,16 +100,43 @@ namespace Api.Controllers
                 cpf = user.Cpf,
                 phone = user.Phone,
                 cep = user.Cep,
-                address = user.Address
+                address = user.Address,
+                userType = user.UserType
             });
         }
 
-        // --- ROTA DE LISTAGEM DE USUÁRIOS ---
-        [Authorize]
-        [HttpGet]
-        public async Task<IActionResult> GetUsers()
+        [Authorize(Roles = "Admin")]
+        [HttpPost("admins")]
+        public async Task<IActionResult> RegisterAdmin([FromBody] UserRegisterDto dto)
         {
-            var users = await _context.Users
+            if (await _context.Users.AnyAsync(u => u.Email == dto.Email))
+                return BadRequest(new { message = "E-mail já cadastrado." });
+
+            if (string.IsNullOrWhiteSpace(dto.Password))
+                return BadRequest(new { message = "Senha é obrigatória." });
+
+            var user = new User
+            {
+                Email = dto.Email,
+                PasswordHash = SecurityService.HashPassword(dto.Password),
+                FullName = dto.FullName,
+                UserType = "Admin"
+            };
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync();
+            return StatusCode(201, new { message = "Administrador cadastrado com sucesso." });
+        }
+
+        // --- ROTA DE LISTAGEM DE USUÁRIOS ---
+        [Authorize(Roles = "Admin")]
+        [HttpGet]
+        public async Task<IActionResult> GetUsers([FromQuery] string? type)
+        {
+            var query = _context.Users.AsQueryable();
+            if (!string.IsNullOrWhiteSpace(type))
+                query = query.Where(u => u.UserType == type);
+
+            var users = await query
                 .Select(u => new UserListDto
                 {
                     Email = u.Email,
@@ -116,7 +144,8 @@ namespace Api.Controllers
                     Cpf = u.Cpf,
                     Phone = u.Phone,
                     Cep = u.Cep,
-                    Address = u.Address
+                    Address = u.Address,
+                    UserType = u.UserType
                 })
                 .ToListAsync();
 
@@ -127,6 +156,10 @@ namespace Api.Controllers
         [HttpPut("{email}")]
         public async Task<IActionResult> UpdateUser(string email, [FromBody] UpdateUserDto dto)
         {
+            var currentUserEmail = GetCurrentUserEmail();
+            if (!User.IsInRole("Admin") && !string.Equals(currentUserEmail, email, StringComparison.OrdinalIgnoreCase))
+                return Forbid();
+
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
             if (user == null) return NotFound(new { message = "Usuário não encontrado." });
 
@@ -156,7 +189,10 @@ namespace Api.Controllers
                 return BadRequest(new { message = "Nova senha é obrigatória." });
             }
 
-            var currentUserEmail = User.FindFirstValue(JwtRegisteredClaimNames.Sub);
+            var currentUserEmail = GetCurrentUserEmail();
+            if (!User.IsInRole("Admin") && !string.Equals(currentUserEmail, email, StringComparison.OrdinalIgnoreCase))
+                return Forbid();
+
             if (currentUserEmail == email)
             {
                 if (string.IsNullOrWhiteSpace(dto.CurrentPassword))
@@ -180,10 +216,19 @@ namespace Api.Controllers
         [HttpDelete("{email}")]
         public async Task<IActionResult> DeleteUser(string email)
         {
+            var currentUserEmail = GetCurrentUserEmail();
+            if (!User.IsInRole("Admin") && !string.Equals(currentUserEmail, email, StringComparison.OrdinalIgnoreCase))
+                return Forbid();
+
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
             if (user == null)
             {
                 return NotFound(new { message = "Usuário não encontrado." });
+            }
+
+            if (user.UserType == "Admin" && await _context.Users.CountAsync(u => u.UserType == "Admin") <= 1)
+            {
+                return BadRequest(new { message = "Não é possível excluir o único administrador do sistema." });
             }
 
             _context.Users.Remove(user);
@@ -238,7 +283,7 @@ namespace Api.Controllers
             }
 
             var jwtSecret = Environment.GetEnvironmentVariable("JWT_SECRET") ?? "shopmicro_dev_secret_12345";
-            var accessToken = SecurityService.GenerateJwtToken(tokenRecord.User.Email, tokenRecord.User.FullName, jwtSecret, TimeSpan.FromHours(1));
+            var accessToken = SecurityService.GenerateJwtToken(tokenRecord.User.Email, tokenRecord.User.FullName, tokenRecord.User.UserType, jwtSecret, TimeSpan.FromHours(1));
 
             return Ok(new { token = accessToken });
         }
@@ -261,7 +306,15 @@ namespace Api.Controllers
                 return Unauthorized(new { message = "Sessão inválida." });
             }
 
-            return Ok(new { email = tokenRecord.User.Email, fullName = tokenRecord.User.FullName });
+            return Ok(new { email = tokenRecord.User.Email, fullName = tokenRecord.User.FullName, userType = tokenRecord.User.UserType });
+        }
+
+        private string? GetCurrentUserEmail()
+        {
+            // JwtBearer mapeia o claim JWT "sub" para NameIdentifier por padrão.
+            // O fallback mantém compatibilidade caso o mapeamento seja desativado.
+            return User.FindFirstValue(ClaimTypes.NameIdentifier)
+                ?? User.FindFirstValue(JwtRegisteredClaimNames.Sub);
         }
     }
 
@@ -276,6 +329,7 @@ namespace Api.Controllers
         public string? Phone { get; set; }
         public string? Cep { get; set; }
         public string? Address { get; set; }
+        public string UserType { get; set; } = "Client";
     }
 
     public class ChangePasswordDto
@@ -302,6 +356,7 @@ namespace Api.Controllers
         public string? Phone { get; set; }
         public string? Cep { get; set; }
         public string? Address { get; set; }
+        public string UserType { get; set; } = "Client";
     }
 
     // --- DTO DE LOGIN ---

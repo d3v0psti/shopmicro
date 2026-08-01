@@ -76,6 +76,7 @@ public class AppDbContext : DbContext
             entity.HasIndex(u => u.Email).IsUnique(); // Garante que o e-mail é único no banco
             entity.Property(u => u.PasswordHash).IsRequired();
             entity.Property(u => u.FullName).HasMaxLength(150);
+            entity.Property(u => u.UserType).HasColumnName("user_type").IsRequired().HasMaxLength(20).HasDefaultValue("Client");
         });
     }
 }

@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%230f172a'/%3E%3Ctext x='32' y='39' text-anchor='middle' font-family='Arial' font-size='22' font-weight='700' fill='%23fbbf24'%3ESM%3C/text%3E%3C/svg%3E">
   <title>ShopMicro — Operações</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -50,7 +51,8 @@
         <h3 class="menu-section-title">Painel</h3>
         <button type="button" class="menu-button active" data-tab="products-section">Produtos</button>
         <button type="button" class="menu-button" data-tab="orders-section">Pedidos</button>
-        <button type="button" class="menu-button" data-tab="users-section">Usuários</button>
+        <button type="button" class="menu-button" data-tab="customers-section">Clientes do Marketplace</button>
+        <button type="button" class="menu-button" data-tab="admins-section">Equipe Administrativa</button>
         <button type="button" class="menu-button" data-tab="password-section">Minha senha</button>
       </div>
     </aside>
@@ -160,15 +162,18 @@
         </div>
       </section>
 
-      <section id="users-section" class="admin-tab-section hidden">
+      <section id="customers-section" class="admin-tab-section hidden">
         <div class="section-header">
-          <h2>Gerenciamento de Usuários</h2>
-          <p class="section-description">Gerencie cadastro, listagem e exclusão de usuários com facilidade.</p>
+          <div>
+            <span class="account-type-badge customer">Marketplace</span>
+            <h2>Clientes do Marketplace</h2>
+            <p class="section-description">Contas usadas para comprar produtos, acompanhar pedidos e manter dados de entrega na loja.</p>
+          </div>
         </div>
 
         <div class="user-management-grid">
           <form id="user-register-form" class="admin-form">
-            <h3>Criar novo usuário</h3>
+            <h3>Criar cliente do marketplace</h3>
             <div class="form-group">
               <label for="user-email">E-mail *</label>
               <input type="email" id="user-email" required>
@@ -201,12 +206,51 @@
                 <input type="text" id="user-address">
               </div>
             </div>
-            <button type="submit" class="btn-primary">Criar usuário</button>
+            <button type="submit" class="btn-primary">Criar cliente</button>
           </form>
 
           <div class="user-table-section admin-form">
-            <h3>Lista de usuários</h3>
+            <h3>Clientes cadastrados na loja</h3>
             <div id="user-list" class="user-table"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="admins-section" class="admin-tab-section hidden">
+        <div class="section-header">
+          <div>
+            <span class="account-type-badge admin">Acesso interno</span>
+            <h2>Equipe Administrativa</h2>
+            <p class="section-description">Contas com acesso ao Seller Central para administrar catálogo, clientes e operação.</p>
+          </div>
+        </div>
+
+        <div class="admin-access-warning">
+          <strong>Acesso privilegiado</strong>
+          <span>Crie estas contas somente para pessoas autorizadas a operar o painel administrativo.</span>
+        </div>
+
+        <div class="user-management-grid">
+          <form id="admin-register-form" class="admin-form">
+            <h3>Adicionar membro da equipe</h3>
+            <div class="form-group">
+              <label for="admin-email">E-mail corporativo *</label>
+              <input type="email" id="admin-email" required>
+            </div>
+            <div class="form-group">
+              <label for="admin-fullname">Nome completo *</label>
+              <input type="text" id="admin-fullname" required>
+            </div>
+            <div class="form-group">
+              <label for="admin-password">Senha inicial *</label>
+              <input type="password" id="admin-password" minlength="6" required>
+            </div>
+            <button type="submit" class="btn-primary">Criar administrador</button>
+          </form>
+
+          <div class="user-table-section admin-form">
+            <h3>Administradores do Seller Central</h3>
+            <div id="admin-list" class="user-table"></div>
           </div>
         </div>
       </section>

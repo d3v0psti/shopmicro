@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%230f172a'/%3E%3Ctext x='32' y='39' text-anchor='middle' font-family='Arial' font-size='22' font-weight='700' fill='%23fbbf24'%3ESM%3C/text%3E%3C/svg%3E">
   <title>ShopMicro — ofertas, tecnologia e praticidade</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -17,19 +18,19 @@
   <!-- Header / Navbar -->
   <header class="header">
     <div class="header-container">
-      <h1 class="logo">🛍️ Shop<span>Micro</span></h1>
+      <h1 class="logo"><span class="logo-mark">SM</span><span class="logo-word">ShopMicro</span><small>Marketplace</small></h1>
       
       <div class="search-box">
-        <input type="text" id="search-input" placeholder="Buscar produtos...">
+        <input type="text" id="search-input" placeholder="Busque por produtos e categorias" aria-label="Buscar produtos">
       </div>
 
       <div class="header-actions">
         <button id="btn-user-profile" class="btn-profile-link hidden">
-          👤 <span id="user-display"></span> (Editar)
+          <span class="profile-avatar">●</span><span id="user-display"></span>
         </button>
-        <button id="btn-open-login" class="btn-secondary">🔑 Entrar</button>
+        <button id="btn-open-login" class="btn-secondary">Entrar</button>
         <button id="btn-open-cart" class="cart-summary">
-          🛒 <span id="cart-count">0</span> itens | <strong id="cart-total">R$ 0,00</strong>
+          <span class="cart-icon">▱</span><span class="cart-label"><span id="cart-count">0</span> itens</span><strong id="cart-total">R$ 0,00</strong>
         </button>
       </div>
     </div>
@@ -38,8 +39,14 @@
   <!-- Banner Promocional -->
   <section class="hero-banner">
     <div class="hero-content">
-      <h2>As melhores ofertas de Tecnologia</h2>
-      <p>Aproveite até 30% OFF e Frete Grátis com o cupom <strong>SHOP10</strong></p>
+      <span class="hero-kicker">TECNOLOGIA PARA O SEU DIA</span>
+      <h2>Escolhas inteligentes.<br>Preços que fazem sentido.</h2>
+      <p>Produtos selecionados, compra segura e entrega descomplicada. Use <strong>SHOP10</strong> e ganhe 10% de desconto.</p>
+      <div class="hero-benefits" aria-label="Benefícios da loja">
+        <span>Compra protegida</span>
+        <span>Entrega para todo o Brasil</span>
+        <span>Pagamento seguro</span>
+      </div>
     </div>
   </section>
 
@@ -49,7 +56,7 @@
     <!-- Vitrine de Produtos -->
     <section class="products-section">
       <div class="section-header">
-        <h2>Catálogo de Produtos</h2>
+        <div><span class="section-kicker">EXPLORE A LOJA</span><h2>Produtos em destaque</h2></div>
         <span id="product-count" class="badge-count">0 produtos</span>
       </div>
       

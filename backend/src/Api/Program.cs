@@ -126,6 +126,10 @@ using (var scope = app.Services.CreateScope())
         // Cria o banco e as tabelas com base nos Models, sem precisar de Migrations
         db.Database.EnsureCreated();
 
+        // EnsureCreated não altera tabelas existentes. Esta evolução preserva os
+        // usuários atuais e permite separar clientes da equipe administrativa.
+        db.Database.ExecuteSqlRaw("ALTER TABLE users ADD COLUMN IF NOT EXISTS user_type varchar(20) NOT NULL DEFAULT 'Client'");
+
         // Popula produtos padrão caso faltem no banco ou ainda não tenham sido adicionados.
         var seededProducts = new[]
         {
@@ -144,19 +148,24 @@ using (var scope = app.Services.CreateScope())
             db.SaveChanges();
         }
 
-        // Garante um usuário inicial de teste se não houver nenhum cadastrado
-        if (!db.Users.Any())
+        // Garante um administrador inicial, independentemente de já existirem clientes.
+        var defaultAdmin = db.Users.FirstOrDefault(u => u.Email == "admin@admin.com");
+        if (defaultAdmin == null)
         {
             db.Users.Add(new User
             {
                 Email = "admin@admin.com",
                 PasswordHash = SecurityService.HashPassword("123456"),
-                FullName = "Administrador do Sistema"
+                FullName = "Administrador do Sistema",
+                UserType = "Admin"
             });
             db.SaveChanges();
         }
         else
         {
+            defaultAdmin.UserType = "Admin";
+            db.SaveChanges();
+
             // Caso algum usuário legado tenha o PasswordHash armazenado em texto puro,
             // re-hash para permitir login sem travar a aplicação.
             var legacyUser = db.Users.FirstOrDefault(u => !u.PasswordHash.StartsWith("$pbkdf2-sha256$"));

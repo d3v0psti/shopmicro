@@ -141,6 +141,20 @@ há um IngressController instalado (nginx, traefik etc).
 | POST   | /api/v1/orders                    | Cria pedido (valida estoque)  |
 | PUT    | /api/v1/orders/{id}/status         | Atualiza status do pedido      |
 
+### Usuários e perfis de acesso
+
+As contas são separadas por `userType`: `Client` representa clientes da
+loja e `Admin` representa membros da equipe com acesso ao Seller Central.
+
+| Método | Rota                              | Descrição |
+|--------|-----------------------------------|-----------|
+| POST   | /api/users/register               | Cadastra cliente do marketplace |
+| POST   | /api/users/login                  | Autentica cliente ou administrador |
+| GET    | /api/users?type=Client\|Admin     | Lista usuários por tipo (somente Admin) |
+| POST   | /api/users/admins                 | Cadastra administrador (somente Admin) |
+| PUT    | /api/users/{email}                | Atualiza perfil próprio ou via Admin |
+| DELETE | /api/users/{email}                | Exclui conta própria ou via Admin |
+
 ## Variáveis de ambiente
 
 ### Backend

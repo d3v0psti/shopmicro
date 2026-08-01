@@ -65,7 +65,7 @@ public class ProductsController : ControllerBase
     }
 
     // POST /api/v1/products
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     public async Task<ActionResult<ProductResponse>> Create([FromForm] CreateProductRequest request, IFormFile? Image, CancellationToken ct)
     {
@@ -94,7 +94,7 @@ public class ProductsController : ControllerBase
     }
 
     // PUT /api/v1/products/{id}
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     [HttpPut("{id:guid}")]
     public async Task<ActionResult<ProductResponse>> Update(Guid id, [FromForm] UpdateProductRequest request, IFormFile? Image, CancellationToken ct)
     {
@@ -122,7 +122,7 @@ public class ProductsController : ControllerBase
     }
 
     // DELETE /api/v1/products/{id}
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> Delete(Guid id, CancellationToken ct)
     {

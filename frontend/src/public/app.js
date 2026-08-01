@@ -10,6 +10,38 @@ let backendAvailable = false;
 let discountPercent = 0;
 let shippingCost = 0;
 
+async function fetchWithAuth(url, options = {}) {
+  if (!currentUser?.token) {
+    throw new Error('Sua sessão expirou. Entre novamente para continuar.');
+  }
+
+  const requestOptions = {
+    ...options,
+    headers: {
+      ...(options.headers || {}),
+      Authorization: `Bearer ${currentUser.token}`
+    }
+  };
+
+  let response = await fetch(url, requestOptions);
+  if (response.status !== 401) return response;
+
+  const refreshResponse = await fetch(`${API_URL}/api/users/refresh-token`, {
+    method: 'POST'
+  });
+
+  if (!refreshResponse.ok) {
+    throw new Error('Sua sessão expirou. Entre novamente para continuar.');
+  }
+
+  const { token } = await refreshResponse.json();
+  currentUser = { ...currentUser, token };
+  localStorage.setItem('shopmicro_user', JSON.stringify(currentUser));
+  requestOptions.headers.Authorization = `Bearer ${token}`;
+
+  return fetch(url, requestOptions);
+}
+
 const defaultImages = [
   'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=300',
   'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300',
@@ -148,7 +180,6 @@ function renderProducts(products) {
   }
 
   productsList.innerHTML = products.map((product, index) => {
-    const pId = product.id || product.Id;
     const pName = product.name || product.Name || 'Produto';
     const pPrice = Number(product.price || product.Price || 0);
     const pStock = product.stockQuantity || product.StockQuantity || product.stock || product.Stock || 0;
@@ -171,15 +202,26 @@ function renderProducts(products) {
           <p class="product-description">${shortDescription}</p>
           <div class="product-card-meta">
             <span class="product-stock">${pStock} unidades em estoque</span>
-            <button class="btn-primary btn-add-cart" onclick="addToCart('${pId}', '${escapeString(pName)}', ${pPrice}, ${pStock})">Adicionar ao carrinho</button>
+            <button class="btn-primary btn-add-cart" data-product-index="${index}">Adicionar ao carrinho</button>
           </div>
         </div>
       </article>
     `;
   }).join('');
-}
 
-function escapeString(str) { return str.replace(/'/g, "\\'"); }
+  productsList.querySelectorAll('.btn-add-cart').forEach(button => {
+    button.addEventListener('click', () => {
+      const product = products[Number(button.dataset.productIndex)];
+      if (!product) return;
+
+      const id = product.id || product.Id;
+      const name = product.name || product.Name || 'Produto';
+      const price = Number(product.price || product.Price || 0);
+      const stock = product.stockQuantity || product.StockQuantity || product.stock || product.Stock || 0;
+      addToCart(id, name, price, stock);
+    });
+  });
+}
 
 // --- LÓGICA DO CARRINHO ---
 function saveCartToStorage() { localStorage.setItem('shopmicro_cart', JSON.stringify(cart)); }
@@ -611,7 +653,17 @@ function setupAuthEvents() {
           throw new Error(errorData.message || 'Erro ao registrar usuário no servidor.');
         }
 
-        currentUser = newUserData;
+        const loginResponse = await fetch(`${API_URL}/api/users/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: newUserData.email, password: passwordValue })
+        });
+
+        if (!loginResponse.ok) {
+          throw new Error('Conta criada, mas não foi possível iniciar a sessão. Faça login para continuar.');
+        }
+
+        currentUser = await loginResponse.json();
         localStorage.setItem('shopmicro_user', JSON.stringify(currentUser));
 
         modal.classList.add('hidden');
@@ -674,9 +726,9 @@ function setupProfileModalEvents() {
       };
 
       try {
-        const response = await fetch(`${API_URL}/api/users/${currentUser.email}`, {
+        const response = await fetchWithAuth(`${API_URL}/api/users/${encodeURIComponent(currentUser.email)}`, {
           method: 'PUT',
-          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${currentUser.token}` },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(updatedUser)
         });
         if (!response.ok) throw new Error('Não foi possível atualizar o perfil.');
@@ -730,13 +782,13 @@ function setupProfileModalEvents() {
           }
         }
 
-        const response = await fetch(`${API_URL}/api/users/${currentUser.email}`, {
-          method: 'DELETE',
-          headers: { Authorization: `Bearer ${currentUser.token}` }
+        const response = await fetchWithAuth(`${API_URL}/api/users/${encodeURIComponent(currentUser.email)}`, {
+          method: 'DELETE'
         });
 
         if (!response.ok) {
-          throw new Error('Erro ao deletar conta no servidor.');
+          const errorData = await response.json().catch(() => null);
+          throw new Error(errorData?.message || 'Erro ao deletar conta no servidor.');
         }
 
         localStorage.removeItem('shopmicro_user');
@@ -914,11 +966,11 @@ function updateUserUI() {
   if (currentUser) {
     if (userDisplay) userDisplay.textContent = currentUser.fullName || currentUser.email;
     if (btnUserProfile) btnUserProfile.classList.remove('hidden');
-    if (btnOpenLogin) btnOpenLogin.textContent = '🚪 Sair';
+    if (btnOpenLogin) btnOpenLogin.textContent = 'Sair';
   } else {
     if (userDisplay) userDisplay.textContent = '';
     if (btnUserProfile) btnUserProfile.classList.add('hidden');
-    if (btnOpenLogin) btnOpenLogin.textContent = '🔑 Entrar';
+    if (btnOpenLogin) btnOpenLogin.textContent = 'Entrar';
   }
 }
 

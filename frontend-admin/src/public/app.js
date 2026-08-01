@@ -25,6 +25,11 @@ const userCpf = document.getElementById('user-cpf');
 const userPhone = document.getElementById('user-phone');
 const userCep = document.getElementById('user-cep');
 const userAddress = document.getElementById('user-address');
+const adminList = document.getElementById('admin-list');
+const adminRegisterForm = document.getElementById('admin-register-form');
+const newAdminEmail = document.getElementById('admin-email');
+const newAdminFullName = document.getElementById('admin-fullname');
+const newAdminPassword = document.getElementById('admin-password');
 const changePasswordForm = document.getElementById('change-password-form');
 const currentPassword = document.getElementById('current-password');
 const newPassword = document.getElementById('new-password');
@@ -52,6 +57,15 @@ const AUTH_TOKEN_KEY = 'shopmicro_admin_token';
 const AUTH_EMAIL_KEY = 'shopmicro_admin_email';
 
 const getAuthToken = () => localStorage.getItem(AUTH_TOKEN_KEY);
+const isAdminToken = token => {
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
+    const role = payload.role || payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
+    return role === 'Admin';
+  } catch {
+    return false;
+  }
+};
 const setAuthToken = token => localStorage.setItem(AUTH_TOKEN_KEY, token);
 const setAuthEmail = email => localStorage.setItem(AUTH_EMAIL_KEY, email);
 const clearAuthStorage = () => {
@@ -125,11 +139,16 @@ const loadCategories = async () => {
 
 const loadUsers = async () => {
   try {
-    const response = await fetchWithAuth(`${window.location.origin}/api/users`);
-    if (!response.ok) throw new Error(`status ${response.status}`);
+    const [customersResponse, adminsResponse] = await Promise.all([
+      fetchWithAuth(`${window.location.origin}/api/users?type=Client`),
+      fetchWithAuth(`${window.location.origin}/api/users?type=Admin`)
+    ]);
+    if (!customersResponse.ok || !adminsResponse.ok) {
+      throw new Error(`status ${customersResponse.ok ? adminsResponse.status : customersResponse.status}`);
+    }
 
-    const users = await response.json();
-    renderUserList(users);
+    renderUserList(await customersResponse.json(), userList, 'Client');
+    renderUserList(await adminsResponse.json(), adminList, 'Admin');
   } catch (error) {
     console.error('Falha ao carregar usuários:', error);
     showToast('Falha ao carregar usuários.', 'error');
@@ -172,10 +191,10 @@ const renderOrderList = (orders) => {
   });
 };
 
-const renderUserList = (users) => {
-  userList.innerHTML = '';
+const renderUserList = (users, target, userType) => {
+  target.innerHTML = '';
   if (!users.length) {
-    userList.innerHTML = '<p>Nenhum usuário cadastrado ainda.</p>';
+    target.innerHTML = `<p>Nenhum ${userType === 'Admin' ? 'administrador' : 'cliente'} cadastrado ainda.</p>`;
     return;
   }
 
@@ -187,8 +206,14 @@ const renderUserList = (users) => {
     header.className = 'product-row';
     header.innerHTML = `<h3>${user.fullName || user.email}</h3><span>${user.email}</span>`;
 
+    const badge = document.createElement('span');
+    badge.className = `account-type-badge ${userType === 'Admin' ? 'admin' : 'customer'}`;
+    badge.textContent = userType === 'Admin' ? 'Administrador' : 'Cliente marketplace';
+
     const details = document.createElement('p');
-    details.textContent = `CPF: ${user.cpf || '-'} • Telefone: ${user.phone || '-'} • CEP: ${user.cep || '-'} ${user.address ? '• ' + user.address : ''}`;
+    details.textContent = userType === 'Admin'
+      ? 'Acesso ao painel administrativo e às operações internas.'
+      : `CPF: ${user.cpf || '-'} • Telefone: ${user.phone || '-'} • CEP: ${user.cep || '-'} ${user.address ? '• ' + user.address : ''}`;
 
     const actions = document.createElement('div');
     actions.className = 'product-row';
@@ -205,13 +230,24 @@ const renderUserList = (users) => {
     deleteButton.style.background = '#dc2626';
     deleteButton.onclick = () => deleteUser(user.email);
 
-    actions.appendChild(resetButton);
-    actions.appendChild(deleteButton);
+    const isCurrentAdmin = userType === 'Admin'
+      && user.email.toLowerCase() === (localStorage.getItem(AUTH_EMAIL_KEY) || '').toLowerCase();
+
+    if (isCurrentAdmin) {
+      const currentAccountLabel = document.createElement('span');
+      currentAccountLabel.className = 'current-account-label';
+      currentAccountLabel.textContent = 'Sua conta — altere a senha em “Minha senha”';
+      actions.appendChild(currentAccountLabel);
+    } else {
+      actions.appendChild(resetButton);
+      actions.appendChild(deleteButton);
+    }
 
     card.appendChild(header);
+    card.appendChild(badge);
     card.appendChild(details);
     card.appendChild(actions);
-    userList.appendChild(card);
+    target.appendChild(card);
   });
 };
 
@@ -478,6 +514,11 @@ const login = async (event) => {
       throw new Error(result?.message || `status ${response.status}`);
     }
 
+    if (result.userType !== 'Admin') {
+      await fetch(window.location.origin + '/api/users/logout', { method: 'POST', credentials: 'same-origin' });
+      throw new Error('Esta conta é de cliente do marketplace e não possui acesso ao painel administrativo.');
+    }
+
     setAuthToken(result.token);
     setAuthEmail(result.email);
     setLoggedInState(result.email);
@@ -510,13 +551,13 @@ const logout = async () => {
 const initializeSession = async () => {
   const storedEmail = localStorage.getItem(AUTH_EMAIL_KEY);
 
-  if (getAuthToken() && storedEmail) {
+  if (isAdminToken(getAuthToken()) && storedEmail) {
     setLoggedInState(storedEmail);
     return true;
   }
 
   const refreshed = await refreshAccessToken();
-  if (refreshed && storedEmail) {
+  if (refreshed && isAdminToken(getAuthToken()) && storedEmail) {
     setLoggedInState(storedEmail);
     return true;
   }
@@ -562,11 +603,40 @@ const handleUserRegister = async (event) => {
     }
 
     userRegisterForm.reset();
-    showToast('Usuário criado com sucesso.');
+    showToast('Cliente do marketplace criado com sucesso.');
     await loadUsers();
   } catch (error) {
     console.error('Erro ao criar usuário:', error);
     showToast(error.message || 'Erro ao criar usuário.', 'error');
+  }
+};
+
+const handleAdminRegister = async (event) => {
+  event.preventDefault();
+  const email = newAdminEmail.value.trim();
+  const fullName = newAdminFullName.value.trim();
+  const password = newAdminPassword.value;
+
+  if (!email || !fullName || !password) {
+    showToast('E-mail, nome e senha são obrigatórios.', 'warning');
+    return;
+  }
+
+  try {
+    const response = await fetchWithAuth(`${window.location.origin}/api/users/admins`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, fullName, password })
+    });
+    const result = await response.json().catch(() => null);
+    if (!response.ok) throw new Error(result?.message || `status ${response.status}`);
+
+    adminRegisterForm.reset();
+    showToast('Administrador criado com sucesso.');
+    await loadUsers();
+  } catch (error) {
+    console.error('Erro ao criar administrador:', error);
+    showToast(error.message || 'Erro ao criar administrador.', 'error');
   }
 };
 
@@ -678,6 +748,7 @@ productImageUrl.addEventListener('input', updatePreview);
 loginForm.addEventListener('submit', login);
 logoutButton.addEventListener('click', logout);
 userRegisterForm.addEventListener('submit', handleUserRegister);
+adminRegisterForm.addEventListener('submit', handleAdminRegister);
 changePasswordForm.addEventListener('submit', handleChangePassword);
 
 const menuButtons = document.querySelectorAll('.menu-button');
