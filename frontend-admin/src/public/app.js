@@ -37,6 +37,8 @@ const loginPassword = document.getElementById('login-password');
 const logoutButton = document.getElementById('logout-button');
 const adminUserActions = document.getElementById('admin-user-actions');
 const adminUserEmail = document.getElementById('admin-user-email');
+const orderList = document.getElementById('order-list');
+const refreshOrdersButton = document.getElementById('refresh-orders');
 
 let selectedProductId = null;
 let selectedImageFile = null;
@@ -132,6 +134,42 @@ const loadUsers = async () => {
     console.error('Falha ao carregar usuários:', error);
     showToast('Falha ao carregar usuários.', 'error');
   }
+};
+
+const loadOrders = async () => {
+  orderList.innerHTML = '<p class="empty-msg">Carregando pedidos…</p>';
+  try {
+    const response = await fetch(`${BACKEND_URL}/orders`, { credentials: 'same-origin' });
+    if (!response.ok) throw new Error(`status ${response.status}`);
+    const orders = await response.json();
+    renderOrderList(Array.isArray(orders) ? orders : []);
+  } catch (error) {
+    console.error('Falha ao carregar pedidos:', error);
+    orderList.innerHTML = '<p class="empty-msg">Não foi possível carregar os pedidos.</p>';
+    showToast('Falha ao carregar pedidos.', 'error');
+  }
+};
+
+const renderOrderList = (orders) => {
+  orderList.innerHTML = '';
+  if (!orders.length) {
+    orderList.innerHTML = '<p class="empty-msg">Nenhum pedido recebido ainda.</p>';
+    return;
+  }
+
+  orders.forEach(order => {
+    const card = document.createElement('article');
+    card.className = 'order-card';
+    const date = order.createdAt ? new Date(order.createdAt).toLocaleDateString('pt-BR', { dateStyle: 'medium' }) : '—';
+    const total = Number(order.totalAmount || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    const itemCount = Array.isArray(order.items) ? order.items.reduce((sum, item) => sum + Number(item.quantity || 0), 0) : 0;
+    const statusMap = ['Pending', 'Confirmed', 'Shipped', 'Cancelled'];
+    const status = typeof order.status === 'number' ? (statusMap[order.status] || 'Pending') : (order.status || 'Pending');
+    card.innerHTML = `<div><span class="order-id">#${String(order.id || '').slice(0, 8)}</span><h3></h3><p></p></div><div class="order-meta"><span class="order-status status-${String(status).toLowerCase()}">${status}</span><strong>${total}</strong><small>${itemCount} item(ns) · ${date}</small></div>`;
+    card.querySelector('h3').textContent = order.customerName || order.customerEmail || 'Cliente';
+    card.querySelector('p').textContent = order.customerEmail || '';
+    orderList.appendChild(card);
+  });
 };
 
 const renderUserList = (users) => {
@@ -447,6 +485,7 @@ const login = async (event) => {
     await loadProducts();
     await loadCategories();
     await loadUsers();
+    await loadOrders();
     showToast('Login realizado com sucesso.');
   } catch (error) {
     console.error('Erro ao efetuar login:', error);
@@ -664,8 +703,11 @@ const setActiveTab = (tabId) => {
 menuButtons.forEach(button => {
   button.addEventListener('click', () => {
     setActiveTab(button.dataset.tab);
+    if (button.dataset.tab === 'orders-section') loadOrders();
   });
 });
+
+refreshOrdersButton.addEventListener('click', loadOrders);
 
 const buildCategoryPills = (categories) => {
   const uniqueCategories = Array.from(new Set(categories.map(c => c?.trim()).filter(Boolean)));

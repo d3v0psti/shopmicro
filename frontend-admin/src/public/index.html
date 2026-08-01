@@ -3,13 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ShopMicro Admin de Produtos</title>
+  <title>ShopMicro — Operações</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <header class="header">
     <div class="header-container">
-      <h1 class="logo">ShopMicro</h1>
+      <h1 class="logo"><span>SM</span> ShopMicro</h1>
       <div class="header-actions">
         <span class="hint">Seller Central: produtos, usuários e configurações</span>
         <div class="user-actions hidden" id="admin-user-actions">
@@ -46,6 +49,7 @@
       <div class="menu-section">
         <h3 class="menu-section-title">Painel</h3>
         <button type="button" class="menu-button active" data-tab="products-section">Produtos</button>
+        <button type="button" class="menu-button" data-tab="orders-section">Pedidos</button>
         <button type="button" class="menu-button" data-tab="users-section">Usuários</button>
         <button type="button" class="menu-button" data-tab="password-section">Minha senha</button>
       </div>
@@ -56,12 +60,11 @@
         <div class="section-header product-form-header">
           <div>
             <h2>Cadastro de Produto</h2>
-            <p class="section-description">Clique no botão para abrir o formulário de cadastro e mantenha o espaço de trabalho limpo.</p>
+            <p class="section-description">Preencha os dados do item para adicioná-lo ao catálogo.</p>
           </div>
-          <button type="button" id="toggle-product-form" class="btn-secondary">Abrir formulário</button>
         </div>
 
-        <div id="product-form-panel" class="product-form-panel collapsed">
+        <div id="product-form-panel" class="product-form-panel">
           <form id="product-form" class="admin-form">
           <div class="form-group">
             <label for="product-name">Nome do Produto *</label>
@@ -141,6 +144,19 @@
             <span id="page-info"></span>
             <button type="button" id="next-page" class="btn-secondary">Próximo</button>
           </div>
+        </div>
+      </section>
+
+      <section id="orders-section" class="admin-tab-section hidden">
+        <div class="section-header">
+          <div>
+            <h2>Pedidos</h2>
+            <p class="section-description">Acompanhe as compras recebidas e o status de cada atendimento.</p>
+          </div>
+          <button type="button" id="refresh-orders" class="btn-secondary">Atualizar lista</button>
+        </div>
+        <div class="orders-panel">
+          <div id="order-list" class="order-list"><p class="empty-msg">Carregue os pedidos para começar.</p></div>
         </div>
       </section>
 

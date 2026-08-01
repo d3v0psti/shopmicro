@@ -718,3 +718,49 @@ button, input, select, textarea {
     grid-template-columns: 1fr;
   }
 }
+
+/* ShopMicro Operations — camada visual contemporânea */
+:root { --ops-ink:#18211d; --ops-paper:#f5f5ef; --ops-lime:#d8ef6b; --ops-line:#dedfd7; --ops-muted:#69716b; }
+* { font-family:'DM Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; }
+body { background:var(--ops-paper); color:var(--ops-ink); }
+.header { background:rgba(245,245,239,.94); backdrop-filter:blur(14px); border-bottom:1px solid var(--ops-line); box-shadow:none; padding:.85rem 1.5rem; }
+.logo { color:var(--ops-ink); display:flex; align-items:center; gap:.55rem; font-size:1.1rem; letter-spacing:-.5px; }
+.logo::after { content:'OPERATIONS'; color:var(--ops-muted); margin-left:.25rem; font-size:.65rem; letter-spacing:.12em; font-weight:700; }
+.logo span { display:grid; place-items:center; width:30px; height:30px; border-radius:9px; background:var(--ops-ink); color:var(--ops-lime); font-size:.7rem; }
+.header .hint { color:var(--ops-muted); font-size:.82rem; }
+.header .btn-secondary { background:var(--ops-ink); border:0; color:white; padding:.55rem .8rem; }
+.admin-container { max-width:1320px; gap:2rem; margin:2rem auto; }
+.admin-menu { background:var(--ops-ink); border-radius:20px; box-shadow:none; padding:1.25rem; top:5.5rem; }
+.menu-header h2 { color:var(--ops-lime); font-family:'Playfair Display',serif; font-size:1.3rem; }
+.menu-header p { color:#bdc5bc; font-size:.84rem; line-height:1.5; }
+.menu-button { border-radius:10px; background:transparent; border:1px solid transparent; padding:.8rem .85rem; font-weight:600; }
+.menu-button.active,.menu-button:hover { background:rgba(216,239,107,.95); border-color:var(--ops-lime); color:var(--ops-ink); box-shadow:none; }
+.menu-section-title { color:#9eaa9e; }
+.section-header h2 { font-family:'Playfair Display',serif; font-size:1.8rem; letter-spacing:-.7px; }
+.section-description { color:var(--ops-muted); max-width:58ch; }
+.product-list-section,.user-table-section,.admin-form,.preview-card { border:1px solid var(--ops-line); box-shadow:none; border-radius:18px; background:#fffefa; }
+.product-list-section,.user-table-section { padding:1.6rem; }
+.product-filters { border-bottom:1px solid var(--ops-line); }
+.filter-input,.filter-select,.form-group input,.form-group textarea { border:1px solid var(--ops-line); border-radius:9px; background:#fbfbf7; padding:.8rem .85rem; }
+.form-group label,.filter-item label { color:var(--ops-ink); font-size:.8rem; }
+.btn-primary,.btn-success { background:var(--ops-ink); color:white; border-radius:9px; padding:.75rem 1rem; }
+.btn-primary:hover,.btn-success:hover { filter:none; background:#344239; }
+.btn-secondary,.btn-small { border-radius:9px; border:1px solid var(--ops-line); background:#fffefa; color:var(--ops-ink); }
+.category-pill { border-radius:99px; border-color:var(--ops-line); background:#fffefa; }
+.category-pill.active { background:var(--ops-ink); border-color:var(--ops-ink); }
+.login-card { border-radius:22px; border-color:var(--ops-line); box-shadow:0 22px 55px rgba(24,33,29,.1); }
+.login-card h2 { font-family:'Playfair Display',serif; font-size:2rem; }
+.toast { border-radius:12px; background:var(--ops-ink); }
+.product-form-panel { display:grid; grid-template-columns:minmax(0,1fr) minmax(220px,.42fr); gap:1.25rem; overflow:hidden; transition:max-height .25s ease, opacity .2s ease, margin .25s ease; }
+.product-form-panel.collapsed { display:none; }
+.orders-panel { background:#fffefa; border:1px solid var(--ops-line); border-radius:18px; padding:1rem 1.35rem; }
+.order-list { display:grid; }
+.order-card { display:flex; justify-content:space-between; align-items:center; gap:1rem; padding:1rem .2rem; border-bottom:1px solid var(--ops-line); }
+.order-card:last-child { border-bottom:0; }
+.order-card h3 { margin:.22rem 0; font-size:.95rem; }.order-card p,.order-card small { color:var(--ops-muted); font-size:.8rem; }.order-id { color:var(--ops-muted); font-size:.72rem; font-weight:700; letter-spacing:.06em; }.order-meta { display:grid; justify-items:end; gap:.25rem; }.order-status { padding:.25rem .55rem; border-radius:99px; background:#ecefe8; color:#4d594c; font-size:.7rem; font-weight:700; }.status-confirmed { background:#e6f1e9; color:#176c3b; }.status-shipped { background:#e5eef8; color:#285f98; }.status-cancelled { background:#f8e8e6; color:#a54137; }
+@media(max-width:900px){.header .hint{display:none}.admin-container{margin:1rem auto}.admin-menu{position:static;max-width:none}.menu-section{grid-template-columns:repeat(3,1fr)}.menu-section-title{grid-column:1/-1}.menu-button{text-align:center;padding:.7rem .35rem;font-size:.8rem}}
+@media(max-width:720px){.product-form-panel{grid-template-columns:1fr}}
+@media(max-width:520px){.order-card{align-items:flex-start;flex-direction:column}.order-meta{justify-items:start}}
+
+/* Marca compartilhada com a loja: navy, branco e amarelo de ação. */
+:root{--ops-ink:#131921;--ops-paper:#eaeded;--ops-lime:#ffca55;--ops-line:#d5dbdb;--ops-muted:#596773}.header{background:var(--ops-ink);border:0;backdrop-filter:none}.logo{color:#fff}.logo span{background:#fff;color:var(--ops-ink)}.logo::after{color:#c9d6df}.header .btn-secondary{background:transparent;border:1px solid #ffffff66}.admin-menu{background:linear-gradient(180deg,#172a3a,#131921)}.menu-header h2{color:var(--ops-lime)}.menu-button.active,.menu-button:hover{background:var(--ops-lime);border-color:var(--ops-lime);color:#111}.section-header h2{font-family:'DM Sans',sans-serif;font-size:1.55rem}.btn-primary,.btn-success{background:var(--ops-lime);color:#111;border:1px solid #e5a900}.btn-primary:hover,.btn-success:hover{background:#f3b72d}.product-list-section,.user-table-section,.admin-form,.preview-card,.orders-panel{background:#fff;border-radius:10px}.category-pill.active{background:var(--ops-ink);border-color:var(--ops-ink)}.orders-panel{box-shadow:0 1px 2px rgba(15,17,17,.08)}

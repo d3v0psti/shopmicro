@@ -22,7 +22,7 @@ namespace Api.Controllers
         }
 
         // --- ROTA DE CADASTRO ---
-        [Authorize]
+        [AllowAnonymous]
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] UserRegisterDto dto)
         {
@@ -121,6 +121,24 @@ namespace Api.Controllers
                 .ToListAsync();
 
             return Ok(users);
+        }
+
+        [Authorize]
+        [HttpPut("{email}")]
+        public async Task<IActionResult> UpdateUser(string email, [FromBody] UpdateUserDto dto)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+            if (user == null) return NotFound(new { message = "Usuário não encontrado." });
+
+            user.FullName = dto.FullName;
+            user.Email = dto.Email;
+            user.Cpf = dto.Cpf;
+            user.Phone = dto.Phone;
+            user.Cep = dto.Cep;
+            user.Address = dto.Address;
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Perfil atualizado com sucesso." });
         }
 
         [Authorize]
@@ -264,6 +282,16 @@ namespace Api.Controllers
     {
         public string? CurrentPassword { get; set; }
         public string NewPassword { get; set; } = string.Empty;
+    }
+
+    public class UpdateUserDto
+    {
+        public string Email { get; set; } = string.Empty;
+        public string FullName { get; set; } = string.Empty;
+        public string? Cpf { get; set; }
+        public string? Phone { get; set; }
+        public string? Cep { get; set; }
+        public string? Address { get; set; }
     }
 
     public class UserListDto

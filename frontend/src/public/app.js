@@ -244,6 +244,7 @@ function updateCart() {
   const cartList = document.getElementById('cart-items');
   const cartCount = document.getElementById('cart-count');
   const cartTotal = document.getElementById('cart-total');
+  const cartDrawerSummary = document.getElementById('cart-drawer-summary');
 
   const totalItems = cart.reduce((sum, i) => sum + i.quantity, 0);
   const subtotal = cart.reduce((sum, i) => sum + (i.price * i.quantity), 0);
@@ -252,6 +253,7 @@ function updateCart() {
 
   if (cartCount) cartCount.textContent = totalItems;
   if (cartTotal) cartTotal.textContent = `R$ ${grandTotal.toFixed(2)}`;
+  if (cartDrawerSummary) cartDrawerSummary.textContent = totalItems ? `${totalItems} ${totalItems === 1 ? 'item selecionado' : 'itens selecionados'} para você.` : 'Sua seleção aparecerá aqui.';
 
   if (document.getElementById('subtotal-val')) document.getElementById('subtotal-val').textContent = `R$ ${subtotal.toFixed(2)}`;
   if (document.getElementById('discount-val')) document.getElementById('discount-val').textContent = `- R$ ${discountVal.toFixed(2)}`;
@@ -672,13 +674,16 @@ function setupProfileModalEvents() {
       };
 
       try {
-        await fetch(`${API_URL}/api/users/${currentUser.email}`, {
+        const response = await fetch(`${API_URL}/api/users/${currentUser.email}`, {
           method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${currentUser.token}` },
           body: JSON.stringify(updatedUser)
         });
+        if (!response.ok) throw new Error('Não foi possível atualizar o perfil.');
       } catch (err) {
-        console.warn('Atualização offline realizada.', err);
+        console.warn('Falha ao atualizar o perfil.', err);
+        showToast(err.message || 'Não foi possível atualizar o perfil.', 'error');
+        return;
       }
 
       currentUser = { ...currentUser, ...updatedUser };
@@ -716,7 +721,7 @@ function setupProfileModalEvents() {
 
         if (ordersRes && ordersRes.ok) {
           const userOrders = await ordersRes.json();
-          const activeOrders = userOrders.filter(order => order.status !== 'Cancelled');
+          const activeOrders = userOrders.filter(order => order.status !== 'Cancelled' && order.status !== 3);
 
           if (activeOrders.length > 0) {
             if (deleteModal) deleteModal.classList.add('hidden');
@@ -726,7 +731,8 @@ function setupProfileModalEvents() {
         }
 
         const response = await fetch(`${API_URL}/api/users/${currentUser.email}`, {
-          method: 'DELETE'
+          method: 'DELETE',
+          headers: { Authorization: `Bearer ${currentUser.token}` }
         });
 
         if (!response.ok) {
@@ -829,7 +835,7 @@ function renderMyOrders(orders) {
     const statusKey = normalizeStatusKey(order.status);
     const statusLabel = orderStatusLabels[statusKey] || statusKey;
     const itemsSummary = (order.items || [])
-      .map(i => `${i.quantity}x ${i.productName}`)
+      .map(i => `${i.quantity || i.Quantity || 0}x ${i.productName || i.ProductName || 'Produto'}`)
       .join(', ');
 
     const canCancel = statusKey === 'Pending' || statusKey === 'Confirmed';
@@ -966,7 +972,22 @@ function showToast(message, type = 'info') {
 
   const toast = document.createElement('div');
   toast.className = `toast ${type}`;
-  toast.textContent = message;
+  const icon = { success: '✓', error: '!', warning: '!', info: 'i' }[type] || 'i';
+  toast.innerHTML = `<span class="toast-icon">${icon}</span><span class="toast-message"></span>`;
+  toast.querySelector('.toast-message').textContent = message;
+
+  if (type === 'success' && message.includes('adicionado ao carrinho')) {
+    toast.classList.add('cart-toast');
+    const action = document.createElement('button');
+    action.type = 'button';
+    action.className = 'toast-action';
+    action.textContent = 'Ver carrinho';
+    action.addEventListener('click', () => {
+      toast.remove();
+      window.openCartDrawer?.();
+    });
+    toast.appendChild(action);
+  }
 
   container.appendChild(toast);
   setTimeout(() => toast.remove(), 3000);

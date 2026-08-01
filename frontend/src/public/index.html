@@ -3,7 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ShopMicro - Sua Loja de Tecnologia</title>
+  <title>ShopMicro — ofertas, tecnologia e praticidade</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -61,7 +64,10 @@
        fica escondido até o cliente clicar no ícone do carrinho no header. -->
   <div id="cart-overlay" class="cart-overlay hidden"></div>
   <aside id="cart-drawer" class="cart-section cart-drawer">
-    <button id="btn-close-cart" class="modal-close cart-drawer-close">✕</button>
+    <div class="cart-drawer-heading">
+      <div><span class="drawer-kicker">SUA COMPRA</span><h2>Meu carrinho</h2><p id="cart-drawer-summary">Revise seus itens antes de finalizar.</p></div>
+      <button id="btn-close-cart" class="modal-close cart-drawer-close" aria-label="Fechar carrinho">✕</button>
+    </div>
 
       
       <!-- Stepper de Progresso -->
@@ -80,7 +86,7 @@
       <!-- ETAPA 1: ITENS DO CARRINHO -->
       <div id="cart-step-1" class="cart-step-content">
         <div class="cart-header">
-          <h3>Seus Produtos</h3>
+          <h3>Itens selecionados</h3>
           <button class="btn-clear-cart" onclick="clearCart()" title="Esvaziar Carrinho">Esvaziar</button>
         </div>
         
@@ -260,11 +266,12 @@
 
   <!-- Modal de Edição de Perfil -->
   <div id="profile-modal" class="modal-overlay hidden">
-    <div class="modal-card">
+    <div class="modal-card profile-modal-card">
       <button id="btn-close-profile-modal" class="modal-close">✕</button>
 
-      <h3>✏️ Editar Perfil do Usuário</h3>
-      <p style="font-size: 0.8rem; color: #64748b; margin-bottom: 1rem;">Atualize seus dados pessoais e de entrega.</p>
+      <span class="modal-kicker">MINHA CONTA</span>
+      <h3>Editar perfil</h3>
+      <p class="modal-description">Mantenha seus dados de entrega atualizados.</p>
 
       <form id="edit-profile-form" class="auth-form">
         <div class="form-group">
@@ -303,23 +310,24 @@
       </form>
 
       <!-- Botão para ver pedidos -->
-      <button type="button" id="btn-view-orders" class="btn-secondary" style="width: 100%; margin-top: 10px;">
-        📦 Meus Pedidos
+      <button type="button" id="btn-view-orders" class="profile-secondary-action">
+        Ver meus pedidos
       </button>
 
       <!-- Botão para Deletar Conta -->
-      <button type="button" id="btn-delete-account" style="background-color: #ef4444; color: white; margin-top: 15px; width: 100%; padding: 10px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">
-        🗑️ Deletar Minha Conta
+      <button type="button" id="btn-delete-account" class="profile-danger-action">
+        Excluir minha conta
       </button>
     </div>
   </div>
 
   <!-- Modal de Meus Pedidos -->
   <div id="orders-modal" class="modal-overlay hidden">
-    <div class="modal-card" style="max-width: 520px;">
+    <div class="modal-card orders-modal-card">
       <button id="btn-close-orders-modal" class="modal-close">✕</button>
-      <h3>📦 Meus Pedidos</h3>
-      <p style="font-size: 0.8rem; color: #64748b; margin-bottom: 1rem;">
+      <span class="modal-kicker">MINHAS COMPRAS</span>
+      <h3>Meus pedidos</h3>
+      <p class="modal-description">
         Pedidos pendentes ou confirmados podem ser cancelados por aqui. Pedidos já enviados não podem mais ser cancelados.
       </p>
       <div id="orders-list" class="orders-list">
@@ -330,15 +338,15 @@
 
 <!-- Modal de Confirmação de Exclusão de Conta -->
   <div id="delete-confirm-modal" class="modal-overlay hidden">
-    <div class="modal-card" style="max-width: 400px; text-align: center;">
-      <div style="font-size: 3rem; margin-bottom: 0.5rem;">⚠️</div>
+    <div class="modal-card delete-confirm-card">
+      <div class="danger-symbol">!</div>
       <h3>Excluir Conta</h3>
-      <p style="font-size: 0.85rem; color: #64748b; margin: 1rem 0;">
+      <p class="modal-description">
         Tem certeza absoluta que deseja deletar sua conta? Esta ação apagará seus dados do banco e não poderá ser desfeita.
       </p>
-      <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
-        <button type="button" id="btn-cancel-delete" style="flex: 1; padding: 10px; border: 1px solid #cbd5e1; background: #e2e8f0; color: #1e293b; border-radius: 6px; cursor: pointer; font-weight: 500;">Cancelar</button>
-        <button type="button" id="btn-confirm-delete" style="flex: 1; background-color: #ef4444; color: white; padding: 10px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">Sim, Deletar</button>
+      <div class="modal-actions">
+        <button type="button" id="btn-cancel-delete" class="modal-cancel">Cancelar</button>
+        <button type="button" id="btn-confirm-delete" class="modal-danger">Excluir</button>
       </div>
     </div>
   </div>
