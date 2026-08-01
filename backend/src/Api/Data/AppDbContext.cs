@@ -11,6 +11,7 @@ public class AppDbContext : DbContext
     public DbSet<Order> Orders => Set<Order>();
     public DbSet<OrderItem> OrderItems => Set<OrderItem>();
     public DbSet<User> Users => Set<User>(); // <-- ESSA LINHA FALTAVA E CAUSAVA O ERRO
+    public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -51,6 +52,19 @@ public class AppDbContext : DbContext
             entity.HasKey(i => i.Id);
             entity.Property(i => i.ProductName).IsRequired().HasMaxLength(150);
             entity.Property(i => i.UnitPrice).HasColumnType("numeric(10,2)");
+        });
+
+        modelBuilder.Entity<RefreshToken>(entity =>
+        {
+            entity.ToTable("refresh_tokens");
+            entity.HasKey(rt => rt.Id);
+            entity.Property(rt => rt.TokenHash).IsRequired();
+            entity.Property(rt => rt.ExpiresAt).IsRequired();
+            entity.Property(rt => rt.Revoked).HasDefaultValue(false);
+            entity.HasOne(rt => rt.User)
+                  .WithMany()
+                  .HasForeignKey(rt => rt.UserId)
+                  .OnDelete(DeleteBehavior.Cascade);
         });
 
         // Configuração da tabela de usuários baseada em E-mail

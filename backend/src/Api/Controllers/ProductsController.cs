@@ -1,5 +1,8 @@
 using Api.Data;
 using Api.Models;
+using Api.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,10 +14,12 @@ public class ProductsController : ControllerBase
 {
     private readonly AppDbContext _db;
     private readonly ILogger<ProductsController> _logger;
+    private readonly IStorageService _storageService;
 
-    public ProductsController(AppDbContext db, ILogger<ProductsController> logger)
+    public ProductsController(AppDbContext db, IStorageService storageService, ILogger<ProductsController> logger)
     {
         _db = db;
+        _storageService = storageService;
         _logger = logger;
     }
 
@@ -60,15 +65,22 @@ public class ProductsController : ControllerBase
     }
 
     // POST /api/v1/products
+    [Authorize]
     [HttpPost]
-    public async Task<ActionResult<ProductResponse>> Create(CreateProductRequest request, CancellationToken ct)
+    public async Task<ActionResult<ProductResponse>> Create([FromForm] CreateProductRequest request, IFormFile? Image, CancellationToken ct)
     {
+        var imageUrl = request.ImageUrl;
+        if (Image is not null && Image.Length > 0)
+        {
+            imageUrl = await _storageService.SaveFileAsync(Image, ct);
+        }
+
         var product = new Product
         {
             Name = request.Name,
             Description = request.Description,
             Price = request.Price,
-            ImageUrl = request.ImageUrl,
+            ImageUrl = imageUrl,
             Category = string.IsNullOrWhiteSpace(request.Category) ? "Geral" : request.Category,
             StockQuantity = request.StockQuantity
         };
@@ -82,8 +94,9 @@ public class ProductsController : ControllerBase
     }
 
     // PUT /api/v1/products/{id}
+    [Authorize]
     [HttpPut("{id:guid}")]
-    public async Task<ActionResult<ProductResponse>> Update(Guid id, UpdateProductRequest request, CancellationToken ct)
+    public async Task<ActionResult<ProductResponse>> Update(Guid id, [FromForm] UpdateProductRequest request, IFormFile? Image, CancellationToken ct)
     {
         var product = await _db.Products.FindAsync(new object[] { id }, ct);
         if (product is null) return NotFound();
@@ -91,9 +104,17 @@ public class ProductsController : ControllerBase
         product.Name = request.Name;
         product.Description = request.Description;
         product.Price = request.Price;
-        product.ImageUrl = request.ImageUrl;
         product.Category = request.Category;
         product.StockQuantity = request.StockQuantity;
+
+        if (Image is not null && Image.Length > 0)
+        {
+            product.ImageUrl = await _storageService.SaveFileAsync(Image, ct);
+        }
+        else if (!string.IsNullOrWhiteSpace(request.ImageUrl))
+        {
+            product.ImageUrl = request.ImageUrl;
+        }
 
         await _db.SaveChangesAsync(ct);
 
@@ -101,6 +122,7 @@ public class ProductsController : ControllerBase
     }
 
     // DELETE /api/v1/products/{id}
+    [Authorize]
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> Delete(Guid id, CancellationToken ct)
     {

@@ -31,6 +31,8 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    volumes:
+      - backend_uploads:/app/uploads
 
   frontend:
     build:
@@ -46,5 +48,20 @@ services:
       backend:
         condition: service_started
 
+  frontend-admin:
+    build:
+      context: ../frontend-admin
+      dockerfile: Dockerfile
+    container_name: frontend-admin
+    restart: unless-stopped
+    environment:
+      BACKEND_UPSTREAM: "http://backend:8080"
+    ports:
+      - "81:80"
+    depends_on:
+      backend:
+        condition: service_started
+
 volumes:
   postgres_data:
+  backend_uploads:

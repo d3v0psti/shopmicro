@@ -6,6 +6,7 @@ let cart = JSON.parse(localStorage.getItem('shopmicro_cart')) || [];
 let currentUser = JSON.parse(localStorage.getItem('shopmicro_user')) || null;
 
 let allProducts = [];
+let backendAvailable = false;
 let discountPercent = 0;
 let shippingCost = 0;
 
@@ -96,7 +97,9 @@ async function loadProducts() {
     
     if (response && response.ok) {
       allProducts = await response.json();
+      backendAvailable = true;
     } else {
+      backendAvailable = false;
       allProducts = [
         { id: '1', name: 'Notebook Gamer Pro', price: 4500.00, stock: 5, imageUrl: 'https://images.unsplash.com/photo-1603302576837-37561b2e2302?w=300' },
         { id: '2', name: 'Mouse Sem Fio RGB', price: 150.00, stock: 12, imageUrl: 'https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?w=300' },
@@ -107,9 +110,28 @@ async function loadProducts() {
     }
 
     renderProducts(allProducts);
+    sanitizeCartItems();
   } catch (error) {
     console.error('Erro ao carregar produtos:', error);
     if (productsList) productsList.innerHTML = `<p class="empty-msg">Erro ao carregar produtos.</p>`;
+  }
+}
+
+function sanitizeCartItems() {
+  const guidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  const validProductIds = new Set(allProducts.map(p => p.id || p.Id).filter(Boolean));
+  const originalLength = cart.length;
+
+  cart = cart.filter(item => {
+    const id = item.productId;
+    if (!id || typeof id !== 'string' || !guidRegex.test(id)) return false;
+    if (validProductIds.size > 0 && !validProductIds.has(id)) return false;
+    return true;
+  });
+
+  if (cart.length !== originalLength) {
+    saveCartToStorage();
+    updateCart();
   }
 }
 
@@ -127,21 +149,32 @@ function renderProducts(products) {
 
   productsList.innerHTML = products.map((product, index) => {
     const pId = product.id || product.Id;
-    const pName = product.name || product.Name;
+    const pName = product.name || product.Name || 'Produto';
     const pPrice = Number(product.price || product.Price || 0);
-    const pStock = product.stockQuantity || product.StockQuantity || product.stock || product.Stock || 10;
+    const pStock = product.stockQuantity || product.StockQuantity || product.stock || product.Stock || 0;
     const pImg = product.imageUrl || product.ImageUrl || defaultImages[index % defaultImages.length];
+    const pCategory = product.category || product.Category || 'Categoria geral';
+    const pDescription = (product.description || product.Description || 'Sem descrição disponível.').trim();
+    const shortDescription = pDescription.length > 120 ? `${pDescription.slice(0, 117)}...` : pDescription;
 
     return `
-      <div class="product-card">
-        <img src="${pImg}" alt="${pName}" class="product-img">
-        <h3>${pName}</h3>
-        <p class="price">R$ ${pPrice.toFixed(2)}</p>
-        <small style="color: #64748b; margin-bottom: 0.5rem; display: block;">Estoque: ${pStock} un.</small>
-        <button class="btn-primary" onclick="addToCart('${pId}', '${escapeString(pName)}', ${pPrice}, ${pStock})">
-          🛒 Adicionar
-        </button>
-      </div>
+      <article class="product-card">
+        <div class="product-card-media">
+          <img src="${pImg}" alt="${pName}" class="product-img">
+          <span class="product-badge">${pCategory}</span>
+        </div>
+        <div class="product-card-body">
+          <div class="product-card-header">
+            <h3>${pName}</h3>
+            <span class="product-price">R$ ${pPrice.toFixed(2)}</span>
+          </div>
+          <p class="product-description">${shortDescription}</p>
+          <div class="product-card-meta">
+            <span class="product-stock">${pStock} unidades em estoque</span>
+            <button class="btn-primary btn-add-cart" onclick="addToCart('${pId}', '${escapeString(pName)}', ${pPrice}, ${pStock})">Adicionar ao carrinho</button>
+          </div>
+        </div>
+      </article>
     `;
   }).join('');
 }
@@ -332,6 +365,13 @@ function setupCheckoutStepper() {
     checkoutForm.addEventListener('submit', async (e) => {
       e.preventDefault();
 
+      if (!checkoutForm.checkValidity()) {
+        checkoutForm.reportValidity();
+        return;
+      }
+
+      const submitBtn = document.getElementById('btn-confirm-order') || document.querySelector('#checkout-form button[type="submit"]');
+
       const orderPayload = {
         customerName: document.getElementById('customer-name').value,
         customerEmail: document.getElementById('customer-email').value,
@@ -340,22 +380,95 @@ function setupCheckoutStepper() {
         customerCep: document.getElementById('customer-cep').value,
         customerAddress: document.getElementById('customer-address').value,
         paymentMethod: document.getElementById('payment-method').value,
-        items: cart.map(i => ({
-          productId: i.productId,
-          quantity: i.quantity
-        }))
+        items: cart.map(i => ({ productId: i.productId, quantity: i.quantity }))
       };
 
+      // Validações cliente-side rápidas para feedback mais claro
+      if (!orderPayload.items || orderPayload.items.length === 0) {
+        showToast('Seu carrinho está vazio. Adicione itens antes de finalizar.', 'warning');
+        return;
+      }
+
+      if (!backendAvailable) {
+        showToast('Backend indisponível. Aguarde e tente novamente.', 'error');
+        console.error('Checkout abortado: backend indisponível');
+        return;
+      }
+
+      // Se o frontend estiver rodando por proxy no Docker Compose, API_URL
+      // pode ser vazio e as requisições devem ser relativas.
+      const guidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+      const invalidItems = orderPayload.items.filter(it => !it.productId || typeof it.productId !== 'string' || !guidRegex.test(it.productId));
+      if (invalidItems.length > 0) {
+        const names = invalidItems.map(it => it.productId || '(sem id)').slice(0, 5).join(', ');
+        const confirmMsg = `Seu carrinho contém ${invalidItems.length} item(s) com identificador inválido (ex: ${names}).\nDeseja removê-los automaticamente e continuar?`;
+        if (confirm(confirmMsg)) {
+          // Remove itens inválidos do carrinho e persiste
+          cart = cart.filter(i => i.productId && typeof i.productId === 'string' && guidRegex.test(i.productId));
+          saveCartToStorage();
+          updateCart();
+          showToast('Itens inválidos removidos do carrinho. Tente finalizar novamente.', 'info');
+        } else {
+          showToast('Checkout cancelado. Remova itens inválidos para continuar.', 'warning');
+        }
+        return;
+      }
+
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.dataset.origText = submitBtn.textContent;
+        submitBtn.textContent = 'Enviando pedido...';
+      }
+
       try {
-        const response = await fetch(`${API_URL}/api/v1/orders`, {
+        const base = API_URL || '';
+        const url = `${base}/api/v1/orders`;
+        console.log('Checkout enviando payload', orderPayload, 'para', url);
+        const response = await fetch(url, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
           body: JSON.stringify(orderPayload)
         });
 
         if (!response.ok) {
-          const errData = await response.json().catch(() => ({}));
-          throw new Error(errData.message || 'Erro ao finalizar pedido.');
+          let errMsg = 'Erro ao finalizar pedido.';
+          let responseText = null;
+          try {
+            const cloned = response.clone();
+            const errData = await response.json().catch(() => null);
+            responseText = await cloned.text().catch(() => null);
+
+            // Tratamento para ValidationProblemDetails do ASP.NET
+            if (errData) {
+              if (errData.message) {
+                errMsg = errData.message;
+              } else if (errData.errors && typeof errData.errors === 'object') {
+                const parts = [];
+                for (const k of Object.keys(errData.errors)) {
+                  const arr = errData.errors[k];
+                  if (Array.isArray(arr)) parts.push(...arr);
+                  else parts.push(String(arr));
+                }
+                if (parts.length) errMsg = parts.join(' | ');
+              } else if (errData.title) {
+                errMsg = errData.title;
+              }
+            } else if (responseText) {
+              errMsg = responseText;
+            }
+          } catch (readErr) {
+            console.error('Erro lendo corpo de erro do servidor no checkout:', readErr);
+          }
+
+          console.error('Checkout falhou', {
+            status: response.status,
+            statusText: response.statusText,
+            payload: orderPayload,
+            serverMessage: errMsg,
+            responseText
+          });
+
+          throw new Error(errMsg + ` (status ${response.status})`);
         }
 
         showToast(`🎉 Pedido confirmado! Obrigado, ${orderPayload.customerName}.`, 'success');
@@ -373,6 +486,11 @@ function setupCheckoutStepper() {
       } catch (err) {
         console.error('Erro no checkout:', err);
         showToast(err.message || 'Erro ao conectar com o servidor.', 'error');
+      } finally {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          if (submitBtn.dataset.origText) submitBtn.textContent = submitBtn.dataset.origText;
+        }
       }
     });
   }
@@ -687,25 +805,44 @@ function renderMyOrders(orders) {
     ordersList.innerHTML = `<p class="empty-msg">Você ainda não tem pedidos.</p>`;
     return;
   }
+  // Helper para normalizar status que pode vir como string ou number
+  const normalizeStatusKey = (raw) => {
+    // Se for número (enum serializado como inteiro), mapeia pelo índice
+    if (typeof raw === 'number') {
+      const map = ['Pending', 'Confirmed', 'Shipped', 'Cancelled'];
+      return map[raw] ?? 'Pending';
+    }
+    if (typeof raw === 'string') {
+      // Pode vir em minúsculas ou já como string do enum
+      const up = raw.charAt(0).toUpperCase() + raw.slice(1);
+      if (['Pending', 'Confirmed', 'Shipped', 'Cancelled'].includes(up)) return up;
+      // tenta extrair nome se vier acompanhado (ex: "OrderStatus.Pending")
+      const parts = raw.split('.');
+      const candidate = parts[parts.length - 1];
+      const cUp = candidate.charAt(0).toUpperCase() + candidate.slice(1);
+      return ['Pending', 'Confirmed', 'Shipped', 'Cancelled'].includes(cUp) ? cUp : 'Pending';
+    }
+    return 'Pending';
+  };
 
   ordersList.innerHTML = orders.map(order => {
-    const status = order.status || 'Pending';
-    const statusLabel = orderStatusLabels[status] || status;
+    const statusKey = normalizeStatusKey(order.status);
+    const statusLabel = orderStatusLabels[statusKey] || statusKey;
     const itemsSummary = (order.items || [])
       .map(i => `${i.quantity}x ${i.productName}`)
       .join(', ');
 
-    const canCancel = status === 'Pending' || status === 'Confirmed';
+    const canCancel = statusKey === 'Pending' || statusKey === 'Confirmed';
 
     return `
       <div class="order-card">
         <div class="order-card-header">
-          <span class="order-id">Pedido #${order.id.slice(0, 8)}</span>
-          <span class="order-status ${status.toLowerCase()}">${statusLabel}</span>
+          <span class="order-id">Pedido #${String(order.id).slice(0, 8)}</span>
+          <span class="order-status ${statusKey.toLowerCase()}">${statusLabel}</span>
         </div>
         <div class="order-items-mini">${itemsSummary}</div>
         <div class="order-total">Total: R$ ${Number(order.totalAmount).toFixed(2)}</div>
-        ${canCancel ? `<button class="btn-cancel-order" onclick="cancelOrder('${order.id}')">Cancelar Pedido</button>` : ''}
+        ${canCancel ? `<button class="btn-cancel-order" data-order-id="${order.id}" onclick="cancelOrder('${order.id}', this)">Cancelar Pedido</button>` : ''}
       </div>
     `;
   }).join('');
@@ -714,19 +851,52 @@ function renderMyOrders(orders) {
 async function cancelOrder(orderId) {
   if (!confirm('Tem certeza que deseja cancelar este pedido? O estoque será devolvido.')) return;
 
+  // Tenta localizar o botão (se passado como segundo argumento via onclick, ele
+  // será o elemento `btn` — caso contrário, procuramos pelo atributo data-order-id).
+  let buttonEl = null;
+  try { buttonEl = arguments[1] ?? document.querySelector(`button.btn-cancel-order[data-order-id="${orderId}"]`); } catch {}
+
+  const originalText = buttonEl ? buttonEl.textContent : null;
+  if (buttonEl) {
+    buttonEl.disabled = true;
+    buttonEl.textContent = 'Cancelando...';
+  }
+
   try {
-    const res = await fetch(`${API_URL}/api/v1/orders/${orderId}/cancel`, { method: 'POST' });
+    const base = API_URL || '';
+    const url = `${base}/api/v1/orders/${orderId}/cancel`;
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Accept': 'application/json' }
+    });
 
     if (!res.ok) {
-      const errData = await res.json().catch(() => ({}));
-      throw new Error(errData.message || 'Não foi possível cancelar o pedido.');
+      // Tenta ler um JSON com a mensagem do servidor, senão lê texto cru para diagnóstico
+      let errMsg = 'Não foi possível cancelar o pedido.';
+      try {
+        const errData = await res.json().catch(() => null);
+        if (errData && errData.message) errMsg = errData.message;
+        else {
+          const txt = await res.text().catch(() => null);
+          if (txt) errMsg = txt;
+        }
+      } catch (readErr) {
+        console.error('Erro lendo corpo de erro do servidor:', readErr);
+      }
+      throw new Error(errMsg + ` (status ${res.status})`);
     }
 
     showToast('Pedido cancelado com sucesso.', 'success');
-    loadMyOrders();
+    // Pequena espera para evitar condições de corrida entre commit da transação
+    // e a leitura imediata dos pedidos em alguns ambientes/discos lentos.
+    setTimeout(() => loadMyOrders(), 250);
   } catch (err) {
     console.error('Erro ao cancelar pedido:', err);
     showToast(err.message || 'Erro ao cancelar o pedido.', 'error');
+    if (buttonEl) {
+      buttonEl.disabled = false;
+      if (originalText) buttonEl.textContent = originalText;
+    }
   }
 }
 
