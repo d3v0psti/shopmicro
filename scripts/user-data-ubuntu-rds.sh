@@ -3,6 +3,8 @@ set -e
 
 # Preencha antes de colar este script no campo User data da EC2.
 DB_CONNECTION_STRING='Host=ENDPOINT_DO_RDS;Port=5432;Database=shopdb;Username=postgres;Password=SENHA_DO_RDS;SSL Mode=Require;Trust Server Certificate=true'
+S3_BUCKET_NAME='NOME_DO_BUCKET_S3'
+AWS_REGION='us-east-1'
 
 apt-get update
 apt-get upgrade -y
@@ -32,5 +34,7 @@ cd /opt/shopmicro/infra
 
 export DB_CONNECTION_STRING
 export JWT_SECRET
+export S3_BUCKET_NAME
+export AWS_REGION
 
 docker compose -f compose.aws.yaml up --build -d

@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.StaticFiles;
 
 namespace Api.Services;
 
@@ -25,5 +26,23 @@ public sealed class LocalStorageService : IStorageService
         await file.CopyToAsync(outputStream, cancellationToken);
 
         return $"/uploads/{fileName}";
+    }
+
+    public Task<StorageFile?> GetFileAsync(string fileName, CancellationToken cancellationToken)
+    {
+        var safeFileName = Path.GetFileName(fileName);
+        if (!string.Equals(fileName, safeFileName, StringComparison.Ordinal))
+            return Task.FromResult<StorageFile?>(null);
+
+        var path = Path.Combine(_uploadsFolderPath, safeFileName);
+        if (!File.Exists(path))
+            return Task.FromResult<StorageFile?>(null);
+
+        var contentTypeProvider = new FileExtensionContentTypeProvider();
+        if (!contentTypeProvider.TryGetContentType(safeFileName, out var contentType))
+            contentType = "application/octet-stream";
+
+        StorageFile result = new(File.OpenRead(path), contentType);
+        return Task.FromResult<StorageFile?>(result);
     }
 }

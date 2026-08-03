@@ -1,6 +1,8 @@
 using Api.Data;
 using Api.Models;
 using Api.Services;
+using Amazon;
+using Amazon.S3;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
@@ -30,7 +32,26 @@ builder.Services.Configure<RouteOptions>(options =>
     options.LowercaseUrls = true;
 });
 
-builder.Services.AddSingleton<IStorageService, LocalStorageService>();
+var storageProvider = Environment.GetEnvironmentVariable("STORAGE_PROVIDER") ?? "Local";
+if (storageProvider.Equals("S3", StringComparison.OrdinalIgnoreCase))
+{
+    var awsRegion = Environment.GetEnvironmentVariable("AWS_REGION");
+    if (string.IsNullOrWhiteSpace(awsRegion))
+        throw new InvalidOperationException("AWS_REGION não configurada para o storage S3.");
+
+    builder.Services.AddSingleton<IAmazonS3>(
+        _ => new AmazonS3Client(RegionEndpoint.GetBySystemName(awsRegion)));
+    builder.Services.AddSingleton<IStorageService, S3StorageService>();
+}
+else if (storageProvider.Equals("Local", StringComparison.OrdinalIgnoreCase))
+{
+    builder.Services.AddSingleton<IStorageService, LocalStorageService>();
+}
+else
+{
+    throw new InvalidOperationException(
+        $"STORAGE_PROVIDER inválido: '{storageProvider}'. Use Local ou S3.");
+}
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -156,15 +177,29 @@ app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
 
-var uploadsPath = Path.Combine(builder.Environment.ContentRootPath, "uploads");
-Directory.CreateDirectory(uploadsPath);
-app.UseStaticFiles(new StaticFileOptions
+if (storageProvider.Equals("Local", StringComparison.OrdinalIgnoreCase))
 {
-    FileProvider = new PhysicalFileProvider(uploadsPath),
-    RequestPath = "/uploads"
-});
+    var uploadsPath = Path.Combine(builder.Environment.ContentRootPath, "uploads");
+    Directory.CreateDirectory(uploadsPath);
+    app.UseStaticFiles(new StaticFileOptions
+    {
+        FileProvider = new PhysicalFileProvider(uploadsPath),
+        RequestPath = "/uploads"
+    });
+}
 
 app.MapControllers();
+
+app.MapGet("/uploads/{fileName}", async (
+    string fileName,
+    IStorageService storage,
+    CancellationToken cancellationToken) =>
+{
+    var file = await storage.GetFileAsync(fileName, cancellationToken);
+    return file is null
+        ? Results.NotFound()
+        : Results.Stream(file.Content, file.ContentType);
+});
 
 // Endpoints de Probes de Saúde
 app.MapHealthChecks("/health/live");

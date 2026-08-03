@@ -28,6 +28,7 @@ services:
       JWT_SECRET: "shopmicro_local_development_secret"
       CORS_ALLOWED_ORIGINS: "*"
       ENABLE_SWAGGER: "true"
+      STORAGE_PROVIDER: "Local"
     ports:
       - "8080:8080"
     depends_on:
