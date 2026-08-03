@@ -43,6 +43,22 @@ resource "aws_iam_role" "ecs_task" {
   })
 }
 
+resource "aws_iam_role_policy" "ecs_task_s3_uploads" {
+  name = "access-shopmicro-uploads"
+  role = aws_iam_role.ecs_task.id
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect = "Allow"
+      Action = [
+        "s3:GetObject",
+        "s3:PutObject"
+      ]
+      Resource = "${aws_s3_bucket.uploads.arn}/uploads/*"
+    }]
+  })
+}
+
 resource "aws_iam_role" "ecs_instance" {
   name = "${local.name}-ecs-instance"
   assume_role_policy = jsonencode({

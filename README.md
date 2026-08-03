@@ -176,9 +176,9 @@ Na AWS, associe uma IAM Role à EC2 com `s3:GetObject` e `s3:PutObject` para o
 prefixo `uploads/*`. Não coloque Access Key ou Secret Key no Compose. A rota
 `/uploads/{arquivo}` permanece igual nos dois ambientes.
 
-> O Terraform ECS existente ainda utiliza EFS para uploads. A migração dessa
-> infraestrutura para S3 permanece registrada no roadmap; o fluxo S3 atual é
-> utilizado pelo `compose.aws.yaml` e pelo user-data da EC2 com RDS.
+O Terraform ECS também configura o backend com `STORAGE_PROVIDER=S3`, cria um
+bucket privado e concede acesso somente à task role. Um S3 Gateway VPC Endpoint
+mantém esse tráfego privado sem exigir NAT Gateway.
 
 ## Principais endpoints
 
@@ -257,12 +257,13 @@ Application Load Balancer
                                   │
                     ┌─────────────┴─────────────┐
                     ▼                           ▼
-              RDS PostgreSQL                  EFS
+              RDS PostgreSQL              S3 privado
               sub-redes privadas       imagens persistentes
 ```
 
-Também são criados três repositórios ECR, Secrets Manager para a conexão do
-banco e o JWT, CloudWatch Logs, VPC, Security Groups e um Auto Scaling Group
+Também são criados três repositórios ECR, bucket S3 privado, endpoint S3,
+Secrets Manager para a conexão do banco e o JWT, CloudWatch Logs, VPC,
+Security Groups e um Auto Scaling Group
 associado ao ECS por capacity provider. O padrão usa uma única instância
 `t3.small` com a AMI ECS-optimized Amazon Linux 2023. O RDS não possui acesso
 público.
@@ -273,8 +274,10 @@ somente do ALB. Essa configuração evita Fargate e NAT Gateway.
 
 ### Custos
 
-ALB, RDS, EC2 e EFS geram cobrança. Mesmo com zero tarefas ECS, a instância EC2,
-o ALB e o RDS permanecem cobrados. Ao terminar, use `terraform destroy`.
+ALB, RDS e EC2 geram cobrança contínua. O S3 cobra armazenamento e requisições;
+o Gateway VPC Endpoint para S3 não possui cobrança adicional. Mesmo com zero
+tarefas ECS, a instância EC2, o ALB e o RDS permanecem cobrados. Ao terminar,
+use `terraform destroy`.
 
 ### Pré-requisitos
 
@@ -349,14 +352,15 @@ ecs_min_size          = 2
 ecs_max_size          = 2
 ecs_desired_capacity  = 2
 protect_database      = true
+protect_uploads       = true
 ```
 
 Para produção, adicione certificado ACM, listener HTTPS e domínio no Route 53.
 
 ### Remoção da infraestrutura
 
-Este comando apaga a infraestrutura e, com `protect_database = false`, também
-os dados do RDS:
+Este comando apaga a infraestrutura. Com `protect_database = false`, remove o
+RDS; com `protect_uploads = false`, esvazia e remove também o bucket S3:
 
 ```bash
 terraform -chdir=infra/aws destroy

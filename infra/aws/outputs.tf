@@ -22,3 +22,8 @@ output "rds_endpoint" {
   value     = aws_db_instance.postgres.address
   sensitive = true
 }
+
+output "uploads_bucket_name" {
+  description = "Bucket S3 privado usado para imagens de produtos."
+  value       = aws_s3_bucket.uploads.id
+}

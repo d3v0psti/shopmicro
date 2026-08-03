@@ -70,15 +70,3 @@ resource "aws_security_group" "database" {
     security_groups = [aws_security_group.backend.id]
   }
 }
-
-resource "aws_security_group" "efs" {
-  name        = "${local.name}-efs"
-  description = "EFS acessivel somente pelo backend"
-  vpc_id      = aws_vpc.main.id
-  ingress {
-    from_port       = 2049
-    to_port         = 2049
-    protocol        = "tcp"
-    security_groups = [aws_security_group.backend.id]
-  }
-}

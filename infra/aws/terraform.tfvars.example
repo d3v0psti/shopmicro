@@ -10,3 +10,4 @@ ecs_desired_capacity  = 1
 db_instance_class     = "db.t4g.micro"
 db_multi_az           = false
 protect_database      = false
+protect_uploads       = false

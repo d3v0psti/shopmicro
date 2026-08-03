@@ -73,3 +73,9 @@ variable "protect_database" {
   type        = bool
   default     = false
 }
+
+variable "protect_uploads" {
+  description = "Impede que terraform destroy remova o bucket com os uploads. Habilite em produção."
+  type        = bool
+  default     = false
+}

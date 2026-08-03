@@ -26,15 +26,6 @@ resource "aws_ecs_task_definition" "backend" {
   execution_role_arn       = aws_iam_role.ecs_execution.arn
   task_role_arn            = aws_iam_role.ecs_task.arn
 
-  volume {
-    name = "uploads"
-    efs_volume_configuration {
-      file_system_id     = aws_efs_file_system.uploads.id
-      transit_encryption = "ENABLED"
-      authorization_config { access_point_id = aws_efs_access_point.uploads.id }
-    }
-  }
-
   container_definitions = jsonencode([{
     name         = "backend"
     image        = "${aws_ecr_repository.services["backend"].repository_url}:${var.image_tag}"
@@ -45,13 +36,15 @@ resource "aws_ecs_task_definition" "backend" {
     environment = [
       { name = "ASPNETCORE_ENVIRONMENT", value = "Production" },
       { name = "ENABLE_SWAGGER", value = "false" },
-      { name = "CORS_ALLOWED_ORIGINS", value = "*" }
+      { name = "CORS_ALLOWED_ORIGINS", value = "*" },
+      { name = "STORAGE_PROVIDER", value = "S3" },
+      { name = "S3_BUCKET_NAME", value = aws_s3_bucket.uploads.id },
+      { name = "AWS_REGION", value = var.aws_region }
     ]
     secrets = [
       { name = "DB_CONNECTION_STRING", valueFrom = aws_secretsmanager_secret.database_connection.arn },
       { name = "JWT_SECRET", valueFrom = aws_secretsmanager_secret.jwt.arn }
     ]
-    mountPoints = [{ sourceVolume = "uploads", containerPath = "/app/uploads", readOnly = false }]
     logConfiguration = {
       logDriver = "awslogs"
       options   = merge(local.common_log_options, { awslogs-group = aws_cloudwatch_log_group.services["backend"].name })
@@ -103,7 +96,7 @@ resource "aws_ecs_service" "backend" {
     container_name   = "backend"
     container_port   = 8080
   }
-  depends_on = [aws_lb_listener.marketplace, aws_lb_listener.admin, aws_efs_mount_target.uploads, aws_ecs_cluster_capacity_providers.main]
+  depends_on = [aws_lb_listener.marketplace, aws_lb_listener.admin, aws_ecs_cluster_capacity_providers.main]
 }
 
 resource "aws_ecs_service" "web" {
