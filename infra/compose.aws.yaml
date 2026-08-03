@@ -1,0 +1,46 @@
+name: shopmicro-aws
+
+services:
+  backend:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      DB_CONNECTION_STRING: "${DB_CONNECTION_STRING:?Informe a connection string do RDS}"
+      JWT_SECRET: "${JWT_SECRET:?Informe o segredo JWT}"
+      CORS_ALLOWED_ORIGINS: "${CORS_ALLOWED_ORIGINS:-*}"
+      ENABLE_SWAGGER: "${ENABLE_SWAGGER:-false}"
+    ports:
+      - "8080:8080"
+    volumes:
+      - backend_uploads:/app/uploads
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      BACKEND_UPSTREAM: "http://backend:8080"
+    ports:
+      - "80:80"
+    depends_on:
+      backend:
+        condition: service_started
+
+  frontend-admin:
+    build:
+      context: ../frontend-admin
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      BACKEND_UPSTREAM: "http://backend:8080"
+    ports:
+      - "81:80"
+    depends_on:
+      backend:
+        condition: service_started
+
+volumes:
+  backend_uploads:
