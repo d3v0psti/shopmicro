@@ -139,6 +139,7 @@ shopmicro/
 │   └── templates/
 └── infra/
     ├── compose.yaml
+    ├── compose.aws.yaml
     └── aws/
         └── *.tf
 ```
@@ -154,9 +155,30 @@ As variáveis ficam em [infra/compose.yaml](infra/compose.yaml):
 | `CORS_ALLOWED_ORIGINS` | Origens aceitas pela API |
 | `ENABLE_SWAGGER` | Habilita o Swagger |
 | `BACKEND_UPSTREAM` | Endereço interno do backend usado pelos Nginx |
+| `STORAGE_PROVIDER` | Seleciona `Local` ou `S3` |
+| `S3_BUCKET_NAME` | Bucket usado no ambiente AWS |
+| `AWS_REGION` | Região do bucket S3 |
 
-As imagens de produtos são armazenadas exclusivamente no volume local do
-backend. O projeto não possui integração com storage externo.
+## Armazenamento local e S3
+
+O backend seleciona a implementação de `IStorageService` por configuração:
+
+| Ambiente | Provider | Persistência |
+|---|---|---|
+| Desenvolvimento local | `Local` | Volume Docker `backend_uploads` |
+| EC2 com Compose AWS | `S3` | Bucket S3 privado |
+
+O [Compose local](infra/compose.yaml) define `STORAGE_PROVIDER=Local` e não
+precisa de credenciais AWS. O [Compose AWS](infra/compose.aws.yaml) define
+`STORAGE_PROVIDER=S3` e exige `S3_BUCKET_NAME` e `AWS_REGION`.
+
+Na AWS, associe uma IAM Role à EC2 com `s3:GetObject` e `s3:PutObject` para o
+prefixo `uploads/*`. Não coloque Access Key ou Secret Key no Compose. A rota
+`/uploads/{arquivo}` permanece igual nos dois ambientes.
+
+> O Terraform ECS existente ainda utiliza EFS para uploads. A migração dessa
+> infraestrutura para S3 permanece registrada no roadmap; o fluxo S3 atual é
+> utilizado pelo `compose.aws.yaml` e pelo user-data da EC2 com RDS.
 
 ## Principais endpoints
 
