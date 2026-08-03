@@ -1,372 +1,130 @@
 # ShopMicro
 
-Marketplace local de referência para catálogo, carrinho, pedidos e gestão
-administrativa. O projeto foi preparado para execução exclusivamente local com
-Docker Compose.
+Marketplace criado com IA generativa para apoiar estudos de AWS, containers e
+arquitetura em nuvem.
+
+O projeto usa uma aplicação funcional para praticar serviços AWS pelo Console e
+com Terraform, sempre avaliando custo, segurança e desempenho. Requisitos e
+decisões são orientados pelo autor; a IA gera e refina código e documentação.
 
 ## Funcionalidades
 
-### Marketplace
-
-- Catálogo de produtos com busca e categorias
-- Carrinho lateral, cupom e cálculo de frete demonstrativo
-- Cadastro, login e edição do perfil do cliente
-- Checkout e criação de pedidos
-- Consulta e cancelamento de pedidos elegíveis
-- Exclusão da conta do cliente
-
-### Painel administrativo
-
-- Cadastro, edição e exclusão de produtos
-- Upload local de imagens
-- Consulta de pedidos
-- Gestão separada de clientes e administradores
-- Redefinição de senhas e controle de acesso por perfil
+- Catálogo, busca, categorias e carrinho
+- Cadastro e autenticação de clientes
+- Checkout, consulta e cancelamento de pedidos
+- Painel administrativo
+- Gestão de produtos, pedidos, clientes e administradores
+- Upload de imagens localmente ou no S3
 
 ## Tecnologias
 
-- Frontend e frontend-admin: HTML, CSS e JavaScript servidos por Nginx
-- Backend: ASP.NET Core 8 Web API
-- Persistência: Entity Framework Core e PostgreSQL 16
-- Autenticação: JWT com refresh token
-- Ambiente local: Docker Compose
+- HTML, CSS, JavaScript e Nginx
+- ASP.NET Core 8 e Entity Framework Core
+- PostgreSQL 18
+- JWT com refresh token
+- Docker Compose
+- EC2, IAM, S3 e Terraform
 
-## Requisitos
+## Execução local
 
-- Docker Engine
-- Docker Compose v2
-
-Não é necessário instalar .NET, PostgreSQL, Nginx ou Node.js para executar o
-ambiente completo.
-
-## Executando localmente
-
-Na raiz do repositório:
+Requisitos: Docker Engine e Docker Compose v2.
 
 ```bash
 cd infra
 docker compose up --build
 ```
 
-Na primeira execução, aguarde o PostgreSQL ficar saudável e o backend concluir
-a criação e a carga inicial do banco.
-
-### Endereços
-
 | Serviço | Endereço |
 |---|---|
 | Marketplace | http://localhost |
 | Painel administrativo | http://localhost:81 |
-| Swagger da API | http://localhost:8080/swagger |
-| Backend | http://localhost:8080 |
+| Swagger | http://localhost:8080/swagger |
 | PostgreSQL | localhost:5432 |
 
-### Administrador inicial
+Acesso administrativo inicial:
 
 ```text
 E-mail: admin@admin.com
 Senha: 123456
 ```
 
-Essa credencial é destinada somente ao ambiente local. Depois de entrar no
-painel, a senha pode ser alterada em **Minha senha**.
+Altere essa senha depois do primeiro acesso e não utilize dados sensíveis.
 
-## Comandos úteis
-
-Executar em segundo plano:
-
-```bash
-cd infra
-docker compose up --build -d
-```
-
-Ver o estado dos serviços:
-
-```bash
-docker compose ps
-```
-
-Ver os logs:
-
-```bash
-docker compose logs -f
-```
-
-Parar o ambiente preservando os dados:
+Para parar preservando os dados:
 
 ```bash
 docker compose down
 ```
 
-Recriar completamente o ambiente e apagar banco e uploads locais:
+Para remover também banco e uploads locais:
 
 ```bash
 docker compose down -v
-docker compose up --build
 ```
 
-> O comando `down -v` remove permanentemente os volumes locais do projeto.
+> PostgreSQL 18 utiliza o volume em `/var/lib/postgresql`. Volumes de versões
+> anteriores devem ser migrados ou recriados.
 
-## Persistência local
+## Ambientes
 
-O Compose cria dois volumes:
+| Ambiente | Banco | Imagens |
+|---|---|---|
+| Local | PostgreSQL 18 em container | Volume Docker |
+| AWS | PostgreSQL 18 na EC2 | Bucket S3 privado |
 
-- `postgres_data`: banco de dados
-- `backend_uploads`: imagens enviadas pelo painel administrativo
+O ambiente local não exige credenciais AWS. Na AWS, o backend acessa o S3 por
+uma IAM Role associada à EC2, sem Access Key ou Secret Key no projeto. O user
+data gera automaticamente senhas aleatórias para o PostgreSQL e para o JWT.
 
-Os dados sobrevivem a `docker compose down`. Para removê-los, é necessário usar
-explicitamente `docker compose down -v`.
+## AWS
+
+```text
+EC2 Ubuntu
+├── Marketplace
+├── Painel administrativo
+├── Backend
+└── PostgreSQL 18 em container
+         │
+         ▼
+   Bucket S3 privado
+```
+
+Os arquivos para criação pelo Console e pelo Terraform estão em
+[infra/aws](infra/aws/).
+
+### Debug do PostgreSQL na EC2
+
+A senha gerada fica em `/opt/shopmicro/infra/.env.s3-lab`. Para consultar
+somente esse valor:
+
+```bash
+sudo grep '^POSTGRES_PASSWORD=' /opt/shopmicro/infra/.env.s3-lab
+```
+
+Para acessar o banco sem exibir a senha:
+
+```bash
+cd /opt/shopmicro/infra
+sudo docker compose --env-file .env.s3-lab -f compose.s3-lab.yaml \
+  exec postgres psql -U postgres -d shopdb
+```
+
+O arquivo também contém o segredo JWT. Não compartilhe seu conteúdo nem o envie
+para logs.
 
 ## Estrutura
 
 ```text
 shopmicro/
 ├── backend/
-│   ├── Dockerfile
-│   └── src/Api/
-│       ├── Controllers/
-│       ├── Data/
-│       ├── Models/
-│       ├── Services/
-│       └── Program.cs
 ├── frontend/
-│   ├── Dockerfile
-│   ├── src/public/
-│   └── templates/
 ├── frontend-admin/
-│   ├── Dockerfile
-│   ├── src/public/
-│   └── templates/
 └── infra/
     ├── compose.yaml
-    ├── compose.aws.yaml
     └── aws/
-        └── *.tf
 ```
 
-## Configuração local
+## Evolução
 
-As variáveis ficam em [infra/compose.yaml](infra/compose.yaml):
-
-| Variável | Uso |
-|---|---|
-| `DB_CONNECTION_STRING` | Conexão do backend com o PostgreSQL local |
-| `JWT_SECRET` | Assinatura dos tokens locais |
-| `CORS_ALLOWED_ORIGINS` | Origens aceitas pela API |
-| `ENABLE_SWAGGER` | Habilita o Swagger |
-| `BACKEND_UPSTREAM` | Endereço interno do backend usado pelos Nginx |
-| `STORAGE_PROVIDER` | Seleciona `Local` ou `S3` |
-| `S3_BUCKET_NAME` | Bucket usado no ambiente AWS |
-| `AWS_REGION` | Região do bucket S3 |
-
-## Armazenamento local e S3
-
-O backend seleciona a implementação de `IStorageService` por configuração:
-
-| Ambiente | Provider | Persistência |
-|---|---|---|
-| Desenvolvimento local | `Local` | Volume Docker `backend_uploads` |
-| EC2 com Compose AWS | `S3` | Bucket S3 privado |
-
-O [Compose local](infra/compose.yaml) define `STORAGE_PROVIDER=Local` e não
-precisa de credenciais AWS. O [Compose AWS](infra/compose.aws.yaml) define
-`STORAGE_PROVIDER=S3` e exige `S3_BUCKET_NAME` e `AWS_REGION`.
-
-Na AWS, associe uma IAM Role à EC2 com `s3:GetObject` e `s3:PutObject` para o
-prefixo `uploads/*`. Não coloque Access Key ou Secret Key no Compose. A rota
-`/uploads/{arquivo}` permanece igual nos dois ambientes.
-
-O Terraform ECS também configura o backend com `STORAGE_PROVIDER=S3`, cria um
-bucket privado e concede acesso somente à task role. Um S3 Gateway VPC Endpoint
-mantém esse tráfego privado sem exigir NAT Gateway.
-
-## Principais endpoints
-
-### Produtos
-
-| Método | Rota | Acesso |
-|---|---|---|
-| GET | `/api/v1/products` | Público |
-| GET | `/api/v1/products/{id}` | Público |
-| GET | `/api/v1/products/categories` | Público |
-| POST | `/api/v1/products` | Administrador |
-| PUT | `/api/v1/products/{id}` | Administrador |
-| DELETE | `/api/v1/products/{id}` | Administrador |
-
-### Pedidos
-
-| Método | Rota | Descrição |
-|---|---|---|
-| GET | `/api/v1/orders?email={email}` | Consulta pedidos |
-| POST | `/api/v1/orders` | Cria pedido |
-| POST | `/api/v1/orders/{id}/cancel` | Cancela pedido elegível |
-| PUT | `/api/v1/orders/{id}/status` | Atualiza status |
-
-### Usuários
-
-| Método | Rota | Descrição |
-|---|---|---|
-| POST | `/api/users/register` | Cadastra cliente |
-| POST | `/api/users/login` | Autentica usuário |
-| POST | `/api/users/refresh-token` | Renova token |
-| POST | `/api/users/logout` | Encerra sessão |
-| GET | `/api/users?type=Client\|Admin` | Lista por perfil administrativo |
-| POST | `/api/users/admins` | Cadastra administrador |
-| PUT | `/api/users/{email}` | Atualiza perfil |
-| PUT | `/api/users/{email}/password` | Atualiza senha |
-| DELETE | `/api/users/{email}` | Exclui conta |
-
-## Desenvolvimento do backend sem Docker
-
-Com .NET 8 instalado e um PostgreSQL disponível:
-
-```bash
-export DB_CONNECTION_STRING='Host=localhost;Port=5432;Database=shopdb;Username=postgres;Password=postgres'
-export JWT_SECRET='shopmicro_local_development_secret'
-dotnet run --project backend/src/Api/Api.csproj
-```
-
-Validação de compilação:
-
-```bash
-dotnet build backend/src/Api/Api.csproj
-```
-
-## Health checks
-
-- Backend: `/health/live` e `/health/ready`
-- Marketplace: `/health/live` e `/health/ready`
-
-## Deploy gerenciado na AWS
-
-O mesmo repositório contém a infraestrutura AWS. O desenvolvimento continua
-local com Docker Compose; somente imagens validadas são publicadas no ECR e
-executadas no ECS sobre uma instância EC2 compartilhada.
-
-### Arquitetura
-
-```text
-Internet
-   │
-   ▼
-Application Load Balancer
-   ├── :80 ───────────────► ECS EC2 / frontend
-   ├── :81 ───────────────► ECS EC2 / frontend-admin
-   ├── /api/* ────────────► ECS EC2 / backend
-   └── /uploads/* ────────► ECS EC2 / backend
-                                  │
-                    ┌─────────────┴─────────────┐
-                    ▼                           ▼
-              RDS PostgreSQL              S3 privado
-              sub-redes privadas       imagens persistentes
-```
-
-Também são criados três repositórios ECR, bucket S3 privado, endpoint S3,
-Secrets Manager para a conexão do banco e o JWT, CloudWatch Logs, VPC,
-Security Groups e um Auto Scaling Group
-associado ao ECS por capacity provider. O padrão usa uma única instância
-`t3.small` com a AMI ECS-optimized Amazon Linux 2023. O RDS não possui acesso
-público.
-
-Para reduzir o custo de estudo, a instância ECS fica em sub-rede pública e não
-aceita conexões de entrada. As interfaces de rede das tarefas aceitam tráfego
-somente do ALB. Essa configuração evita Fargate e NAT Gateway.
-
-### Custos
-
-ALB, RDS e EC2 geram cobrança contínua. O S3 cobra armazenamento e requisições;
-o Gateway VPC Endpoint para S3 não possui cobrança adicional. Mesmo com zero
-tarefas ECS, a instância EC2, o ALB e o RDS permanecem cobrados. Ao terminar,
-use `terraform destroy`.
-
-### Pré-requisitos
-
-- AWS CLI v2 autenticada
-- Docker
-- Terraform 1.7 ou superior
-- `jq`
-
-```bash
-aws sts get-caller-identity
-```
-
-### Provisionamento inicial
-
-```bash
-cd infra/aws
-cp terraform.tfvars.example terraform.tfvars
-terraform init
-terraform fmt -check
-terraform validate
-terraform plan
-terraform apply
-```
-
-O arquivo de exemplo inicia com `service_desired_count = 0`, pois ainda não há
-imagens nos repositórios ECR. A capacidade padrão é uma única `t3.small`:
-
-```hcl
-ecs_instance_type    = "t3.small"
-ecs_min_size         = 1
-ecs_max_size         = 1
-ecs_desired_capacity = 1
-```
-
-Depois do primeiro apply, volte à raiz e publique as imagens:
-
-```bash
-./scripts/deploy-aws.sh
-```
-
-O script autentica no ECR, constrói as três imagens `linux/amd64`, publica-as,
-altera os serviços para uma tarefa e força o deployment na capacidade EC2.
-
-URLs resultantes:
-
-```bash
-terraform -chdir=infra/aws output marketplace_url
-terraform -chdir=infra/aws output admin_url
-```
-
-Para novos deployments:
-
-```bash
-IMAGE_TAG=v1.1.0 ./scripts/deploy-aws.sh
-```
-
-Logs do backend:
-
-```bash
-aws logs tail /ecs/shopmicro-dev/backend --region us-east-1 --follow
-```
-
-### Alta disponibilidade e produção
-
-O padrão de estudo usa RDS Single-AZ, uma instância ECS e uma tarefa por
-serviço. Para aumentar a disponibilidade, ajuste no `terraform.tfvars`:
-
-```hcl
-db_multi_az           = true
-service_desired_count = 2
-ecs_min_size          = 2
-ecs_max_size          = 2
-ecs_desired_capacity  = 2
-protect_database      = true
-protect_uploads       = true
-```
-
-Para produção, adicione certificado ACM, listener HTTPS e domínio no Route 53.
-
-### Remoção da infraestrutura
-
-Este comando apaga a infraestrutura. Com `protect_database = false`, remove o
-RDS; com `protect_uploads = false`, esvazia e remove também o bucket S3:
-
-```bash
-terraform -chdir=infra/aws destroy
-```
-
-Referências oficiais: [ECS com ALB](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/alb.html),
-[capacity providers EC2](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/asg-capacity-providers.html),
-[role da instância ECS](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/instance_IAM_role.html) e
-[RDS em VPC](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_VPC.WorkingWithRDSInstanceinaVPC.html).
+O projeto será ampliado com identidade administrativa, cache, filas, workers,
+eventos, observabilidade, domínio e HTTPS, preservando a execução local e na AWS.
