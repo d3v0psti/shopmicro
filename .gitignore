@@ -16,5 +16,13 @@ infra/certs/*.crt
 .DS_Store
 *.log
 
+# Terraform
+**/.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+!*.tfvars.example
+crash.log
+
 # Windows (Mark of the Web ao extrair zips baixados)
 *Zone.Identifier*

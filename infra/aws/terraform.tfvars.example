@@ -1,0 +1,12 @@
+aws_region            = "us-east-1"
+project_name          = "shopmicro"
+environment           = "dev"
+image_tag              = "latest"
+service_desired_count = 0
+ecs_instance_type     = "t3.small"
+ecs_min_size          = 1
+ecs_max_size          = 1
+ecs_desired_capacity  = 1
+db_instance_class     = "db.t4g.micro"
+db_multi_az           = false
+protect_database      = false

@@ -13,7 +13,7 @@ RUN dotnet publish -c Release -o /app/publish
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
 
-# Usuário não-root (boa prática para qualquer ambiente, cloud ou on-prem)
+# Usuário sem privilégios para a execução local.
 RUN adduser --disabled-password --gecos "" appuser
 USER appuser
 

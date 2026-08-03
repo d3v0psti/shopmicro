@@ -1,10 +1,10 @@
 # AGENTS.md
 
 ## Visão geral
-Este repositório é uma aplicação de referência em arquitetura de microsserviços para catálogo e pedidos, com:
+Este repositório é uma aplicação de referência para catálogo e pedidos, com:
 - Frontend e frontend-admin em HTML/CSS/JS estáticos servidos por Nginx.
 - Backend em ASP.NET Core 8 Web API com Entity Framework Core + PostgreSQL.
-- Infra local via Docker Compose e deploy em Kubernetes com manifests puros.
+- Desenvolvimento local via Docker Compose e deploy AWS via Terraform.
 
 Leia primeiro [README.md](README.md) para contexto de produto e execução.
 
@@ -18,7 +18,7 @@ docker compose up --build
 ```
 
 Isso sobe:
-- Frontend em http://localhost:3000
+- Frontend em http://localhost
 - Frontend-admin em http://localhost:81
 - Backend Swagger em http://localhost:8080/swagger
 - PostgreSQL em localhost:5432
@@ -45,15 +45,16 @@ O frontend não depende de um servidor Node em desenvolvimento; ele é servido c
 - Prefira configuração por ambiente em vez de valores hardcoded.
 - Se adicionar uma nova variável de ambiente, atualize os arquivos de infraestrutura e a documentação relevante.
 - Mantenha backend e frontend desacoplados; a comunicação ocorre por HTTP e o frontend usa rotas relativas como `/api/v1/...`.
-- Não introduza dependências cloud-specific no código de aplicação; o projeto é pensado para ser agnóstico de provedor.
-- Alterações que mudam contratos da API devem refletir em [README.md](README.md) e, quando pertinente, nos manifests em [infra/k8s](infra/k8s).
+- Mantenha o fluxo local independente da infraestrutura AWS.
+- Recursos AWS devem ser declarados em `infra/aws` e nunca conter segredos versionados.
+- Alterações que mudam contratos da API devem refletir em [README.md](README.md).
 
 ## Estrutura relevante
 - Backend: [backend/src/Api](backend/src/Api)
 - Controllers principais: [backend/src/Api/Controllers](backend/src/Api/Controllers)
 - Modelos e DTOs: [backend/src/Api/Models](backend/src/Api/Models)
-- Infra local: [infra/docker-compose-local.yaml](infra/docker-compose-local.yaml)
-- Kubernetes: [infra/k8s](infra/k8s)
+- Infra local: [infra/compose.yaml](infra/compose.yaml)
+- Infra AWS: [infra/aws](infra/aws)
 
 ## Boas práticas para agentes
 - Faça mudanças pequenas e focalizadas.

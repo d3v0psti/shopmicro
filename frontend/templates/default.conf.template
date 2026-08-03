@@ -5,8 +5,7 @@ server {
     root /usr/share/nginx/html;
     index index.html index.htm;
 
-    # Health checks — usados pelas probes do Kubernetes (liveness/readiness)
-    # e por qualquer load balancer, em qualquer nuvem ou on-premises.
+    # Verificação simples do Nginx local.
     location /health/live {
         access_log off;
         return 200 'ok';
@@ -31,11 +30,7 @@ server {
         access_log off;
     }
 
-    # Proxy reverso para o backend.
-    # BACKEND_UPSTREAM é substituído em tempo de execução (envsubst, nativo
-    # da imagem oficial do Nginx) — em Docker Compose aponta para o nome do
-    # serviço ("backend"), em Kubernetes para o nome do Service
-    # ("backend-service"), sem precisar de rebuild da imagem.
+    # Proxy reverso para o backend no Docker Compose.
     location /api/ {
         proxy_pass ${BACKEND_UPSTREAM};
 
@@ -44,5 +39,10 @@ server {
         proxy_set_header Connection 'upgrade';
         proxy_set_header Host $host;
         proxy_cache_bypass $http_upgrade;
+    }
+
+    location /uploads/ {
+        proxy_pass ${BACKEND_UPSTREAM};
+        proxy_set_header Host $host;
     }
 }

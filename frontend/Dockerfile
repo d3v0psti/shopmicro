@@ -11,10 +11,7 @@ COPY templates/default.conf.template /etc/nginx/templates/default.conf.template
 # Arquivos estáticos da vitrine (HTML/CSS/JS puro)
 COPY src/public /usr/share/nginx/html
 
-# Valor padrão — funciona de imediato em Docker Compose local, onde o
-# serviço do backend se chama "backend". Em Kubernetes, sobrescreva essa
-# variável de ambiente no Deployment apontando para o Service
-# ("http://backend-service:8080").
+# No Docker Compose local, o backend é acessado pelo nome do serviço.
 ENV BACKEND_UPSTREAM=http://backend:8080
 
 EXPOSE 80

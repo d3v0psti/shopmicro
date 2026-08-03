@@ -1,5 +1,3 @@
-using Amazon;
-using Amazon.S3;
 using Api.Data;
 using Api.Models;
 using Api.Services;
@@ -11,10 +9,7 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ----------------------------------------------------------------------
-// Configuração agnóstica de ambiente (12-factor):
-// Connection string via variável de ambiente (docker-compose, K8s, etc).
-// ----------------------------------------------------------------------
+// A conexão local é fornecida pelo Docker Compose.
 var connectionString =
     Environment.GetEnvironmentVariable("DB_CONNECTION_STRING")
     ?? builder.Configuration.GetConnectionString("DefaultConnection");
@@ -35,39 +30,7 @@ builder.Services.Configure<RouteOptions>(options =>
     options.LowercaseUrls = true;
 });
 
-// Storage provider selection: local, aws, azure, gcp
-var storageProvider = Environment.GetEnvironmentVariable("STORAGE_PROVIDER")?.ToLowerInvariant() ?? "local";
-
-switch (storageProvider)
-{
-    case "aws":
-    {
-        var bucket = Environment.GetEnvironmentVariable("AWS_S3_BUCKET") ?? throw new InvalidOperationException("AWS_S3_BUCKET não configurado.");
-        var region = Environment.GetEnvironmentVariable("AWS_REGION") ?? "us-east-1";
-        builder.Services.AddSingleton<IAmazonS3>(sp => new AmazonS3Client(RegionEndpoint.GetBySystemName(region)));
-        builder.Services.AddSingleton<IStorageService>(sp => new S3StorageService(sp.GetRequiredService<IAmazonS3>(), bucket, region));
-        break;
-    }
-    case "azure":
-    {
-        var blobConnectionString = Environment.GetEnvironmentVariable("AZURE_BLOB_CONNECTION_STRING") ?? throw new InvalidOperationException("AZURE_BLOB_CONNECTION_STRING não configurado.");
-        var containerName = Environment.GetEnvironmentVariable("AZURE_BLOB_CONTAINER") ?? "shopmicro-images";
-        builder.Services.AddSingleton<IStorageService>(sp => new AzureBlobStorageService(blobConnectionString, containerName));
-        break;
-    }
-    case "gcp":
-    {
-        var bucket = Environment.GetEnvironmentVariable("GCP_STORAGE_BUCKET") ?? throw new InvalidOperationException("GCP_STORAGE_BUCKET não configurado.");
-        var serviceAccountJson = Environment.GetEnvironmentVariable("GCP_SERVICE_ACCOUNT_JSON");
-        builder.Services.AddSingleton<IStorageService>(sp => new GcpStorageService(bucket, serviceAccountJson));
-        break;
-    }
-    default:
-    {
-        builder.Services.AddSingleton<IStorageService, LocalStorageService>();
-        break;
-    }
-}
+builder.Services.AddSingleton<IStorageService, LocalStorageService>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
