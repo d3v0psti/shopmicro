@@ -8,7 +8,7 @@ resource "aws_security_group" "ec2" {
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
-    cidr_blocks = [var.admin_cidr]
+    cidr_blocks = [var.marketplace_cidr]
   }
 
   ingress {
@@ -17,22 +17,6 @@ resource "aws_security_group" "ec2" {
     to_port     = 81
     protocol    = "tcp"
     cidr_blocks = [var.admin_cidr]
-  }
-
-  ingress {
-    description = "SSH a partir do IP administrativo"
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = [var.admin_cidr]
-  }
-
-  ingress {
-    description     = "EC2 Instance Connect pelo Console"
-    from_port       = 22
-    to_port         = 22
-    protocol        = "tcp"
-    prefix_list_ids = [data.aws_ec2_managed_prefix_list.instance_connect.id]
   }
 
   egress {

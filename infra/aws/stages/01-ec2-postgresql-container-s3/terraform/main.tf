@@ -27,10 +27,6 @@ data "aws_ssm_parameter" "ubuntu_ami" {
   name = "/aws/service/canonical/ubuntu/server/24.04/stable/current/amd64/hvm/ebs-gp3/ami-id"
 }
 
-data "aws_ec2_managed_prefix_list" "instance_connect" {
-  name = "com.amazonaws.${var.aws_region}.ec2-instance-connect"
-}
-
 locals {
   name           = "${var.project_name}-${var.environment}"
   subnet_id      = sort(data.aws_subnets.default.ids)[0]

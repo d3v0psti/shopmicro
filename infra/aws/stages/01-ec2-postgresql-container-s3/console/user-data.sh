@@ -31,6 +31,11 @@ apt-get update
 apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 systemctl enable --now docker
 
+if ! snap list amazon-ssm-agent >/dev/null 2>&1; then
+  snap install amazon-ssm-agent --classic
+fi
+systemctl enable --now snap.amazon-ssm-agent.amazon-ssm-agent.service
+
 # Ajuda a t3.small durante o build das imagens sem aumentar a instância.
 if ! swapon --show | grep -q /swapfile; then
   fallocate -l 2G /swapfile

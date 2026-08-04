@@ -40,6 +40,7 @@ Health checks: `/health/live` e `/health/ready`.
 - Mantenha o ambiente local independente da AWS.
 - Use configuração por ambiente e nunca versione segredos.
 - Preserve PostgreSQL 18 em todos os ambientes.
+- Administre EC2 somente por SSM Session Manager; não abra a porta 22.
 - Atualize Compose, Terraform e documentação ao adicionar configurações.
 - Mantenha rotas relativas `/api/...` entre frontend e backend.
 - Recursos AWS ficam em [infra/aws](infra/aws/).

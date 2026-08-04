@@ -5,7 +5,6 @@ resource "aws_instance" "shopmicro" {
   associate_public_ip_address = true
   vpc_security_group_ids      = [aws_security_group.ec2.id]
   iam_instance_profile        = aws_iam_instance_profile.ec2.name
-  key_name                    = var.key_name
 
   user_data = templatefile("${path.module}/templates/user-data.sh.tftpl", {
     aws_region        = var.aws_region
@@ -33,6 +32,7 @@ resource "aws_instance" "shopmicro" {
 
   depends_on = [
     aws_iam_role_policy.uploads,
+    aws_iam_role_policy_attachment.ssm,
     aws_s3_bucket_policy.uploads,
     aws_vpc_endpoint.s3
   ]

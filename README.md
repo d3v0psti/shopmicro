@@ -75,6 +75,8 @@ docker compose down -v
 O ambiente local não exige credenciais AWS. Na AWS, o backend acessa o S3 por
 uma IAM Role associada à EC2, sem Access Key ou Secret Key no projeto. O user
 data gera automaticamente senhas aleatórias para o PostgreSQL e para o JWT.
+A administração da instância usa somente AWS Systems Manager Session Manager;
+o Security Group não possui entrada na porta 22.
 
 ## AWS
 

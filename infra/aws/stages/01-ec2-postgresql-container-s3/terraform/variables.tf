@@ -16,8 +16,19 @@ variable "environment" {
   default     = "stage-01"
 }
 
+variable "marketplace_cidr" {
+  description = "CIDR autorizado a acessar o marketplace."
+  type        = string
+  default     = "0.0.0.0/0"
+
+  validation {
+    condition     = can(cidrhost(var.marketplace_cidr, 0))
+    error_message = "Informe um CIDR válido."
+  }
+}
+
 variable "admin_cidr" {
-  description = "Seu IP público no formato CIDR /32 para acesso SSH e ao painel."
+  description = "Seu IP público no formato CIDR /32 para acessar o painel administrativo."
   type        = string
 
   validation {
@@ -53,13 +64,6 @@ variable "repository_branch" {
   description = "Branch clonada pelo user-data."
   type        = string
   default     = "develop"
-}
-
-variable "key_name" {
-  description = "Key pair opcional. EC2 Instance Connect pode ser usado sem informar este valor."
-  type        = string
-  default     = null
-  nullable    = true
 }
 
 variable "force_destroy_bucket" {
