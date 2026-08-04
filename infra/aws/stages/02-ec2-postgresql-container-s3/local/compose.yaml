@@ -1,0 +1,70 @@
+name: shopmicro-stage-02-local
+
+services:
+  postgres:
+    image: postgres:18-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: shopdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d shopdb"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  backend:
+    build:
+      context: ../../../../../backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      DB_CONNECTION_STRING: "Host=postgres;Port=5432;Database=shopdb;Username=postgres;Password=postgres"
+      JWT_SECRET: "shopmicro_stage_02_local_development_secret"
+      CORS_ALLOWED_ORIGINS: "*"
+      ENABLE_SWAGGER: "true"
+      STORAGE_PROVIDER: "Local"
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - backend_uploads:/app/uploads
+
+  frontend:
+    build:
+      context: ../../../../../frontend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      BACKEND_UPSTREAM: "http://backend:8080"
+    ports:
+      - "80:80"
+    depends_on:
+      backend:
+        condition: service_started
+
+  frontend-admin:
+    build:
+      context: ../../../../../frontend-admin
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      BACKEND_UPSTREAM: "http://backend:8080"
+    ports:
+      - "81:80"
+    depends_on:
+      backend:
+        condition: service_started
+
+volumes:
+  postgres_data:
+  backend_uploads:

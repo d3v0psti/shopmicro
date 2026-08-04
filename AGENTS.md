@@ -44,6 +44,11 @@ Health checks: `/health/live` e `/health/ready`.
 - Atualize Compose, Terraform e documentação ao adicionar configurações.
 - Mantenha rotas relativas `/api/...` entre frontend e backend.
 - Recursos AWS ficam em [infra/aws](infra/aws/).
+- Cada stage mantém `STAGE.md`, `local/`, `console/`, `terraform/` e `validacoes/`.
+- Um stage deve funcionar localmente sem credenciais AWS antes das validações na nuvem.
+- Não crie, publique, mova ou exclua uma tag de stage sem aprovação explícita do autor.
+- A aprovação da tag só pode ser solicitada depois de Local, Console e Terraform serem validados.
+- Tags de stages concluídos são imutáveis; correções usam sufixos como `shopmicro-aws-stage-01.1`.
 - Mudanças de API devem atualizar a documentação correspondente.
 - Considere o bootstrap e a carga inicial ao alterar o banco.
 
@@ -52,4 +57,5 @@ Health checks: `/health/live` e `/health/ready`.
 - Execute `dotnet build` após mudanças no backend.
 - Valide os arquivos Compose após mudanças de infraestrutura.
 - Execute `terraform fmt -check` e `terraform validate` após mudanças no Terraform.
+- Execute o roteiro em `validacoes/` antes de concluir ou criar a tag de um stage.
 - Não exponha credenciais, tokens ou dados sensíveis em código e logs.
