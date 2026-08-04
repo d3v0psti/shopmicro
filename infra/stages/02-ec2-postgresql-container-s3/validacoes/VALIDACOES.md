@@ -76,14 +76,14 @@ Repita a consulta SQL, a conferência no S3 e a abertura da imagem.
 
 | Verificação | Local | Console | Terraform |
 |---|---|---|---|
-| Quatro containers ativos | [ ] | [ ] | [ ] |
-| Health checks aprovados | [ ] | [ ] | [ ] |
-| Produto no PostgreSQL | [ ] | [ ] | [ ] |
-| Imagem no volume local | [ ] | N/A | N/A |
-| Objeto privado no S3 | N/A | [ ] | [ ] |
-| Banco e imagem persistem | [ ] | [ ] | [ ] |
-| Nenhum segredo nos logs | [ ] | [ ] | [ ] |
-| Recursos AWS removidos | N/A | [ ] | [ ] |
+| Quatro containers ativos | [x] | [x] | [x] |
+| Health checks aprovados | [x] | [x] | [x] |
+| Produto no PostgreSQL | [x] | [x] | [x] |
+| Imagem no volume local | [x] | N/A | N/A |
+| Objeto privado no S3 | N/A | [x] | [x] |
+| Banco e imagem persistem | [x] | [x] | [x] |
+| Nenhum segredo nos logs | [x] | [x] | [x] |
+| Recursos AWS removidos | N/A | [x] | [x] |
 
 Registre nome do produto, ID, `ImageUrl`, chave S3 e horários. Não registre
 senhas, JWT, credenciais ou o conteúdo dos arquivos `.env`.
