@@ -66,12 +66,12 @@ No Console RDS, confirme:
 
 | Verificação | Local | Console | Terraform |
 |---|---|---|---|
-| Quatro containers locais / três na AWS | [ ] | [ ] | [ ] |
-| Health checks aprovados | [ ] | [ ] | [ ] |
-| Produto persistido no PostgreSQL | [ ] | [ ] | [ ] |
-| Imagem local no volume | [ ] | N/A | N/A |
-| Objeto privado no S3 | N/A | [ ] | [ ] |
-| RDS privado e criptografado | N/A | [ ] | [ ] |
-| Persistência após reinício da EC2 | [ ] | [ ] | [ ] |
-| Nenhum segredo em logs | [ ] | [ ] | [ ] |
-| Recursos AWS removidos | N/A | [ ] | [ ] |
+| Quatro containers locais / três na AWS | [x] | [x] | [x] |
+| Health checks aprovados | [x] | [x] | [x] |
+| Produto persistido no PostgreSQL | [x] | [x] | [x] |
+| Imagem local no volume | [x] | N/A | N/A |
+| Objeto privado no S3 | N/A | [x] | [x] |
+| RDS privado e criptografado | N/A | [x] | [x] |
+| Persistência após reinício da EC2 | [x] | [x] | [x] |
+| Nenhum segredo nos logs | [x] | [x] | [x] |
+| Recursos AWS removidos | N/A | [x] | [x] |
