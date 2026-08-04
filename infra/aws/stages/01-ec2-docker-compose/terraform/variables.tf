@@ -46,11 +46,11 @@ variable "instance_type" {
 variable "root_volume_size" {
   description = "Tamanho em GiB do volume raiz GP3."
   type        = number
-  default     = 25
+  default     = 8
 
   validation {
-    condition     = var.root_volume_size >= 20
-    error_message = "O volume raiz deve possuir pelo menos 20 GiB."
+    condition     = var.root_volume_size >= 8
+    error_message = "O volume raiz deve possuir pelo menos 8 GiB."
   }
 }
 
