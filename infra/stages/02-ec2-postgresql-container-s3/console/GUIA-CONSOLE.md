@@ -23,9 +23,28 @@ bucket S3 privado.
    - `AmazonSSMManagedInstanceCore`;
    - policy inline permitindo somente `s3:GetObject` e `s3:PutObject` em
      `arn:aws:s3:::NOME_DO_BUCKET/uploads/*`.
-4. Crie um endpoint do tipo `Gateway` para
-   `com.amazonaws.us-east-1.s3`, associado à VPC e à tabela de rotas escolhidas.
-   Restrinja sua policy ao mesmo prefixo `uploads/*` do bucket.
+4. Crie o endpoint privado do S3:
+   1. Abra **VPC → Endpoints → Create endpoint**.
+   2. Use o nome `shopmicro-stage-02-s3-endpoint`.
+   3. Em **Service category**, selecione **AWS services**.
+   4. Procure por `com.amazonaws.us-east-1.s3` e selecione o serviço cujo tipo
+      seja **Gateway**. Não selecione o tipo Interface.
+   5. Selecione a mesma VPC usada pela EC2.
+   6. Em **Route tables**, marque a tabela associada à sub-rede pública onde a
+      EC2 será criada. O endpoint adicionará automaticamente uma rota do S3
+      com destino iniciado por `pl-` nessa tabela.
+   7. Em **Policy**, mantenha **Full access**. O endpoint também transportará
+      downloads dos repositórios oficiais do Amazon Linux e das imagens do
+      Docker Hub, que utilizam buckets S3 gerenciados por terceiros. A restrição
+      efetiva do ShopMicro permanece na IAM Role do passo 3, limitada ao bucket
+      do stage e ao prefixo `uploads/*`.
+   8. Crie o endpoint e aguarde o status **Available**. Endpoint Gateway não
+      utiliza Security Group.
+
+   **Full access no endpoint não concede acesso irrestrito à EC2.** As chamadas
+   ainda precisam ser autorizadas pela IAM Role e pelas policies dos buckets.
+   Evite uma lista fixa de buckets externos, pois repositórios e registries
+   podem alterar os buckets usados para distribuir pacotes e imagens.
 5. Crie `shopmicro-stage-02-sg` com TCP `80` público e TCP `81` limitado a
    `SEU_IP/32`. Não abra `22`, `5432` ou `8080`.
 6. Abra [user-data.sh](user-data.sh), substitua `NOME_UNICO_DO_BUCKET` pelo nome
