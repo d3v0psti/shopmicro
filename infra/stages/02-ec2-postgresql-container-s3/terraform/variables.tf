@@ -40,7 +40,7 @@ variable "admin_cidr" {
 variable "instance_type" {
   description = "Tipo da instância do estágio."
   type        = string
-  default     = "t3.small"
+  default     = "t3.micro"
 }
 
 variable "root_volume_size" {

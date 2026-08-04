@@ -30,8 +30,9 @@ bucket S3 privado.
    `SEU_IP/32`. Não abra `22`, `5432` ou `8080`.
 6. Abra [user-data.sh](user-data.sh), substitua `NOME_UNICO_DO_BUCKET` pelo nome
    real e copie todo o conteúdo.
-7. Inicie uma EC2 Ubuntu 24.04 `t3.small`, sem Key Pair, com IP público, EBS gp3
-   criptografado de 25 GiB e IMDSv2 obrigatório.
+7. Inicie uma EC2 com a AMI **Amazon Linux 2023 AMI** para arquitetura x86_64,
+   tipo `t3.micro`, sem Key Pair, com IP público, EBS gp3 criptografado de
+   25 GiB e IMDSv2 obrigatório.
 8. Associe a role, o Security Group e o user data preparados.
 9. Aguarde `2/2 checks passed` e conecte pelo Session Manager.
 

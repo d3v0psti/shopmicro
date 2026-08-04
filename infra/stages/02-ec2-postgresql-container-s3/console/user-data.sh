@@ -12,31 +12,20 @@ if [ "$S3_BUCKET_NAME" = 'NOME_UNICO_DO_BUCKET' ]; then
   exit 1
 fi
 
-export DEBIAN_FRONTEND=noninteractive
-
-apt-get update
-apt-get upgrade -y
-apt-get install -y ca-certificates curl git openssl
-
-install -m 0755 -d /etc/apt/keyrings
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg \
-  -o /etc/apt/keyrings/docker.asc
-chmod a+r /etc/apt/keyrings/docker.asc
-
-. /etc/os-release
-echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu ${UBUNTU_CODENAME:-$VERSION_CODENAME} stable" \
-  > /etc/apt/sources.list.d/docker.list
-
-apt-get update
-apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+dnf install -y docker git openssl
 systemctl enable --now docker
 
-if ! snap list amazon-ssm-agent >/dev/null 2>&1; then
-  snap install amazon-ssm-agent --classic
-fi
-systemctl enable --now snap.amazon-ssm-agent.amazon-ssm-agent.service
+DOCKER_COMPOSE_VERSION='v2.32.4'
+install -m 0755 -d /usr/local/lib/docker/cli-plugins
+curl -fsSL \
+  "https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-linux-x86_64" \
+  -o /usr/local/lib/docker/cli-plugins/docker-compose
+chmod 0755 /usr/local/lib/docker/cli-plugins/docker-compose
+docker compose version
 
-# Ajuda a t3.small durante o build das imagens sem aumentar a instância.
+systemctl enable --now amazon-ssm-agent
+
+# Ajuda a t3.micro durante o build das imagens sem aumentar a instância.
 if ! swapon --show | grep -q /swapfile; then
   fallocate -l 2G /swapfile
   chmod 600 /swapfile
