@@ -1,7 +1,19 @@
 #!/usr/bin/env bash
 set -e
 
-exec > >(tee -a /var/log/shopmicro-aws-stage-01.log | logger -t shopmicro-aws-stage-01 -s 2>/dev/console) 2>&1
+exec > >(tee -a /var/log/shopmicro-aws-stage-03.log | logger -t shopmicro-aws-stage-03 -s 2>/dev/console) 2>&1
+
+# Preencha antes de colar no campo User data da EC2.
+S3_BUCKET_NAME='NOME_UNICO_DO_BUCKET'
+RDS_HOST='ENDPOINT_PRIVADO_DO_RDS'
+RDS_PASSWORD_PARAMETER='/shopmicro/stage-03/rds/password'
+AWS_REGION='us-east-1'
+
+if [ "$S3_BUCKET_NAME" = 'NOME_UNICO_DO_BUCKET' ] || \
+   [ "$RDS_HOST" = 'ENDPOINT_PRIVADO_DO_RDS' ]; then
+  echo 'ERRO: preencha S3_BUCKET_NAME e RDS_HOST no user-data.'
+  exit 1
+fi
 
 dnf install -y docker git openssl
 systemctl enable --now docker
@@ -13,10 +25,10 @@ curl -fsSL \
   -o /usr/local/lib/docker/cli-plugins/docker-compose
 chmod 0755 /usr/local/lib/docker/cli-plugins/docker-compose
 docker compose version
+aws --version
 
 systemctl enable --now amazon-ssm-agent
 
-# Ajuda a t3.micro durante o build das imagens sem aumentar a instância.
 if ! swapon --show | grep -q /swapfile; then
   fallocate -l 2G /swapfile
   chmod 600 /swapfile
@@ -29,26 +41,10 @@ git clone --depth 1 --branch develop --single-branch \
   https://github.com/d3v0psti/shopmicro.git \
   /opt/shopmicro
 
-install -m 0644 /dev/stdin /opt/shopmicro/infra/compose.aws-stage-01.yaml <<'COMPOSE'
-name: shopmicro-aws-stage-01
+install -m 0644 /dev/stdin /opt/shopmicro/infra/compose.aws-stage-03.yaml <<'COMPOSE'
+name: shopmicro-aws-stage-03
 
 services:
-  postgres:
-    image: postgres:18-alpine
-    restart: unless-stopped
-    environment:
-      POSTGRES_DB: shopdb
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:?POSTGRES_PASSWORD não configurado}"
-    volumes:
-      - postgres_data:/var/lib/postgresql
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d shopdb"]
-      interval: 5s
-      timeout: 5s
-      retries: 10
-      start_period: 10s
-
   backend:
     build:
       context: /opt/shopmicro/backend
@@ -56,18 +52,15 @@ services:
     restart: unless-stopped
     environment:
       ASPNETCORE_ENVIRONMENT: Production
-      DB_CONNECTION_STRING: "Host=postgres;Port=5432;Database=shopdb;Username=postgres;Password=${POSTGRES_PASSWORD:?POSTGRES_PASSWORD não configurado}"
+      DB_CONNECTION_STRING: "Host=${RDS_HOST:?RDS_HOST não configurado};Port=5432;Database=shopdb;Username=shopadmin;Password=${RDS_PASSWORD:?RDS_PASSWORD não configurado};SSL Mode=Require;Trust Server Certificate=true"
       JWT_SECRET: "${JWT_SECRET:?JWT_SECRET não configurado}"
       CORS_ALLOWED_ORIGINS: "*"
       ENABLE_SWAGGER: "true"
-      STORAGE_PROVIDER: "Local"
+      STORAGE_PROVIDER: "S3"
+      S3_BUCKET_NAME: "${S3_BUCKET_NAME:?S3_BUCKET_NAME não configurado}"
+      AWS_REGION: "${AWS_REGION:-us-east-1}"
     ports:
       - "127.0.0.1:8080:8080"
-    depends_on:
-      postgres:
-        condition: service_healthy
-    volumes:
-      - backend_uploads:/app/uploads
 
   frontend:
     build:
@@ -94,32 +87,35 @@ services:
     depends_on:
       backend:
         condition: service_started
-
-volumes:
-  postgres_data:
-  backend_uploads:
 COMPOSE
 
+RDS_PASSWORD="$(aws ssm get-parameter \
+  --region "$AWS_REGION" \
+  --name "$RDS_PASSWORD_PARAMETER" \
+  --with-decryption \
+  --query 'Parameter.Value' \
+  --output text)"
 JWT_SECRET="$(openssl rand -hex 32)"
-POSTGRES_PASSWORD="$(openssl rand -hex 24)"
+
 umask 077
-printf 'JWT_SECRET=%s\nPOSTGRES_PASSWORD=%s\n' \
-  "$JWT_SECRET" "$POSTGRES_PASSWORD" \
-  > /opt/shopmicro/infra/.env.aws-stage-01
+printf 'JWT_SECRET=%s\nRDS_HOST=%s\nRDS_PASSWORD=%s\nS3_BUCKET_NAME=%s\nAWS_REGION=%s\n' \
+  "$JWT_SECRET" "$RDS_HOST" "$RDS_PASSWORD" "$S3_BUCKET_NAME" "$AWS_REGION" \
+  > /opt/shopmicro/infra/.env.aws-stage-03
+unset RDS_PASSWORD JWT_SECRET
 
 cd /opt/shopmicro/infra
-docker compose --env-file .env.aws-stage-01 -f compose.aws-stage-01.yaml up --build -d
+docker compose --env-file .env.aws-stage-03 -f compose.aws-stage-03.yaml up --build -d
 
-for attempt in $(seq 1 60); do
+for attempt in $(seq 1 90); do
   if curl -fsS http://127.0.0.1/health/live >/dev/null; then
-    echo 'ShopMicro AWS Stage 01 iniciado com sucesso.'
-    docker compose --env-file .env.aws-stage-01 -f compose.aws-stage-01.yaml ps
+    echo 'ShopMicro AWS Stage 03 iniciado com sucesso.'
+    docker compose --env-file .env.aws-stage-03 -f compose.aws-stage-03.yaml ps
     exit 0
   fi
   sleep 5
 done
 
 echo 'ERRO: aplicação não respondeu no prazo.'
-docker compose --env-file .env.aws-stage-01 -f compose.aws-stage-01.yaml ps
-docker compose --env-file .env.aws-stage-01 -f compose.aws-stage-01.yaml logs --tail 200
+docker compose --env-file .env.aws-stage-03 -f compose.aws-stage-03.yaml ps
+docker compose --env-file .env.aws-stage-03 -f compose.aws-stage-03.yaml logs --tail 200
 exit 1

@@ -90,7 +90,7 @@ e abertura da imagem no marketplace.
 | Imagem no volume local | [x] | [x] | [x] |
 | Persistência após reinício | [x] | [x] | [x] |
 | Nenhum segredo nos logs | [x] | [x] | [x] |
-| Recursos AWS removidos | N/A | [ ] | [ ] |
+| Recursos AWS removidos | N/A | [x] | [x] |
 
 Registre IDs, nomes e horários; não copie senha PostgreSQL, JWT ou conteúdo de
 arquivos `.env` para as evidências.

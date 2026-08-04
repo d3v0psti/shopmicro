@@ -65,55 +65,25 @@ docker compose down -v
 > PostgreSQL 18 utiliza o volume em `/var/lib/postgresql`. Volumes de versões
 > anteriores devem ser migrados ou recriados.
 
-## Ambientes
+## Evolução na AWS
 
 | Ambiente | Banco | Imagens |
 |---|---|---|
 | Local | PostgreSQL 18 em container | Volume Docker |
 | AWS Stage 01 | PostgreSQL 18 na EC2 | Volume Docker |
 | AWS Stage 02 | PostgreSQL 18 na EC2 | Bucket S3 privado |
+| AWS Stage 03 | RDS PostgreSQL 18 privado | Bucket S3 privado |
 
-O ambiente local não exige credenciais AWS. No Stage 01, banco e imagens ficam
-em volumes Docker na EC2. No Stage 02, o backend passa a armazenar imagens no
-S3 por uma IAM Role, sem Access Key ou Secret Key no projeto. O user data gera
-automaticamente senhas aleatórias para o PostgreSQL e para o JWT.
-A administração da instância usa somente AWS Systems Manager Session Manager;
-o Security Group não possui entrada na porta 22.
+Cada stage adiciona um conceito sem quebrar a execução local:
 
-## AWS
+1. Stage 01: aplicação, PostgreSQL e uploads na EC2.
+2. Stage 02: uploads transferidos para o S3.
+3. Stage 03: PostgreSQL transferido para o RDS.
+4. Stage 04: imagens Docker no ECR, planejado.
 
-```text
-Stage 01: EC2 + Docker Compose + armazenamento local
-Stage 02: EC2 + Docker Compose + Amazon S3
-```
-
-Os arquivos para criação pelo Console e pelo Terraform estão em
-[infra/stages](infra/stages/).
-
-Cada stage possui execução `local/`, criação AWS por `console/` e `terraform/`,
-além de um roteiro em `validacoes/`. Depois de aprovado nos três modos, o stage
-é congelado em uma tag Git para continuar reproduzível durante a evolução do
-projeto. Consulte [o guia dos stages](infra/stages/GUIA-STAGES.md).
-
-### Debug do PostgreSQL na EC2
-
-A senha gerada fica em `/opt/shopmicro/infra/.env.aws-stage-01`. Para consultar
-somente esse valor:
-
-```bash
-sudo grep '^POSTGRES_PASSWORD=' /opt/shopmicro/infra/.env.aws-stage-01
-```
-
-Para acessar o banco sem exibir a senha:
-
-```bash
-cd /opt/shopmicro/infra
-sudo docker compose --env-file .env.aws-stage-01 -f compose.aws-stage-01.yaml \
-  exec postgres psql -U postgres -d shopdb
-```
-
-O arquivo também contém o segredo JWT. Não compartilhe seu conteúdo nem o envie
-para logs.
+EC2 é administrada somente pelo Session Manager, sem SSH. A aplicação usa IAM
+Roles, sem Access Key ou Secret Key no código. Consulte os roteiros em
+[infra/stages](infra/stages/) e a [ordem de execução](infra/stages/GUIA-STAGES.md).
 
 ## Estrutura
 
@@ -124,11 +94,10 @@ shopmicro/
 ├── frontend-admin/
 └── infra/
     ├── compose.yaml
-    └── aws/
-        └── stages/
+    └── stages/
 ```
 
-## Evolução
+## Próximos passos
 
 O projeto será ampliado com identidade administrativa, cache, filas, workers,
 eventos, observabilidade, domínio e HTTPS, preservando a execução local e na AWS.

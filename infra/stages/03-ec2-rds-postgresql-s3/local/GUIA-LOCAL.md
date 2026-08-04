@@ -1,14 +1,15 @@
-# Stage 02 — execução local
+# Stage 03 — execução local
 
-Usa PostgreSQL 18 e uploads em volumes Docker. O S3 será usado somente na AWS.
+Usa PostgreSQL 18 e uploads em volumes Docker. RDS e S3 serão usados somente na
+AWS.
 
 ## 1. Iniciar
 
 Antes de iniciar, encerre qualquer outro stage que esteja usando as portas 80,
-81, 5432 e 8080. Use `docker compose down` no diretório desse stage.
+81, 5432 e 8080 com `docker compose down`.
 
 ```bash
-cd infra/stages/02-ec2-postgresql-container-s3/local
+cd infra/stages/03-ec2-rds-postgresql-s3/local
 docker compose up --build -d
 docker compose ps
 ```

@@ -8,32 +8,24 @@ ShopMicro é um marketplace com:
 - Backend ASP.NET Core 8 com Entity Framework Core.
 - PostgreSQL 18.
 - Docker Compose local.
-- Execução AWS incremental: armazenamento local na EC2 no Stage 01 e uploads no S3 no Stage 02.
+- Execução AWS incremental: armazenamento local no Stage 01, S3 no Stage 02 e
+  RDS PostgreSQL no Stage 03. O Stage 04 planeja imagens separadas no ECR.
 
 Leia [README.md](README.md) antes de alterar o projeto.
 
-## Execução e validação
+## Comandos principais
 
 ```bash
 cd infra
 docker compose up --build
 ```
 
-Serviços:
-
-- Marketplace: http://localhost
-- Painel administrativo: http://localhost:81
-- Swagger: http://localhost:8080/swagger
-- PostgreSQL: localhost:5432
-
-Backend:
-
 ```bash
 dotnet build backend/src/Api/Api.csproj
-dotnet run --project backend/src/Api/Api.csproj
 ```
 
-Health checks: `/health/live` e `/health/ready`.
+Endpoints locais: marketplace `:80`, admin `:81`, backend `:8080` e PostgreSQL
+`:5432`. Health checks: `/health/live` e `/health/ready`.
 
 ## Convenções
 
@@ -41,21 +33,24 @@ Health checks: `/health/live` e `/health/ready`.
 - Use configuração por ambiente e nunca versione segredos.
 - Preserve PostgreSQL 18 em todos os ambientes.
 - Administre EC2 somente por SSM Session Manager; não abra a porta 22.
-- Atualize Compose, Terraform e documentação ao adicionar configurações.
+- Atualize Compose, Terraform e documentação ao adicionar configuração.
 - Mantenha rotas relativas `/api/...` entre frontend e backend.
 - Recursos AWS ficam em [infra/stages](infra/stages/).
-- Cada stage mantém `STAGE.md`, `local/`, `console/`, `terraform/` e `validacoes/`.
-- Um stage deve funcionar localmente sem credenciais AWS antes das validações na nuvem.
-- Não crie, publique, mova ou exclua uma tag de stage sem aprovação explícita do autor.
-- A aprovação da tag só pode ser solicitada depois de Local, Console e Terraform serem validados.
-- Tags de stages concluídos são imutáveis; correções usam sufixos como `shopmicro-aws-stage-01.1`.
+- Siga a estrutura e o fluxo definidos em
+  [GUIA-STAGES.md](infra/stages/GUIA-STAGES.md).
+- Não crie, publique, mova ou exclua tags sem aprovação explícita do autor.
+- Tags publicadas são imutáveis; correções usam sufixos como
+  `shopmicro-aws-stage-01.1`.
 - Mudanças de API devem atualizar a documentação correspondente.
 - Considere o bootstrap e a carga inicial ao alterar o banco.
+- Trate frontend, frontend-admin e backend como unidades de implantação
+  separadas ao introduzir ECR; não descreva os frontends como microserviços de
+  negócio.
 
 ## Validação mínima
 
 - Execute `dotnet build` após mudanças no backend.
 - Valide os arquivos Compose após mudanças de infraestrutura.
 - Execute `terraform fmt -check` e `terraform validate` após mudanças no Terraform.
-- Execute o roteiro em `validacoes/` antes de concluir ou criar a tag de um stage.
+- Execute `validacoes/` antes de concluir um stage.
 - Não exponha credenciais, tokens ou dados sensíveis em código e logs.

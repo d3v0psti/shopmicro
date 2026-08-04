@@ -8,7 +8,7 @@
 - Imagens na AWS: bucket S3 privado via Gateway VPC Endpoint
 - Administração AWS: Systems Manager Session Manager
 
-## Ordem do laboratório
+## Como executar
 
 1. [Executar localmente](local/GUIA-LOCAL.md)
 2. [Criar pelo Console AWS](console/GUIA-CONSOLE.md)

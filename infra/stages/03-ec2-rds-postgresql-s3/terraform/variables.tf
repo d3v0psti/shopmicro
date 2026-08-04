@@ -13,7 +13,7 @@ variable "project_name" {
 variable "environment" {
   description = "Identificação do ambiente."
   type        = string
-  default     = "stage-01"
+  default     = "stage-03"
 }
 
 variable "marketplace_cidr" {
@@ -38,13 +38,13 @@ variable "admin_cidr" {
 }
 
 variable "instance_type" {
-  description = "Tipo da instância do estágio."
+  description = "Tipo da instância EC2 do estágio."
   type        = string
   default     = "t3.micro"
 }
 
 variable "root_volume_size" {
-  description = "Tamanho em GiB do volume raiz GP3."
+  description = "Tamanho em GiB do volume raiz GP3 da EC2."
   type        = number
   default     = 8
 
@@ -54,14 +54,37 @@ variable "root_volume_size" {
   }
 }
 
+variable "db_instance_class" {
+  description = "Classe de menor custo usada pelo RDS deste treinamento."
+  type        = string
+  default     = "db.t4g.micro"
+}
+
+variable "db_allocated_storage" {
+  description = "Armazenamento GP3 do RDS em GiB."
+  type        = number
+  default     = 20
+
+  validation {
+    condition     = var.db_allocated_storage >= 20
+    error_message = "O RDS PostgreSQL deve possuir pelo menos 20 GiB."
+  }
+}
+
 variable "repository_url" {
-  description = "Repositório Git clonado pelo user-data."
+  description = "Repositório Git clonado pelo user data."
   type        = string
   default     = "https://github.com/d3v0psti/shopmicro.git"
 }
 
 variable "repository_branch" {
-  description = "Branch clonada pelo user-data."
+  description = "Branch clonada pelo user data."
   type        = string
   default     = "develop"
+}
+
+variable "force_destroy_bucket" {
+  description = "Permite excluir objetos e bucket no terraform destroy deste treinamento."
+  type        = bool
+  default     = true
 }
