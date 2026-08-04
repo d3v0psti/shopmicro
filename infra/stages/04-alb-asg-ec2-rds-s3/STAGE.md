@@ -1,6 +1,6 @@
 # Stage 04 — ALB, duas EC2, RDS e S3
 
-- Status: `PLANEJADO — preparação pendente`
+- Status: `PREPARADO — validação pendente`
 - Tag planejada: `shopmicro-aws-stage-04`
 - Banco local: PostgreSQL 18 em container
 - Banco na AWS: RDS PostgreSQL 18 privado
@@ -11,7 +11,7 @@
 
 Adicionar alta disponibilidade à camada da aplicação sem alterar RDS e S3.
 
-## Arquitetura planejada
+## Arquitetura
 
 ```text
 Internet
@@ -44,7 +44,14 @@ Para evitar o custo de NAT Gateway neste momento, as EC2 poderão permanecer em
 sub-redes públicas, sem portas de entrada diretas e administradas somente por
 Session Manager. Uma evolução posterior poderá movê-las para sub-redes privadas.
 
-## Validação planejada
+## Ordem de execução
+
+1. [Local](local/GUIA-LOCAL.md)
+2. [AWS pelo Console](console/GUIA-CONSOLE.md)
+3. [AWS pelo Terraform](terraform/GUIA-TERRAFORM.md)
+4. [Validações](validacoes/VALIDACOES.md)
+
+## Validação
 
 1. Confirmar duas EC2 saudáveis em zonas diferentes.
 2. Acessar marketplace e painel somente pelo DNS do ALB.
@@ -52,4 +59,5 @@ Session Manager. Uma evolução posterior poderá movê-las para sub-redes priva
 4. Confirmar aplicação disponível durante a substituição.
 5. Validar persistência compartilhada no RDS e no S3.
 
-Os arquivos executáveis serão preparados a partir da tag validada do Stage 03.
+O stage somente será marcado como validado e receberá uma tag após a validação
+manual dos três modos pelo responsável pelo projeto.
