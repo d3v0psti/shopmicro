@@ -5,7 +5,7 @@ imagem pequena do computador e anote o nome usado.
 
 ## Local
 
-Execute dentro de `infra/aws/stages/01-ec2-docker-compose/local`.
+Execute dentro de `infra/stages/01-ec2-docker-compose/local`.
 
 ### 1. Serviços e saúde
 
@@ -66,7 +66,7 @@ Cadastre `VALIDACAO-STAGE-01-AAAA-MM-DD` pelo painel e valide o PostgreSQL:
 sudo docker compose --env-file .env.aws-stage-01 \
   -f compose.aws-stage-01.yaml exec -T postgres \
   psql -U postgres -d shopdb \
-  < aws/stages/01-ec2-docker-compose/validacoes/consultar-produtos.sql
+  < stages/01-ec2-docker-compose/validacoes/consultar-produtos.sql
 ```
 
 Valide o arquivo:

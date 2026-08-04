@@ -43,7 +43,7 @@ Health checks: `/health/live` e `/health/ready`.
 - Administre EC2 somente por SSM Session Manager; não abra a porta 22.
 - Atualize Compose, Terraform e documentação ao adicionar configurações.
 - Mantenha rotas relativas `/api/...` entre frontend e backend.
-- Recursos AWS ficam em [infra/aws](infra/aws/).
+- Recursos AWS ficam em [infra/stages](infra/stages/).
 - Cada stage mantém `STAGE.md`, `local/`, `console/`, `terraform/` e `validacoes/`.
 - Um stage deve funcionar localmente sem credenciais AWS antes das validações na nuvem.
 - Não crie, publique, mova ou exclua uma tag de stage sem aprovação explícita do autor.

@@ -4,7 +4,7 @@ Esta execução valida o mesmo conjunto de containers antes de criar recursos AW
 Não requer AWS CLI nem credenciais AWS.
 
 ```bash
-cd infra/aws/stages/01-ec2-docker-compose/local
+cd infra/stages/01-ec2-docker-compose/local
 docker compose up --build -d
 docker compose ps
 ```

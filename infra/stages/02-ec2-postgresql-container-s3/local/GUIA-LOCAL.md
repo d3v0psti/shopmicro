@@ -4,7 +4,7 @@ O código com suporte ao S3 deve continuar funcionando localmente sem AWS. Por
 isso, esta execução usa `STORAGE_PROVIDER=Local` e volumes Docker.
 
 ```bash
-cd infra/aws/stages/02-ec2-postgresql-container-s3/local
+cd infra/stages/02-ec2-postgresql-container-s3/local
 docker compose up --build -d
 docker compose ps
 ```

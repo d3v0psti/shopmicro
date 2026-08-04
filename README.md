@@ -88,12 +88,12 @@ Stage 02: EC2 + Docker Compose + Amazon S3
 ```
 
 Os arquivos para criação pelo Console e pelo Terraform estão em
-[infra/aws](infra/aws/).
+[infra/stages](infra/stages/).
 
 Cada stage possui execução `local/`, criação AWS por `console/` e `terraform/`,
 além de um roteiro em `validacoes/`. Depois de aprovado nos três modos, o stage
 é congelado em uma tag Git para continuar reproduzível durante a evolução do
-projeto. Consulte [o guia dos stages](infra/aws/stages/GUIA-STAGES.md).
+projeto. Consulte [o guia dos stages](infra/stages/GUIA-STAGES.md).
 
 ### Debug do PostgreSQL na EC2
 

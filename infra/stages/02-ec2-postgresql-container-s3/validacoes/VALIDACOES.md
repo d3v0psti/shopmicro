@@ -5,7 +5,7 @@ imagem pequena e anote o nome usado.
 
 ## Local
 
-Execute dentro de `infra/aws/stages/02-ec2-postgresql-container-s3/local`.
+Execute dentro de `infra/stages/02-ec2-postgresql-container-s3/local`.
 
 ```bash
 docker compose ps
@@ -49,7 +49,7 @@ Cadastre `VALIDACAO-STAGE-02-AAAA-MM-DD` pelo painel e consulte o PostgreSQL:
 sudo docker compose --env-file .env.aws-stage-02 \
   -f compose.aws-stage-02.yaml exec -T postgres \
   psql -U postgres -d shopdb \
-  < aws/stages/02-ec2-postgresql-container-s3/validacoes/consultar-produtos.sql
+  < stages/02-ec2-postgresql-container-s3/validacoes/consultar-produtos.sql
 ```
 
 Copie apenas o valor de `ImageUrl`, por exemplo `/uploads/abc.jpg`. A chave

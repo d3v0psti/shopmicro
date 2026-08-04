@@ -3,7 +3,7 @@
 Execute somente depois de validar o modo local e a criação pelo Console.
 
 ```bash
-cd infra/aws/stages/02-ec2-postgresql-container-s3/terraform
+cd infra/stages/02-ec2-postgresql-container-s3/terraform
 cp terraform.tfvars.example terraform.tfvars
 ```
 

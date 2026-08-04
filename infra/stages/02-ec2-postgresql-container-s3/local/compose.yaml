@@ -21,7 +21,7 @@ services:
 
   backend:
     build:
-      context: ../../../../../backend
+      context: ../../../../backend
       dockerfile: Dockerfile
     restart: unless-stopped
     environment:
@@ -41,7 +41,7 @@ services:
 
   frontend:
     build:
-      context: ../../../../../frontend
+      context: ../../../../frontend
       dockerfile: Dockerfile
     restart: unless-stopped
     environment:
@@ -54,7 +54,7 @@ services:
 
   frontend-admin:
     build:
-      context: ../../../../../frontend-admin
+      context: ../../../../frontend-admin
       dockerfile: Dockerfile
     restart: unless-stopped
     environment:
