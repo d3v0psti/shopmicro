@@ -70,7 +70,8 @@ docker compose down -v
 | Ambiente | Banco | Imagens |
 |---|---|---|
 | Local | PostgreSQL 18 em container | Volume Docker |
-| AWS | PostgreSQL 18 na EC2 | Bucket S3 privado |
+| AWS Stage 01 | PostgreSQL 18 na EC2 | Volume Docker |
+| AWS Stage 02 | PostgreSQL 18 na EC2 | Bucket S3 privado |
 
 O ambiente local não exige credenciais AWS. No Stage 01, banco e imagens ficam
 em volumes Docker na EC2. No Stage 02, o backend passa a armazenar imagens no

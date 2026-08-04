@@ -8,7 +8,7 @@ ShopMicro é um marketplace com:
 - Backend ASP.NET Core 8 com Entity Framework Core.
 - PostgreSQL 18.
 - Docker Compose local.
-- Execução AWS em EC2 com uploads no S3.
+- Execução AWS incremental: armazenamento local na EC2 no Stage 01 e uploads no S3 no Stage 02.
 
 Leia [README.md](README.md) antes de alterar o projeto.
 
