@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+set -e
+
+exec > >(tee -a /var/log/shopmicro-aws-stage-01.log | logger -t shopmicro-aws-stage-01 -s 2>/dev/console) 2>&1
+export DEBIAN_FRONTEND=noninteractive
+
+apt-get update
+apt-get upgrade -y
+apt-get install -y ca-certificates curl git openssl
+
+install -m 0755 -d /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+chmod a+r /etc/apt/keyrings/docker.asc
+
+. /etc/os-release
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $${UBUNTU_CODENAME:-$VERSION_CODENAME} stable" \
+  > /etc/apt/sources.list.d/docker.list
+
+apt-get update
+apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+systemctl enable --now docker
+
+if ! snap list amazon-ssm-agent >/dev/null 2>&1; then
+  snap install amazon-ssm-agent --classic
+fi
+systemctl enable --now snap.amazon-ssm-agent.amazon-ssm-agent.service
+
+if ! swapon --show | grep -q /swapfile; then
+  fallocate -l 2G /swapfile
+  chmod 600 /swapfile
+  mkswap /swapfile
+  swapon /swapfile
+  echo '/swapfile none swap sw 0 0' >> /etc/fstab
+fi
+
+git clone --depth 1 --branch '${repository_branch}' --single-branch \
+  '${repository_url}' /opt/shopmicro
+
+printf '%s' '${compose_base64}' | base64 -d > /opt/shopmicro/infra/compose.aws-stage-01.yaml
+
+JWT_SECRET="$(openssl rand -hex 32)"
+POSTGRES_PASSWORD="$(openssl rand -hex 24)"
+umask 077
+printf 'JWT_SECRET=%s\nPOSTGRES_PASSWORD=%s\n' \
+  "$JWT_SECRET" "$POSTGRES_PASSWORD" \
+  > /opt/shopmicro/infra/.env.aws-stage-01
+
+cd /opt/shopmicro/infra
+docker compose --env-file .env.aws-stage-01 -f compose.aws-stage-01.yaml up --build -d
+
+for attempt in $(seq 1 60); do
+  if curl -fsS http://127.0.0.1/health/live >/dev/null; then
+    echo 'ShopMicro AWS Stage 01 iniciado com sucesso.'
+    docker compose --env-file .env.aws-stage-01 -f compose.aws-stage-01.yaml ps
+    exit 0
+  fi
+  sleep 5
+done
+
+echo 'ERRO: aplicação não respondeu no prazo.'
+docker compose --env-file .env.aws-stage-01 -f compose.aws-stage-01.yaml ps
+docker compose --env-file .env.aws-stage-01 -f compose.aws-stage-01.yaml logs --tail 200
+exit 1

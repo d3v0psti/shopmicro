@@ -72,23 +72,18 @@ docker compose down -v
 | Local | PostgreSQL 18 em container | Volume Docker |
 | AWS | PostgreSQL 18 na EC2 | Bucket S3 privado |
 
-O ambiente local não exige credenciais AWS. Na AWS, o backend acessa o S3 por
-uma IAM Role associada à EC2, sem Access Key ou Secret Key no projeto. O user
-data gera automaticamente senhas aleatórias para o PostgreSQL e para o JWT.
+O ambiente local não exige credenciais AWS. No Stage 01, banco e imagens ficam
+em volumes Docker na EC2. No Stage 02, o backend passa a armazenar imagens no
+S3 por uma IAM Role, sem Access Key ou Secret Key no projeto. O user data gera
+automaticamente senhas aleatórias para o PostgreSQL e para o JWT.
 A administração da instância usa somente AWS Systems Manager Session Manager;
 o Security Group não possui entrada na porta 22.
 
 ## AWS
 
 ```text
-EC2 Ubuntu
-├── Marketplace
-├── Painel administrativo
-├── Backend
-└── PostgreSQL 18 em container
-         │
-         ▼
-   Bucket S3 privado
+Stage 01: EC2 + Docker Compose + armazenamento local
+Stage 02: EC2 + Docker Compose + Amazon S3
 ```
 
 Os arquivos para criação pelo Console e pelo Terraform estão em

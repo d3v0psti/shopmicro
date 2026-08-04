@@ -65,9 +65,3 @@ variable "repository_branch" {
   type        = string
   default     = "develop"
 }
-
-variable "force_destroy_bucket" {
-  description = "Permite esvaziar e excluir o bucket no terraform destroy. Use somente neste estágio de estudo."
-  type        = bool
-  default     = true
-}

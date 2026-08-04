@@ -1,5 +1,5 @@
 output "instance_id" {
-  description = "ID da instância do estágio 01."
+  description = "ID da instância do estágio 02."
   value       = aws_instance.shopmicro.id
 }
 
@@ -25,5 +25,5 @@ output "bucket_name" {
 
 output "user_data_log_command" {
   description = "Comando para acompanhar o bootstrap dentro da EC2."
-  value       = "sudo tail -f /var/log/shopmicro-aws-stage-01.log"
+  value       = "sudo tail -f /var/log/shopmicro-aws-stage-02.log"
 }

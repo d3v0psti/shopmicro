@@ -1,4 +1,4 @@
-name: shopmicro-aws-stage-01
+name: shopmicro-aws-stage-02
 
 services:
   postgres:

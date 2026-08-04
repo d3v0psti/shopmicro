@@ -3,15 +3,6 @@ set -e
 
 exec > >(tee -a /var/log/shopmicro-aws-stage-01.log | logger -t shopmicro-aws-stage-01 -s 2>/dev/console) 2>&1
 
-# Preencha antes de colar no campo User data da EC2.
-S3_BUCKET_NAME='NOME_UNICO_DO_BUCKET'
-AWS_REGION='us-east-1'
-
-if [ "$S3_BUCKET_NAME" = 'NOME_UNICO_DO_BUCKET' ]; then
-  echo 'ERRO: preencha S3_BUCKET_NAME no user-data.'
-  exit 1
-fi
-
 export DEBIAN_FRONTEND=noninteractive
 
 apt-get update
@@ -80,14 +71,14 @@ services:
       JWT_SECRET: "${JWT_SECRET:?JWT_SECRET não configurado}"
       CORS_ALLOWED_ORIGINS: "*"
       ENABLE_SWAGGER: "true"
-      STORAGE_PROVIDER: "S3"
-      S3_BUCKET_NAME: "${S3_BUCKET_NAME:?S3_BUCKET_NAME não configurado}"
-      AWS_REGION: "${AWS_REGION:-us-east-1}"
+      STORAGE_PROVIDER: "Local"
     ports:
       - "127.0.0.1:8080:8080"
     depends_on:
       postgres:
         condition: service_healthy
+    volumes:
+      - backend_uploads:/app/uploads
 
   frontend:
     build:
@@ -117,13 +108,14 @@ services:
 
 volumes:
   postgres_data:
+  backend_uploads:
 COMPOSE
 
 JWT_SECRET="$(openssl rand -hex 32)"
 POSTGRES_PASSWORD="$(openssl rand -hex 24)"
 umask 077
-printf 'JWT_SECRET=%s\nPOSTGRES_PASSWORD=%s\nS3_BUCKET_NAME=%s\nAWS_REGION=%s\n' \
-  "$JWT_SECRET" "$POSTGRES_PASSWORD" "$S3_BUCKET_NAME" "$AWS_REGION" \
+printf 'JWT_SECRET=%s\nPOSTGRES_PASSWORD=%s\n' \
+  "$JWT_SECRET" "$POSTGRES_PASSWORD" \
   > /opt/shopmicro/infra/.env.aws-stage-01
 
 cd /opt/shopmicro/infra

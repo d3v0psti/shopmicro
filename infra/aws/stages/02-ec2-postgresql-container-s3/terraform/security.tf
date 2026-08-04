@@ -1,6 +1,6 @@
 resource "aws_security_group" "ec2" {
   name        = "${local.name}-ec2"
-  description = "Acesso restrito ao estagio 01 do ShopMicro"
+  description = "Acesso restrito ao estagio 02 do ShopMicro"
   vpc_id      = data.aws_vpc.default.id
 
   ingress {
