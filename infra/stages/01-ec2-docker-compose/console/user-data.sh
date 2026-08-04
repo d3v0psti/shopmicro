@@ -16,7 +16,7 @@ docker compose version
 
 systemctl enable --now amazon-ssm-agent
 
-# Ajuda a t3.small durante o build das imagens sem aumentar a instância.
+# Ajuda a t3.micro durante o build das imagens sem aumentar a instância.
 if ! swapon --show | grep -q /swapfile; then
   fallocate -l 2G /swapfile
   chmod 600 /swapfile
