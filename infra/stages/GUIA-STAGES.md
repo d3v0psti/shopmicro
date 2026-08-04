@@ -1,12 +1,12 @@
 # Guia dos stages AWS
 
-Cada stage é uma etapa reproduzível do ShopMicro e possui quatro formas de uso:
+Cada stage preserva uma versão funcional do ShopMicro. Siga sempre esta ordem:
 
 ```text
 local → console → terraform → validações
 ```
 
-## Estrutura obrigatória
+## O que existe em cada stage
 
 ```text
 NN-nome-do-stage/
@@ -17,12 +17,13 @@ NN-nome-do-stage/
 └── validacoes/
 ```
 
-- `local/`: comprova que a aplicação funciona sem credenciais AWS.
-- `console/`: criação manual dos recursos para aprendizado.
-- `terraform/`: reprodução automatizada da arquitetura validada.
-- `validacoes/`: mesmas evidências funcionais para os três modos.
+- `STAGE.md`: objetivo, arquitetura e status.
+- `local/`: execução sem credenciais AWS.
+- `console/`: criação manual na AWS.
+- `terraform/`: criação automatizada da mesma arquitetura.
+- `validacoes/`: testes e evidências dos três modos.
 
-## Ciclo de conclusão
+## Ordem obrigatória
 
 1. Validar localmente.
 2. Criar e validar a AWS pelo Console.
@@ -30,13 +31,13 @@ NN-nome-do-stage/
 4. Criar e validar a AWS pelo Terraform.
 5. Executar `terraform destroy`.
 6. Atualizar documentação e evidências.
-7. Apresentar as evidências e solicitar aprovação explícita do autor.
-8. Somente após a aprovação, criar e publicar a tag indicada em `STAGE.md`.
+7. Registrar as evidências.
+8. Solicitar autorização para criar a tag.
+9. Solicitar outra autorização antes de publicar a tag.
 
-Concluir as validações não autoriza automaticamente a criação da tag. Criar,
-publicar, mover ou excluir uma tag exige aprovação explícita do autor. Tags
-publicadas são imutáveis. Uma correção posterior recebe um sufixo, como
-`shopmicro-aws-stage-01.1`; a tag original não deve ser movida.
+Validação e autorização de tag são decisões separadas. Tags publicadas são
+imutáveis. Correções posteriores usam um sufixo, como
+`shopmicro-aws-stage-01.1`.
 
 ## Executar um stage antigo
 
@@ -48,8 +49,7 @@ cd shopmicro
 git switch --detach shopmicro-aws-stage-01
 ```
 
-Em seguida, siga o `STAGE.md` daquela versão. Isso preserva código, Dockerfiles,
-Compose, Terraform e documentação no ponto em que o stage foi validado.
+Depois, abra o `STAGE.md` e siga os links na ordem indicada.
 
 Stages antigos são material de estudo. Dependências externas podem deixar de
 receber correções de segurança; não trate uma tag histórica como implantação de

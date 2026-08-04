@@ -1,14 +1,18 @@
 # Stage 02 — AWS pelo Terraform
 
-Execute somente depois de validar o modo local e a criação pelo Console.
+Execute depois de validar o modo local e o Console.
+
+## 1. Configurar
 
 ```bash
 cd infra/stages/02-ec2-postgresql-container-s3/terraform
 cp terraform.tfvars.example terraform.tfvars
 ```
 
-No `terraform.tfvars`, substitua `seu_ip/32` pelo IPv4 obtido em
-https://checkip.amazonaws.com/, mantendo o `/32`.
+Abra https://checkip.amazonaws.com/ e substitua `seu_ip/32` no
+`terraform.tfvars`, mantendo `/32`.
+
+## 2. Criar
 
 ```bash
 terraform init
@@ -18,17 +22,18 @@ terraform plan -out=stage-02.tfplan
 terraform apply stage-02.tfplan
 ```
 
-Use os outputs para localizar EC2, URLs e bucket. Execute a seção
-`AWS — Console ou Terraform` de [VALIDACOES.md](../validacoes/VALIDACOES.md).
+## 3. Validar
+
+Use `terraform output` e execute `AWS — Console ou Terraform` em
+[VALIDACOES.md](../validacoes/VALIDACOES.md).
 
 O exemplo usa `force_destroy_bucket = true` para permitir a remoção dos objetos
 durante este treino. Não replique essa escolha automaticamente em produção.
 
-Ao terminar:
+## 4. Remover
 
 ```bash
 terraform destroy
 ```
 
-Confirme no Console que EC2, EBS, bucket, VPC Endpoint, Security Group, instance
-profile e IAM Role foram removidos.
+Confirme no Console que nenhum recurso do stage permaneceu.

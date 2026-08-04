@@ -1,6 +1,6 @@
 # Stage 02 — AWS pelo Console
 
-Objetivo: executar a aplicação e PostgreSQL na EC2, armazenando imagens em um
+Objetivo: manter aplicação e PostgreSQL na EC2 e transferir os uploads para um
 bucket S3 privado.
 
 ## Recursos
@@ -10,7 +10,7 @@ bucket S3 privado.
 - IAM Role com acesso mínimo a `uploads/*`
 - S3 Gateway VPC Endpoint
 
-## Passos
+## 1. Criar
 
 1. Selecione `us-east-1` e confirme a VPC default, a sub-rede pública e sua
    tabela de rotas.
@@ -41,10 +41,8 @@ bucket S3 privado.
    8. Crie o endpoint e aguarde o status **Available**. Endpoint Gateway não
       utiliza Security Group.
 
-   **Full access no endpoint não concede acesso irrestrito à EC2.** As chamadas
-   ainda precisam ser autorizadas pela IAM Role e pelas policies dos buckets.
-   Evite uma lista fixa de buckets externos, pois repositórios e registries
-   podem alterar os buckets usados para distribuir pacotes e imagens.
+   A policy do endpoint permite o tráfego, mas a IAM Role continua limitando o
+   acesso da EC2 ao bucket do stage.
 5. Crie `shopmicro-stage-02-sg` com TCP `80` público e TCP `81` limitado a
    `SEU_IP/32`. Não abra `22`, `5432` ou `8080`.
 6. Abra [user-data.sh](user-data.sh), substitua `NOME_UNICO_DO_BUCKET` pelo nome
@@ -55,16 +53,18 @@ bucket S3 privado.
 8. Associe a role, o Security Group e o user data preparados.
 9. Aguarde `2/2 checks passed` e conecte pelo Session Manager.
 
-## Acompanhar o bootstrap
+## 2. Acompanhar
 
 ```bash
 sudo tail -f /var/log/shopmicro-aws-stage-02.log
 ```
 
-Execute a seção `AWS — Console ou Terraform` de
-[VALIDACOES.md](../validacoes/VALIDACOES.md), incluindo a evidência no S3.
+## 3. Validar
 
-## Remoção
+Execute `AWS — Console ou Terraform` em
+[VALIDACOES.md](../validacoes/VALIDACOES.md).
+
+## 4. Remover
 
 Exclua EC2 e EBS, esvazie e exclua o bucket, remova o VPC Endpoint, Security
 Group, instance profile e IAM Role. Confira se nenhum recurso do stage permaneceu.
