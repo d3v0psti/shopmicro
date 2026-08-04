@@ -41,7 +41,7 @@ server {
         proxy_cache_bypass $http_upgrade;
     }
 
-    location /uploads/ {
+    location ^~ /uploads/ {
         proxy_pass ${BACKEND_UPSTREAM};
         proxy_set_header Host $host;
     }

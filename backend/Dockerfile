@@ -13,8 +13,11 @@ RUN dotnet publish -c Release -o /app/publish
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
 
-# Usuário sem privilégios para a execução local.
-RUN adduser --disabled-password --gecos "" appuser
+# Mantém a aplicação sem privilégios e prepara o diretório persistente com
+# permissão de escrita para uploads locais.
+RUN adduser --disabled-password --gecos "" appuser \
+    && mkdir -p /app/uploads \
+    && chown appuser:appuser /app/uploads
 USER appuser
 
 COPY --from=build /app/publish .
