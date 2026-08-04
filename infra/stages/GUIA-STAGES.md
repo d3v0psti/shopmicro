@@ -41,15 +41,21 @@ imutáveis. Correções posteriores usam um sufixo, como
 
 ## Executar um stage antigo
 
-Depois que a tag estiver publicada:
+Primeiro atualize as tags e liste as versões do stage desejado:
 
 ```bash
-git clone https://github.com/d3v0psti/shopmicro.git
-cd shopmicro
-git switch --detach shopmicro-aws-stage-01
+git fetch --tags
+git tag --list 'shopmicro-aws-stage-01*' --sort=-version:refname
 ```
 
-Depois, abra o `STAGE.md` e siga os links na ordem indicada.
+Use o primeiro resultado, que representa a versão mais recente. Depois execute:
+
+```bash
+git switch --detach shopmicro-aws-stage-01.1
+```
+
+Substitua o exemplo pela última tag encontrada. Abra o `STAGE.md` dessa versão e
+siga os links na ordem indicada.
 
 Stages antigos são material de estudo. Dependências externas podem deixar de
 receber correções de segurança; não trate uma tag histórica como implantação de

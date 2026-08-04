@@ -67,12 +67,13 @@ docker compose down -v
 
 ## Evolução na AWS
 
-| Ambiente | Banco | Imagens |
-|---|---|---|
-| Local | PostgreSQL 18 em container | Volume Docker |
-| AWS Stage 01 | PostgreSQL 18 na EC2 | Volume Docker |
-| AWS Stage 02 | PostgreSQL 18 na EC2 | Bucket S3 privado |
-| AWS Stage 03 | RDS PostgreSQL 18 privado | Bucket S3 privado |
+| Ambiente | Aplicação | Banco | Uploads |
+|---|---|---|---|
+| Local | Docker Compose local | PostgreSQL 18 em container | Volume Docker |
+| Stage 01 | EC2 com Docker Compose | PostgreSQL 18 na EC2 | Volume Docker na EC2 |
+| Stage 02 | EC2 com Docker Compose | PostgreSQL 18 na EC2 | Bucket S3 privado |
+| Stage 03 | EC2 com Docker Compose | RDS PostgreSQL 18 privado | Bucket S3 privado |
+| Stage 04 (planejado) | EC2 com imagens do ECR | RDS PostgreSQL 18 privado | Bucket S3 privado |
 
 Cada stage adiciona um conceito sem quebrar a execução local:
 
@@ -84,6 +85,17 @@ Cada stage adiciona um conceito sem quebrar a execução local:
 EC2 é administrada somente pelo Session Manager, sem SSH. A aplicação usa IAM
 Roles, sem Access Key ou Secret Key no código. Consulte os roteiros em
 [infra/stages](infra/stages/) e a [ordem de execução](infra/stages/GUIA-STAGES.md).
+
+Antes de executar um stage já concluído, atualize as tags e use a versão mais
+recente disponível para ele:
+
+```bash
+git fetch --tags
+git tag --list 'shopmicro-aws-stage-01*' --sort=-version:refname
+```
+
+O primeiro resultado é a versão mais recente, por exemplo
+`shopmicro-aws-stage-01.1`.
 
 ## Estrutura
 
