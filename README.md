@@ -94,18 +94,18 @@ Os arquivos para criação pelo Console e pelo Terraform estão em
 
 ### Debug do PostgreSQL na EC2
 
-A senha gerada fica em `/opt/shopmicro/infra/.env.s3-lab`. Para consultar
+A senha gerada fica em `/opt/shopmicro/infra/.env.aws-stage-01`. Para consultar
 somente esse valor:
 
 ```bash
-sudo grep '^POSTGRES_PASSWORD=' /opt/shopmicro/infra/.env.s3-lab
+sudo grep '^POSTGRES_PASSWORD=' /opt/shopmicro/infra/.env.aws-stage-01
 ```
 
 Para acessar o banco sem exibir a senha:
 
 ```bash
 cd /opt/shopmicro/infra
-sudo docker compose --env-file .env.s3-lab -f compose.s3-lab.yaml \
+sudo docker compose --env-file .env.aws-stage-01 -f compose.aws-stage-01.yaml \
   exec postgres psql -U postgres -d shopdb
 ```
 

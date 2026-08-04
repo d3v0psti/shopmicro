@@ -7,7 +7,7 @@ resource "aws_vpc_endpoint" "s3" {
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [{
-      Sid       = "RestrictEndpointToLabBucket"
+      Sid       = "RestrictEndpointToStageBucket"
       Effect    = "Allow"
       Principal = "*"
       Action = [

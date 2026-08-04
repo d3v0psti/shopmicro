@@ -6,7 +6,7 @@ provider "aws" {
       Project     = var.project_name
       Environment = var.environment
       ManagedBy   = "Terraform"
-      Lab         = "ec2-postgres-s3"
+      Stage       = "01-ec2-postgresql-container-s3"
     }
   }
 }

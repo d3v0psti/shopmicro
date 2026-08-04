@@ -44,7 +44,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "uploads" {
   bucket = aws_s3_bucket.uploads.id
 
   rule {
-    id     = "lab-cleanup"
+    id     = "stage-cleanup"
     status = "Enabled"
 
     filter {}

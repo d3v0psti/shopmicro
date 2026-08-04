@@ -1,5 +1,5 @@
 variable "aws_region" {
-  description = "Região AWS usada pelo laboratório."
+  description = "Região AWS usada pelo estágio."
   type        = string
   default     = "us-east-1"
 }
@@ -13,7 +13,7 @@ variable "project_name" {
 variable "environment" {
   description = "Identificação do ambiente."
   type        = string
-  default     = "lab"
+  default     = "stage-01"
 }
 
 variable "admin_cidr" {
@@ -27,7 +27,7 @@ variable "admin_cidr" {
 }
 
 variable "instance_type" {
-  description = "Tipo da instância do laboratório."
+  description = "Tipo da instância do estágio."
   type        = string
   default     = "t3.small"
 }
@@ -63,7 +63,7 @@ variable "key_name" {
 }
 
 variable "force_destroy_bucket" {
-  description = "Permite esvaziar e excluir o bucket no terraform destroy. Use somente no laboratório."
+  description = "Permite esvaziar e excluir o bucket no terraform destroy. Use somente neste estágio de estudo."
   type        = bool
   default     = true
 }

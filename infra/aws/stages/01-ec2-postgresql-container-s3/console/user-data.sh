@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-exec > >(tee -a /var/log/shopmicro-s3-lab.log | logger -t shopmicro-s3-lab -s 2>/dev/console) 2>&1
+exec > >(tee -a /var/log/shopmicro-aws-stage-01.log | logger -t shopmicro-aws-stage-01 -s 2>/dev/console) 2>&1
 
 # Preencha antes de colar no campo User data da EC2.
 S3_BUCKET_NAME='NOME_UNICO_DO_BUCKET'
@@ -44,8 +44,8 @@ git clone --depth 1 --branch develop --single-branch \
   https://github.com/d3v0psti/shopmicro.git \
   /opt/shopmicro
 
-install -m 0644 /dev/stdin /opt/shopmicro/infra/compose.s3-lab.yaml <<'COMPOSE'
-name: shopmicro-s3-lab
+install -m 0644 /dev/stdin /opt/shopmicro/infra/compose.aws-stage-01.yaml <<'COMPOSE'
+name: shopmicro-aws-stage-01
 
 services:
   postgres:
@@ -119,21 +119,21 @@ POSTGRES_PASSWORD="$(openssl rand -hex 24)"
 umask 077
 printf 'JWT_SECRET=%s\nPOSTGRES_PASSWORD=%s\nS3_BUCKET_NAME=%s\nAWS_REGION=%s\n' \
   "$JWT_SECRET" "$POSTGRES_PASSWORD" "$S3_BUCKET_NAME" "$AWS_REGION" \
-  > /opt/shopmicro/infra/.env.s3-lab
+  > /opt/shopmicro/infra/.env.aws-stage-01
 
 cd /opt/shopmicro/infra
-docker compose --env-file .env.s3-lab -f compose.s3-lab.yaml up --build -d
+docker compose --env-file .env.aws-stage-01 -f compose.aws-stage-01.yaml up --build -d
 
 for attempt in $(seq 1 60); do
   if curl -fsS http://127.0.0.1/health/live >/dev/null; then
-    echo 'ShopMicro S3 Lab iniciado com sucesso.'
-    docker compose --env-file .env.s3-lab -f compose.s3-lab.yaml ps
+    echo 'ShopMicro AWS Stage 01 iniciado com sucesso.'
+    docker compose --env-file .env.aws-stage-01 -f compose.aws-stage-01.yaml ps
     exit 0
   fi
   sleep 5
 done
 
 echo 'ERRO: aplicação não respondeu no prazo.'
-docker compose --env-file .env.s3-lab -f compose.s3-lab.yaml ps
-docker compose --env-file .env.s3-lab -f compose.s3-lab.yaml logs --tail 200
+docker compose --env-file .env.aws-stage-01 -f compose.aws-stage-01.yaml ps
+docker compose --env-file .env.aws-stage-01 -f compose.aws-stage-01.yaml logs --tail 200
 exit 1

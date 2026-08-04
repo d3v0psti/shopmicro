@@ -1,6 +1,6 @@
 aws_region        = "us-east-1"
 project_name      = "shopmicro"
-environment       = "lab"
+environment       = "stage-01"
 admin_cidr        = "203.0.113.10/32"
 instance_type     = "t3.small"
 root_volume_size  = 25
@@ -8,7 +8,7 @@ repository_url    = "https://github.com/d3v0psti/shopmicro.git"
 repository_branch = "develop"
 
 # Opcional: informe o nome de um Key Pair existente.
-# key_name = "shopmicro-lab"
+# key_name = "shopmicro-stage-01"
 
-# true facilita o terraform destroy no laboratório e apaga os objetos do bucket.
+# true facilita o terraform destroy neste estágio e apaga os objetos do bucket.
 force_destroy_bucket = true
