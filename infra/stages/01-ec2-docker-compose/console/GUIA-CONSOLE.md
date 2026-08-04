@@ -8,7 +8,7 @@ locais pelo Docker Compose.
 - VPC default e uma sub-rede pública
 - IAM Role com `AmazonSSMManagedInstanceCore`
 - Security Group
-- EC2 Ubuntu 24.04, `t3.small`, EBS gp3 de 25 GiB
+- EC2 Amazon Linux 2023 (x86_64), `t3.small`, EBS gp3 de 25 GiB
 
 ## Passos
 
@@ -19,8 +19,9 @@ locais pelo Docker Compose.
    - TCP `80` a partir de `0.0.0.0/0`;
    - TCP `81` somente a partir de `SEU_IP/32`;
    - nenhuma entrada para `22`, `5432` ou `8080`.
-4. Inicie uma EC2 Ubuntu 24.04 `t3.small`, sem Key Pair, com IP público, volume
-   raiz gp3 criptografado de 25 GiB e IMDSv2 obrigatório.
+4. Inicie uma EC2 com a AMI **Amazon Linux 2023 AMI** para arquitetura x86_64,
+   tipo `t3.small`, sem Key Pair, com IP público, volume raiz gp3 criptografado
+   de 25 GiB e IMDSv2 obrigatório.
 5. Associe a IAM Role e o Security Group criados.
 6. Cole todo o conteúdo de [user-data.sh](user-data.sh) em **Advanced details →
    User data** e inicie a instância.

@@ -1,7 +1,8 @@
 # Stage 01 — EC2 com Docker Compose
 
-- Status: `PREPARADO — validação pendente`
-- Tag planejada: `shopmicro-aws-stage-01`
+- Status: `VALIDADO em 2026-08-04 — tag pendente de aprovação`
+- Validações concluídas: local, Console AWS e Terraform
+- Tag planejada: `shopmicro-aws-stage-01` (ainda não criada)
 - Banco: PostgreSQL 18 em container
 - Imagens: volume Docker local
 - Administração AWS: Systems Manager Session Manager
@@ -13,5 +14,5 @@
 3. [Criar pelo Terraform](terraform/GUIA-TERRAFORM.md)
 4. [Registrar as validações](validacoes/VALIDACOES.md)
 
-A tag planejada será criada somente depois que os três modos forem validados,
-os recursos AWS forem removidos e o autor conceder aprovação explícita.
+A tag planejada será criada somente depois que os recursos AWS forem removidos
+e o autor conceder aprovação explícita.

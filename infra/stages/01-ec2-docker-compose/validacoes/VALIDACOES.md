@@ -84,12 +84,12 @@ e abertura da imagem no marketplace.
 
 | Verificação | Local | Console | Terraform |
 |---|---|---|---|
-| Quatro containers ativos | [ ] | [ ] | [ ] |
-| Health checks aprovados | [ ] | [ ] | [ ] |
-| Produto no PostgreSQL | [ ] | [ ] | [ ] |
-| Imagem no volume local | [ ] | [ ] | [ ] |
-| Persistência após reinício | [ ] | [ ] | [ ] |
-| Nenhum segredo nos logs | [ ] | [ ] | [ ] |
+| Quatro containers ativos | [x] | [x] | [x] |
+| Health checks aprovados | [x] | [x] | [x] |
+| Produto no PostgreSQL | [x] | [x] | [x] |
+| Imagem no volume local | [x] | [x] | [x] |
+| Persistência após reinício | [x] | [x] | [x] |
+| Nenhum segredo nos logs | [x] | [x] | [x] |
 | Recursos AWS removidos | N/A | [ ] | [ ] |
 
 Registre IDs, nomes e horários; não copie senha PostgreSQL, JWT ou conteúdo de
