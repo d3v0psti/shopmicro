@@ -73,14 +73,14 @@ docker compose down -v
 | Stage 01 | EC2 com Docker Compose | PostgreSQL 18 na EC2 | Volume Docker na EC2 |
 | Stage 02 | EC2 com Docker Compose | PostgreSQL 18 na EC2 | Bucket S3 privado |
 | Stage 03 | EC2 com Docker Compose | RDS PostgreSQL 18 privado | Bucket S3 privado |
-| Stage 04 (planejado) | EC2 com imagens do ECR | RDS PostgreSQL 18 privado | Bucket S3 privado |
+| Stage 04 (planejado) | ALB e ASG com duas EC2 | RDS PostgreSQL 18 privado | Bucket S3 privado |
 
 Cada stage adiciona um conceito sem quebrar a execução local:
 
 1. Stage 01: aplicação, PostgreSQL e uploads na EC2.
 2. Stage 02: uploads transferidos para o S3.
 3. Stage 03: PostgreSQL transferido para o RDS.
-4. Stage 04: imagens Docker no ECR, planejado.
+4. Stage 04: ALB e duas EC2 em zonas diferentes, planejado.
 
 EC2 é administrada somente pelo Session Manager, sem SSH. A aplicação usa IAM
 Roles, sem Access Key ou Secret Key no código. Consulte os roteiros em

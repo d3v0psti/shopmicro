@@ -8,8 +8,8 @@ ShopMicro é um marketplace com:
 - Backend ASP.NET Core 8 com Entity Framework Core.
 - PostgreSQL 18.
 - Docker Compose local.
-- Execução AWS incremental: armazenamento local no Stage 01, S3 no Stage 02 e
-  RDS PostgreSQL no Stage 03. O Stage 04 planeja imagens separadas no ECR.
+- Execução AWS incremental: armazenamento local no Stage 01, S3 no Stage 02,
+  RDS PostgreSQL no Stage 03 e ALB com duas EC2 no Stage 04.
 
 Leia [README.md](README.md) antes de alterar o projeto.
 
@@ -43,9 +43,8 @@ Endpoints locais: marketplace `:80`, admin `:81`, backend `:8080` e PostgreSQL
   `shopmicro-aws-stage-01.1`.
 - Mudanças de API devem atualizar a documentação correspondente.
 - Considere o bootstrap e a carga inicial ao alterar o banco.
-- Trate frontend, frontend-admin e backend como unidades de implantação
-  separadas ao introduzir ECR; não descreva os frontends como microserviços de
-  negócio.
+- Ao usar mais de uma EC2, compartilhe segredos de autenticação e mantenha dados
+  persistentes fora das instâncias.
 
 ## Validação mínima
 
