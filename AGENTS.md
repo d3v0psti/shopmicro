@@ -9,8 +9,8 @@ ShopMicro é um marketplace com:
 - PostgreSQL 18.
 - Docker Compose local.
 - Execução AWS incremental: armazenamento local no Stage 01, S3 no Stage 02,
-  RDS PostgreSQL no Stage 03, ALB com duas EC2 no Stage 04 e imagens privadas
-  independentes no ECR manual a partir do Stage 05.
+  RDS PostgreSQL no Stage 03, ALB com duas EC2 no Stage 04, imagens privadas
+  independentes no ECR manual no Stage 05 e ECS sobre EC2 no Stage 06.
 
 Leia [README.md](README.md) antes de alterar o projeto.
 
@@ -48,6 +48,9 @@ Endpoints locais: marketplace `:80`, admin `:81`, backend `:8080` e PostgreSQL
   persistentes fora das instâncias.
 - No Stage 05, preserve os três repositórios ECR manuais fora do Terraform e use
   `latest`; versionamento imutável será introduzido futuramente com CI/CD.
+- No Stage 06, use duas EC2 `t3.small`, três ECS Services e `awsvpcTrunking`.
+  Descreva a solução como arquitetura orientada a serviços enquanto o backend
+  continuar sendo um monólito de negócio.
 
 ## Validação mínima
 

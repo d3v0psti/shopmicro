@@ -23,7 +23,7 @@ decisões são orientados pelo autor; a IA gera e refina código e documentaçã
 - PostgreSQL 18
 - JWT com refresh token
 - Docker Compose
-- EC2, IAM, S3 e Terraform
+- EC2, ECS, ECR, ALB, RDS, S3, IAM e Terraform
 
 ## Execução local
 
@@ -75,6 +75,7 @@ docker compose down -v
 | Stage 03 | EC2 com Docker Compose | RDS PostgreSQL 18 privado | Bucket S3 privado |
 | Stage 04 | ALB e ASG com duas EC2 em zonas diferentes | RDS PostgreSQL 18 privado | Bucket S3 privado |
 | Stage 05 | ALB e ASG consumindo três imagens ECR independentes | RDS PostgreSQL 18 privado | Bucket S3 privado |
+| Stage 06 | ECS sobre duas EC2 `t3.small`, com três Services | RDS PostgreSQL 18 privado | Bucket S3 privado |
 
 Cada stage adiciona um conceito sem quebrar a execução local:
 
@@ -83,6 +84,11 @@ Cada stage adiciona um conceito sem quebrar a execução local:
 3. Stage 03: PostgreSQL transferido para o RDS.
 4. Stage 04: ALB e ASG com duas EC2 em zonas diferentes.
 5. Stage 05: imagens prontas e independentes no ECR.
+6. Stage 06: orquestração no ECS sobre EC2 e implantação independente por serviço.
+
+No Stage 06 existem três serviços implantáveis, mas o backend ainda concentra
+os domínios de negócio. Por isso, a solução é tratada como arquitetura orientada
+a serviços; microserviços surgirão com a separação de domínios, filas e workers.
 
 EC2 é administrada somente pelo Session Manager, sem SSH. A aplicação usa IAM
 Roles, sem Access Key ou Secret Key no código. Consulte os roteiros em
