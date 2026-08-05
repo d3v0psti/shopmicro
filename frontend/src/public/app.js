@@ -43,9 +43,11 @@ async function fetchWithAuth(url, options = {}) {
 }
 
 const defaultImages = [
-  'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=300',
-  'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300',
-  'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=300'
+  '/assets/products/notebook-generico.png',
+  '/assets/products/mouse-generico.png',
+  '/assets/products/teclado-generico.png',
+  '/assets/products/monitor-generico.png',
+  '/assets/products/headset-generico.png'
 ];
 
 // --- INICIALIZAÇÃO ---
@@ -133,11 +135,11 @@ async function loadProducts() {
     } else {
       backendAvailable = false;
       allProducts = [
-        { id: '1', name: 'Notebook Gamer Pro', price: 4500.00, stock: 5, imageUrl: 'https://images.unsplash.com/photo-1603302576837-37561b2e2302?w=300' },
-        { id: '2', name: 'Mouse Sem Fio RGB', price: 150.00, stock: 12, imageUrl: 'https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?w=300' },
-        { id: '3', name: 'Teclado Mecânico Switch Blue', price: 320.00, stock: 8, imageUrl: 'https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=300' },
-        { id: '4', name: 'Monitor Ultrawide 29"', price: 1250.00, stock: 3, imageUrl: 'https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=300' },
-        { id: '5', name: 'Headset Surround 7.1', price: 280.00, stock: 15, imageUrl: 'https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=300' }
+        { id: '1', name: 'Notebook Gamer Pro', price: 4500.00, stock: 5, imageUrl: '/assets/products/notebook-generico.png' },
+        { id: '2', name: 'Mouse Sem Fio RGB', price: 150.00, stock: 12, imageUrl: '/assets/products/mouse-generico.png' },
+        { id: '3', name: 'Teclado Mecânico Switch Blue', price: 320.00, stock: 8, imageUrl: '/assets/products/teclado-generico.png' },
+        { id: '4', name: 'Monitor Ultrawide 29"', price: 1250.00, stock: 3, imageUrl: '/assets/products/monitor-generico.png' },
+        { id: '5', name: 'Headset Surround 7.1', price: 280.00, stock: 15, imageUrl: '/assets/products/headset-generico.png' }
       ];
     }
 

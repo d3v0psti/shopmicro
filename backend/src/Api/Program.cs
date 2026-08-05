@@ -117,20 +117,32 @@ using (var scope = app.Services.CreateScope())
         // Popula produtos padrão caso faltem no banco ou ainda não tenham sido adicionados.
         var seededProducts = new[]
         {
-            new Product { Name = "Notebook Gamer Pro", Description = "Processador potente, RGB, tela 144Hz.", Price = 4500.00m, Category = "Eletrônicos", StockQuantity = 5, ImageUrl = "https://images.unsplash.com/photo-1603302576837-37561b2e2302?w=500" },
-            new Product { Name = "Mouse Sem Fio RGB", Description = "Sensor preciso, autonomia prolongada.", Price = 150.00m, Category = "Eletrônicos", StockQuantity = 12, ImageUrl = "https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?w=500" },
-            new Product { Name = "Teclado Mecânico Switch Blue", Description = "Teclas táteis e duráveis.", Price = 320.00m, Category = "Eletrônicos", StockQuantity = 8, ImageUrl = "https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=500" },
-            new Product { Name = "Monitor Ultrawide 29\"", Description = "Ideal para produtividade e jogos.", Price = 1250.00m, Category = "Eletrônicos", StockQuantity = 3, ImageUrl = "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=500" },
-            new Product { Name = "Headset Surround 7.1", Description = "Áudio imersivo e confortável.", Price = 280.00m, Category = "Eletrônicos", StockQuantity = 15, ImageUrl = "https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=500" }
+            new Product { Name = "Notebook Gamer Pro", Description = "Processador potente, RGB, tela 144Hz.", Price = 4500.00m, Category = "Eletrônicos", StockQuantity = 5, ImageUrl = "/assets/products/notebook-generico.png" },
+            new Product { Name = "Mouse Sem Fio RGB", Description = "Sensor preciso, autonomia prolongada.", Price = 150.00m, Category = "Eletrônicos", StockQuantity = 12, ImageUrl = "/assets/products/mouse-generico.png" },
+            new Product { Name = "Teclado Mecânico Switch Blue", Description = "Teclas táteis e duráveis.", Price = 320.00m, Category = "Eletrônicos", StockQuantity = 8, ImageUrl = "/assets/products/teclado-generico.png" },
+            new Product { Name = "Monitor Ultrawide 29\"", Description = "Ideal para produtividade e jogos.", Price = 1250.00m, Category = "Eletrônicos", StockQuantity = 3, ImageUrl = "/assets/products/monitor-generico.png" },
+            new Product { Name = "Headset Surround 7.1", Description = "Áudio imersivo e confortável.", Price = 280.00m, Category = "Eletrônicos", StockQuantity = 15, ImageUrl = "/assets/products/headset-generico.png" }
         };
 
-        var existingProductNames = db.Products.Select(p => p.Name).ToHashSet();
+        var seededProductNames = seededProducts.Select(p => p.Name).ToArray();
+        var existingProducts = db.Products
+            .Where(p => seededProductNames.Contains(p.Name))
+            .ToList();
+        var existingProductNames = existingProducts.Select(p => p.Name).ToHashSet();
         var missingProducts = seededProducts.Where(p => !existingProductNames.Contains(p.Name)).ToArray();
-        if (missingProducts.Any())
+
+        // Migra somente as imagens externas usadas anteriormente pelos produtos
+        // iniciais. Imagens alteradas pelo administrador são preservadas.
+        foreach (var existingProduct in existingProducts.Where(p =>
+                     p.ImageUrl != null && p.ImageUrl.Contains("images.unsplash.com")))
         {
-            db.Products.AddRange(missingProducts);
-            db.SaveChanges();
+            existingProduct.ImageUrl = seededProducts
+                .First(p => p.Name == existingProduct.Name)
+                .ImageUrl;
         }
+
+        if (missingProducts.Any()) db.Products.AddRange(missingProducts);
+        db.SaveChanges();
 
         // Garante um administrador inicial, independentemente de já existirem clientes.
         var defaultAdmin = db.Users.FirstOrDefault(u => u.Email == "admin@admin.com");
