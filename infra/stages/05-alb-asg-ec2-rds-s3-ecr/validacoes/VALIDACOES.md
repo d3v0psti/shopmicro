@@ -1,7 +1,7 @@
 # Stage 05 — validações
 
 Somente o responsável pelo projeto confirma estas evidências. A tag só pode ser
-criada após validar Local, Console e Terraform.
+criada após validar Local e Console.
 
 ## Local
 
@@ -20,7 +20,7 @@ docker compose restart
 
 Confirme marketplace, admin, produto, imagem e persistência após o reinício.
 
-## AWS — Console ou Terraform
+## AWS — Console
 
 ### 1. ECR
 
@@ -91,16 +91,16 @@ Confirme `uploads/ARQUIVO` no S3 privado.
 
 ## Evidências
 
-| Verificação | Local | Console | Terraform |
-|---|---|---|---|
-| Aplicação funcional | [x] | [x] | [x] |
-| PostgreSQL 18 e uploads persistentes | [x] | [x] | [x] |
-| Três repositórios ECR com `latest` | N/A | [x] | [x] |
-| EC2 realiza pull sem clone ou build | N/A | [x] | [x] |
-| IAM das EC2 permite pull, mas não push | N/A | [x] | [x] |
-| Duas EC2 e targets saudáveis | N/A | [x] | [x] |
-| Atualização independente do frontend | N/A | [x] | [x] |
-| ASG substitui as instâncias gradualmente | N/A | [x] | [x] |
-| RDS privado e objeto S3 privado | N/A | [x] | [x] |
-| Nenhum segredo em código ou logs | [x] | [x] | [x] |
-| Recursos removidos e ECR preservado | N/A | [x] | [x] |
+| Verificação | Local | Console |
+|---|---|---|
+| Aplicação funcional | [x] | [x] |
+| PostgreSQL 18 e uploads persistentes | [x] | [x] |
+| Três repositórios ECR com `latest` | N/A | [x] |
+| EC2 realiza pull sem clone ou build | N/A | [x] |
+| IAM das EC2 permite pull, mas não push | N/A | [x] |
+| Duas EC2 e targets saudáveis | N/A | [x] |
+| Atualização independente do frontend | N/A | [x] |
+| ASG substitui as instâncias gradualmente | N/A | [x] |
+| RDS privado e objeto S3 privado | N/A | [x] |
+| Nenhum segredo em código ou logs | [x] | [x] |
+| Recursos removidos e ECR preservado | N/A | [x] |

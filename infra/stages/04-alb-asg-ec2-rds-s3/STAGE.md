@@ -48,8 +48,7 @@ Session Manager. Uma evolução posterior poderá movê-las para sub-redes priva
 
 1. [Local](local/GUIA-LOCAL.md)
 2. [AWS pelo Console](console/GUIA-CONSOLE.md)
-3. [AWS pelo Terraform](terraform/GUIA-TERRAFORM.md)
-4. [Validações](validacoes/VALIDACOES.md)
+3. [Validações](validacoes/VALIDACOES.md)
 
 ## Validação
 
@@ -59,5 +58,5 @@ Session Manager. Uma evolução posterior poderá movê-las para sub-redes priva
 4. Confirmar aplicação disponível durante a substituição.
 5. Validar persistência compartilhada no RDS e no S3.
 
-Validação manual de Local, Console e Terraform confirmada pelo responsável pelo
+Validação manual de Local e Console confirmada pelo responsável pelo
 projeto. A tag será criada somente após autorização explícita e separada.

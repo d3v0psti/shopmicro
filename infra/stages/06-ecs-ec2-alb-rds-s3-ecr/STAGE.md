@@ -43,8 +43,7 @@ ALB :80/:81
 
 1. [Local](local/GUIA-LOCAL.md)
 2. [AWS pelo Console](console/GUIA-CONSOLE.md)
-3. [AWS pelo Terraform](terraform/GUIA-TERRAFORM.md)
-4. [Validações](validacoes/VALIDACOES.md)
+3. [Validações](validacoes/VALIDACOES.md)
 
 Somente o responsável pelo projeto valida o stage e autoriza separadamente a
 criação e a publicação da tag Git.

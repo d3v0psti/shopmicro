@@ -31,7 +31,7 @@ docker compose restart
 
 Repita SQL e abertura da imagem para confirmar a persistência local.
 
-## AWS — Console ou Terraform
+## AWS — Console
 
 Conecte à EC2 pelo Session Manager:
 
@@ -74,16 +74,16 @@ Repita a consulta SQL, a conferência no S3 e a abertura da imagem.
 
 ## Evidências
 
-| Verificação | Local | Console | Terraform |
-|---|---|---|---|
-| Quatro containers ativos | [x] | [x] | [x] |
-| Health checks aprovados | [x] | [x] | [x] |
-| Produto no PostgreSQL | [x] | [x] | [x] |
-| Imagem no volume local | [x] | N/A | N/A |
-| Objeto privado no S3 | N/A | [x] | [x] |
-| Banco e imagem persistem | [x] | [x] | [x] |
-| Nenhum segredo nos logs | [x] | [x] | [x] |
-| Recursos AWS removidos | N/A | [x] | [x] |
+| Verificação | Local | Console |
+|---|---|---|
+| Quatro containers ativos | [x] | [x] |
+| Health checks aprovados | [x] | [x] |
+| Produto no PostgreSQL | [x] | [x] |
+| Imagem no volume local | [x] | N/A |
+| Objeto privado no S3 | N/A | [x] |
+| Banco e imagem persistem | [x] | [x] |
+| Nenhum segredo nos logs | [x] | [x] |
+| Recursos AWS removidos | N/A | [x] |
 
 Registre nome do produto, ID, `ImageUrl`, chave S3 e horários. Não registre
 senhas, JWT, credenciais ou o conteúdo dos arquivos `.env`.

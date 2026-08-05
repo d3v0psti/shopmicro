@@ -61,7 +61,7 @@ sudo tail -f /var/log/shopmicro-aws-stage-02.log
 
 ## 3. Validar
 
-Execute `AWS — Console ou Terraform` em
+Execute `AWS — Console` em
 [VALIDACOES.md](../validacoes/VALIDACOES.md).
 
 ## 4. Remover

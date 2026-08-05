@@ -79,7 +79,7 @@ Não use seu IP nem `0.0.0.0/0` como origem da porta 5432.
 
 ## 5. Validar
 
-Execute `AWS — Console ou Terraform` em
+Execute `AWS — Console` em
 [VALIDACOES.md](../validacoes/VALIDACOES.md).
 
 ## 6. Remover

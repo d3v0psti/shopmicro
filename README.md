@@ -3,8 +3,8 @@
 Marketplace criado com IA generativa para apoiar estudos de AWS, containers e
 arquitetura em nuvem.
 
-O projeto usa uma aplicação funcional para praticar serviços AWS pelo Console e
-com Terraform, sempre avaliando custo, segurança e desempenho. Requisitos e
+O projeto usa uma aplicação funcional para praticar serviços AWS pelo Console,
+sempre avaliando custo, segurança e desempenho. Requisitos e
 decisões são orientados pelo autor; a IA gera e refina código e documentação.
 
 ## Funcionalidades
@@ -23,7 +23,7 @@ decisões são orientados pelo autor; a IA gera e refina código e documentaçã
 - PostgreSQL 18
 - JWT com refresh token
 - Docker Compose
-- EC2, ECS, ECR, ALB, RDS, S3, IAM e Terraform
+- EC2, ECS, ECR, ALB, RDS, S3 e IAM
 
 ## Execução local
 
@@ -93,6 +93,10 @@ a serviços; microserviços surgirão com a separação de domínios, filas e wo
 EC2 é administrada somente pelo Session Manager, sem SSH. A aplicação usa IAM
 Roles, sem Access Key ou Secret Key no código. Consulte os roteiros em
 [infra/stages](infra/stages/) e a [ordem de execução](infra/stages/GUIA-STAGES.md).
+
+O Terraform evolui separadamente no repositório genérico
+`d3v0psti/terraform-aws-platform`,
+usando as camadas fixas network, data, storage e compute, sem cópias por stage.
 
 Antes de executar um stage já concluído, atualize as tags e use a versão mais
 recente disponível para ele:

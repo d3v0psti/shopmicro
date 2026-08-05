@@ -127,7 +127,7 @@ stage, cada interface possui sua própria porta e seu próprio listener.
 - Marketplace: `http://DNS_DO_ALB`
 - Admin: `http://DNS_DO_ALB:81`
 
-Execute a seção `AWS — Console ou Terraform` em
+Execute a seção `AWS — Console` em
 [VALIDACOES.md](../validacoes/VALIDACOES.md).
 
 ## 8. Remover

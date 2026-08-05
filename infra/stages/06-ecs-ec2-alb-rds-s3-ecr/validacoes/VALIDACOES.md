@@ -1,7 +1,7 @@
 # Stage 06 — validações
 
 Somente o responsável pelo projeto confirma as evidências. A tag Git depende da
-validação de Local, Console e Terraform e de autorização explícita.
+validação de Local e Console e de autorização explícita.
 
 ## Local
 
@@ -18,7 +18,7 @@ docker compose restart
 
 Confirme marketplace, admin, cadastro, imagem e persistência após o reinício.
 
-## AWS — Console ou Terraform
+## AWS — Console
 
 ### 1. Cluster e alta disponibilidade
 
@@ -63,13 +63,13 @@ Não exponha o RDS nem imprima a senha em logs.
 
 ## Checklist manual
 
-| Verificação | Local | Console | Terraform |
-|---|---|---|---|
-| Aplicação e persistência | [ ] | [ ] | [ ] |
-| Três Services com duas tasks | N/A | [ ] | [ ] |
-| Duas EC2 em zonas diferentes | N/A | [ ] | [ ] |
-| ALB e target groups saudáveis | N/A | [ ] | [ ] |
-| RDS e S3 privados | N/A | [ ] | [ ] |
-| Atualização independente | N/A | [ ] | [ ] |
-| Nenhum segredo em código ou logs | [ ] | [ ] | [ ] |
-| Recursos removidos e ECR preservado | N/A | [ ] | [ ] |
+| Verificação | Local | Console |
+|---|---|---|
+| Aplicação e persistência | [ ] | [ ] |
+| Três Services com duas tasks | N/A | [ ] |
+| Duas EC2 em zonas diferentes | N/A | [ ] |
+| ALB e target groups saudáveis | N/A | [ ] |
+| RDS e S3 privados | N/A | [ ] |
+| Atualização independente | N/A | [ ] |
+| Nenhum segredo em código ou logs | [ ] | [ ] |
+| Recursos removidos e ECR preservado | N/A | [ ] |

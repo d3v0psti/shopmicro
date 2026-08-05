@@ -48,7 +48,7 @@ docker compose restart
 Repita a consulta SQL e abra o marketplace. O produto e a imagem devem continuar
 disponíveis. Não use `down -v` antes desta verificação.
 
-## AWS — Console ou Terraform
+## AWS — Console
 
 Conecte à EC2 pelo Session Manager e execute:
 
@@ -82,15 +82,15 @@ e abertura da imagem no marketplace.
 
 ## Evidências
 
-| Verificação | Local | Console | Terraform |
-|---|---|---|---|
-| Quatro containers ativos | [x] | [x] | [x] |
-| Health checks aprovados | [x] | [x] | [x] |
-| Produto no PostgreSQL | [x] | [x] | [x] |
-| Imagem no volume local | [x] | [x] | [x] |
-| Persistência após reinício | [x] | [x] | [x] |
-| Nenhum segredo nos logs | [x] | [x] | [x] |
-| Recursos AWS removidos | N/A | [x] | [x] |
+| Verificação | Local | Console |
+|---|---|---|
+| Quatro containers ativos | [x] | [x] |
+| Health checks aprovados | [x] | [x] |
+| Produto no PostgreSQL | [x] | [x] |
+| Imagem no volume local | [x] | [x] |
+| Persistência após reinício | [x] | [x] |
+| Nenhum segredo nos logs | [x] | [x] |
+| Recursos AWS removidos | N/A | [x] |
 
 Registre IDs, nomes e horários; não copie senha PostgreSQL, JWT ou conteúdo de
 arquivos `.env` para as evidências.

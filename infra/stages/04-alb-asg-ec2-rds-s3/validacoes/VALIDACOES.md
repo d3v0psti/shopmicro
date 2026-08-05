@@ -4,7 +4,7 @@ Cadastre um produto chamado `VALIDACAO-STAGE-04-AAAA-MM-DD` com uma imagem
 pequena. Registre apenas IDs, nomes e horários; nunca registre segredos.
 
 Somente o responsável pelo projeto confirma estas evidências. A tag do stage só
-pode ser criada depois da validação manual de Local, Console e Terraform.
+pode ser criada depois da validação manual de Local e Console.
 
 ## Local
 
@@ -22,7 +22,7 @@ docker compose restart
 
 Após o reinício, confirme novamente o produto e a imagem.
 
-## AWS — Console ou Terraform
+## AWS — Console
 
 ### 1. ALB e duas instâncias
 
@@ -93,18 +93,18 @@ também comprova que banco, imagens e `JWT_SECRET` não dependem de uma EC2.
 
 Preencha somente após executar cada teste:
 
-| Verificação | Local | Console | Terraform |
-|---|---|---|---|
-| Quatro containers locais / três por EC2 | [x] | [x] | [x] |
-| Duas EC2 em zonas diferentes | N/A | [x] | [x] |
-| Listeners 80 e 81 encaminham para os target groups corretos | N/A | [x] | [x] |
-| Dois targets saudáveis em cada target group | N/A | [x] | [x] |
-| Marketplace e admin acessíveis pelo ALB | N/A | [x] | [x] |
-| Produto persistido no PostgreSQL | [x] | [x] | [x] |
-| Imagem local no volume | [x] | N/A | N/A |
-| Objeto privado persistido no S3 | N/A | [x] | [x] |
-| RDS privado e criptografado | N/A | [x] | [x] |
-| ASG substitui uma EC2 encerrada | N/A | [x] | [x] |
-| Aplicação e dados disponíveis após substituição | N/A | [x] | [x] |
-| Nenhum segredo nos logs | [x] | [x] | [x] |
-| Recursos AWS removidos | N/A | [x] | [x] |
+| Verificação | Local | Console |
+|---|---|---|
+| Quatro containers locais / três por EC2 | [x] | [x] |
+| Duas EC2 em zonas diferentes | N/A | [x] |
+| Listeners 80 e 81 encaminham para os target groups corretos | N/A | [x] |
+| Dois targets saudáveis em cada target group | N/A | [x] |
+| Marketplace e admin acessíveis pelo ALB | N/A | [x] |
+| Produto persistido no PostgreSQL | [x] | [x] |
+| Imagem local no volume | [x] | N/A |
+| Objeto privado persistido no S3 | N/A | [x] |
+| RDS privado e criptografado | N/A | [x] |
+| ASG substitui uma EC2 encerrada | N/A | [x] |
+| Aplicação e dados disponíveis após substituição | N/A | [x] |
+| Nenhum segredo nos logs | [x] | [x] |
+| Recursos AWS removidos | N/A | [x] |

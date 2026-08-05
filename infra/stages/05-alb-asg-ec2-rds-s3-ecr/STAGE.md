@@ -44,8 +44,7 @@ digest antes de tratar esse fluxo como produção.
 
 1. [Local](local/GUIA-LOCAL.md)
 2. [AWS pelo Console](console/GUIA-CONSOLE.md)
-3. [AWS pelo Terraform](terraform/GUIA-TERRAFORM.md)
-4. [Validações](validacoes/VALIDACOES.md)
+3. [Validações](validacoes/VALIDACOES.md)
 
-Validação manual de Local, Console e Terraform confirmada pelo responsável pelo
+Validação manual de Local e Console confirmada pelo responsável pelo
 projeto. Criar e publicar a tag continuam exigindo autorizações separadas.

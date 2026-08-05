@@ -34,7 +34,7 @@ Endpoints locais: marketplace `:80`, admin `:81`, backend `:8080` e PostgreSQL
 - Use configuração por ambiente e nunca versione segredos.
 - Preserve PostgreSQL 18 em todos os ambientes.
 - Administre EC2 somente por SSM Session Manager; não abra a porta 22.
-- Atualize Compose, Terraform e documentação ao adicionar configuração.
+- Atualize Compose e documentação ao adicionar configuração na aplicação.
 - Mantenha rotas relativas `/api/...` entre frontend e backend.
 - Recursos AWS ficam em [infra/stages](infra/stages/).
 - Siga a estrutura e o fluxo definidos em
@@ -56,6 +56,7 @@ Endpoints locais: marketplace `:80`, admin `:81`, backend `:8080` e PostgreSQL
 
 - Execute `dotnet build` após mudanças no backend.
 - Valide os arquivos Compose após mudanças de infraestrutura.
-- Execute `terraform fmt -check` e `terraform validate` após mudanças no Terraform.
+- O Terraform pertence ao repositório independente
+  `d3v0psti/terraform-aws-platform`.
 - Execute `validacoes/` antes de concluir um stage.
 - Não exponha credenciais, tokens ou dados sensíveis em código e logs.

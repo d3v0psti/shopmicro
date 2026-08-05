@@ -22,7 +22,7 @@ Reinicie os containers e confirme que banco e imagem continuam disponíveis:
 docker compose restart
 ```
 
-## AWS — Console ou Terraform
+## AWS — Console
 
 Conecte à EC2 pelo Session Manager:
 
@@ -64,14 +64,14 @@ No Console RDS, confirme:
 
 ## Evidências
 
-| Verificação | Local | Console | Terraform |
-|---|---|---|---|
-| Quatro containers locais / três na AWS | [x] | [x] | [x] |
-| Health checks aprovados | [x] | [x] | [x] |
-| Produto persistido no PostgreSQL | [x] | [x] | [x] |
-| Imagem local no volume | [x] | N/A | N/A |
-| Objeto privado no S3 | N/A | [x] | [x] |
-| RDS privado e criptografado | N/A | [x] | [x] |
-| Persistência após reinício da EC2 | [x] | [x] | [x] |
-| Nenhum segredo nos logs | [x] | [x] | [x] |
-| Recursos AWS removidos | N/A | [x] | [x] |
+| Verificação | Local | Console |
+|---|---|---|
+| Quatro containers locais / três na AWS | [x] | [x] |
+| Health checks aprovados | [x] | [x] |
+| Produto persistido no PostgreSQL | [x] | [x] |
+| Imagem local no volume | [x] | N/A |
+| Objeto privado no S3 | N/A | [x] |
+| RDS privado e criptografado | N/A | [x] |
+| Persistência após reinício da EC2 | [x] | [x] |
+| Nenhum segredo nos logs | [x] | [x] |
+| Recursos AWS removidos | N/A | [x] |
