@@ -78,11 +78,29 @@ Session Manager.
 1. Crie dois target groups do tipo **Instances**, sem registrar instâncias:
    - `shopmicro-stage-04-market`: HTTP 80, health check `/health/ready`;
    - `shopmicro-stage-04-admin`: HTTP 81, health check `/`, sucesso `200-399`.
-2. Crie um ALB público chamado `shopmicro-stage-04-alb`:
+2. Em **EC2 → Load Balancers → Create load balancer**, crie um Application
+   Load Balancer público chamado `shopmicro-stage-04-alb`:
+   - esquema `Internet-facing` e endereço `IPv4`;
    - nas duas sub-redes escolhidas;
    - com `shopmicro-stage-04-alb-sg`;
-   - listener 80 encaminhando para o target group do marketplace;
-   - listener 81 encaminhando para o target group administrativo.
+   - em **Listeners and routing**, configure `HTTP : 80` encaminhando para
+     `shopmicro-stage-04-market`.
+3. Finalize a criação e aguarde o ALB ficar `Active`.
+4. Abra o ALB criado e acesse **Listeners and rules → Add listener**:
+   - protocolo `HTTP`;
+   - porta `81`;
+   - ação padrão `Forward to target groups`;
+   - target group `shopmicro-stage-04-admin`;
+   - salve o listener.
+5. Confirme que o ALB exibe exatamente estes dois listeners:
+
+   | Listener do ALB | Destino | Serviço nas EC2 |
+   |---|---|---|
+   | `HTTP:80` | `shopmicro-stage-04-market` | `frontend` na porta 80 |
+   | `HTTP:81` | `shopmicro-stage-04-admin` | `frontend-admin` na porta 81 |
+
+Não crie uma regra de caminho para unir os frontends no listener 80. Neste
+stage, cada interface possui sua própria porta e seu próprio listener.
 
 ## 6. Launch Template e Auto Scaling Group
 

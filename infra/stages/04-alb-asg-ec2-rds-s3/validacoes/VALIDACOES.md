@@ -30,6 +30,8 @@ No Console, confirme:
 
 - ASG com `min=2`, `desired=2` e `max=2`;
 - duas EC2 em zonas de disponibilidade diferentes;
+- listener `HTTP:80` encaminhando somente para o target group do frontend;
+- listener `HTTP:81` encaminhando somente para o target group do frontend-admin;
 - dois targets **Healthy** no target group da porta 80;
 - dois targets **Healthy** no target group da porta 81;
 - nenhuma regra de entrada direta da internet no Security Group das EC2.
@@ -95,6 +97,7 @@ Preencha somente após executar cada teste:
 |---|---|---|---|
 | Quatro containers locais / três por EC2 | [ ] | [ ] | [ ] |
 | Duas EC2 em zonas diferentes | N/A | [ ] | [ ] |
+| Listeners 80 e 81 encaminham para os target groups corretos | N/A | [ ] | [ ] |
 | Dois targets saudáveis em cada target group | N/A | [ ] | [ ] |
 | Marketplace e admin acessíveis pelo ALB | N/A | [ ] | [ ] |
 | Produto persistido no PostgreSQL | [ ] | [ ] | [ ] |
