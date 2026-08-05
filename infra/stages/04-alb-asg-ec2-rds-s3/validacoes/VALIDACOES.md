@@ -95,16 +95,16 @@ Preencha somente após executar cada teste:
 
 | Verificação | Local | Console | Terraform |
 |---|---|---|---|
-| Quatro containers locais / três por EC2 | [ ] | [ ] | [ ] |
-| Duas EC2 em zonas diferentes | N/A | [ ] | [ ] |
-| Listeners 80 e 81 encaminham para os target groups corretos | N/A | [ ] | [ ] |
-| Dois targets saudáveis em cada target group | N/A | [ ] | [ ] |
-| Marketplace e admin acessíveis pelo ALB | N/A | [ ] | [ ] |
-| Produto persistido no PostgreSQL | [ ] | [ ] | [ ] |
-| Imagem local no volume | [ ] | N/A | N/A |
-| Objeto privado persistido no S3 | N/A | [ ] | [ ] |
-| RDS privado e criptografado | N/A | [ ] | [ ] |
-| ASG substitui uma EC2 encerrada | N/A | [ ] | [ ] |
-| Aplicação e dados disponíveis após substituição | N/A | [ ] | [ ] |
-| Nenhum segredo nos logs | [ ] | [ ] | [ ] |
-| Recursos AWS removidos | N/A | [ ] | [ ] |
+| Quatro containers locais / três por EC2 | [x] | [x] | [x] |
+| Duas EC2 em zonas diferentes | N/A | [x] | [x] |
+| Listeners 80 e 81 encaminham para os target groups corretos | N/A | [x] | [x] |
+| Dois targets saudáveis em cada target group | N/A | [x] | [x] |
+| Marketplace e admin acessíveis pelo ALB | N/A | [x] | [x] |
+| Produto persistido no PostgreSQL | [x] | [x] | [x] |
+| Imagem local no volume | [x] | N/A | N/A |
+| Objeto privado persistido no S3 | N/A | [x] | [x] |
+| RDS privado e criptografado | N/A | [x] | [x] |
+| ASG substitui uma EC2 encerrada | N/A | [x] | [x] |
+| Aplicação e dados disponíveis após substituição | N/A | [x] | [x] |
+| Nenhum segredo nos logs | [x] | [x] | [x] |
+| Recursos AWS removidos | N/A | [x] | [x] |

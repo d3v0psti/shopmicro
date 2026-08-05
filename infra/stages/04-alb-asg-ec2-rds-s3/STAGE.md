@@ -1,6 +1,6 @@
 # Stage 04 — ALB, duas EC2, RDS e S3
 
-- Status: `PREPARADO — validação pendente`
+- Status: `VALIDADO — tag pendente de autorização`
 - Tag planejada: `shopmicro-aws-stage-04`
 - Banco local: PostgreSQL 18 em container
 - Banco na AWS: RDS PostgreSQL 18 privado
@@ -59,5 +59,5 @@ Session Manager. Uma evolução posterior poderá movê-las para sub-redes priva
 4. Confirmar aplicação disponível durante a substituição.
 5. Validar persistência compartilhada no RDS e no S3.
 
-O stage somente será marcado como validado e receberá uma tag após a validação
-manual dos três modos pelo responsável pelo projeto.
+Validação manual de Local, Console e Terraform confirmada pelo responsável pelo
+projeto. A tag será criada somente após autorização explícita e separada.
