@@ -27,24 +27,119 @@ limpeza evita crescimento contínuo do armazenamento.
 Esses três repositórios são recursos compartilhados e permanentes. Não os
 recrie no Terraform e não os remova ao finalizar o stage.
 
-## 2. Construir e publicar as imagens
+## 2. Construir e publicar manualmente
 
 Na sua máquina, configure AWS CLI para a conta do treinamento e mantenha Docker
 em execução. A identidade usada para publicar precisa de permissão de push
-somente nos três repositórios e de `ecr:GetAuthorizationToken`. Na raiz do
-projeto:
+somente nos três repositórios e de `ecr:GetAuthorizationToken`.
+
+Os comandos abaixo consideram o terminal na pasta `shopmicro/infra`:
 
 ```bash
-infra/stages/05-alb-asg-ec2-rds-s3-ecr/console/publicar-imagens.sh all
+cd infra
+aws sts get-caller-identity
+```
+
+O segundo comando deve mostrar a conta e a identidade AWS autenticada.
+
+### 2.1 Identificar a conta e autenticar o Docker
+
+```bash
+export AWS_REGION='us-east-1'
+export AWS_ACCOUNT_ID="$(aws sts get-caller-identity \
+  --region "$AWS_REGION" --query Account --output text)"
+export ECR_REGISTRY="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
+
+aws ecr get-login-password --region "$AWS_REGION" | \
+  docker login --username AWS --password-stdin "$ECR_REGISTRY"
+```
+
+O resultado esperado do último comando é `Login Succeeded`.
+
+### 2.2 Build, tag e push do backend
+
+```bash
+docker build --platform linux/amd64 \
+  -f ../backend/Dockerfile \
+  -t shopmicro-backend:latest \
+  ../backend
+
+docker tag shopmicro-backend:latest \
+  "$ECR_REGISTRY/shopmicro-backend:latest"
+
+docker push "$ECR_REGISTRY/shopmicro-backend:latest"
+```
+
+### 2.3 Build, tag e push do frontend
+
+```bash
+docker build --platform linux/amd64 \
+  -f ../frontend/Dockerfile \
+  -t shopmicro-frontend:latest \
+  ../frontend
+
+docker tag shopmicro-frontend:latest \
+  "$ECR_REGISTRY/shopmicro-frontend:latest"
+
+docker push "$ECR_REGISTRY/shopmicro-frontend:latest"
+```
+
+### 2.4 Build, tag e push do frontend-admin
+
+```bash
+docker build --platform linux/amd64 \
+  -f ../frontend-admin/Dockerfile \
+  -t shopmicro-frontend-admin:latest \
+  ../frontend-admin
+
+docker tag shopmicro-frontend-admin:latest \
+  "$ECR_REGISTRY/shopmicro-frontend-admin:latest"
+
+docker push "$ECR_REGISTRY/shopmicro-frontend-admin:latest"
+```
+
+O parâmetro `--platform linux/amd64` mantém compatibilidade com as EC2
+`t3.micro` deste stage.
+
+### 2.5 Confirmar as imagens enviadas
+
+```bash
+aws ecr describe-images --region "$AWS_REGION" \
+  --repository-name shopmicro-backend \
+  --image-ids imageTag=latest
+
+aws ecr describe-images --region "$AWS_REGION" \
+  --repository-name shopmicro-frontend \
+  --image-ids imageTag=latest
+
+aws ecr describe-images --region "$AWS_REGION" \
+  --repository-name shopmicro-frontend-admin \
+  --image-ids imageTag=latest
+```
+
+Confirme `imageDigest`, `imagePushedAt` e `latest`. Depois, encerre a sessão do
+Docker no registry e limpe as variáveis temporárias:
+
+```bash
+docker logout "$ECR_REGISTRY"
+unset AWS_REGION AWS_ACCOUNT_ID ECR_REGISTRY
+```
+
+### 2.6 Atalho opcional
+
+O script executa o mesmo fluxo para as três aplicações:
+
+```bash
+./stages/05-alb-asg-ec2-rds-s3-ecr/console/publicar-imagens.sh all
 ```
 
 O script descobre a conta autenticada, faz login no ECR e publica imagens
 `linux/amd64` com tag `latest`. Para publicar somente uma aplicação:
 
 ```bash
-infra/stages/05-alb-asg-ec2-rds-s3-ecr/console/publicar-imagens.sh backend
-infra/stages/05-alb-asg-ec2-rds-s3-ecr/console/publicar-imagens.sh frontend
-infra/stages/05-alb-asg-ec2-rds-s3-ecr/console/publicar-imagens.sh frontend-admin
+./stages/05-alb-asg-ec2-rds-s3-ecr/console/publicar-imagens.sh backend
+./stages/05-alb-asg-ec2-rds-s3-ecr/console/publicar-imagens.sh frontend
+./stages/05-alb-asg-ec2-rds-s3-ecr/console/publicar-imagens.sh frontend-admin
 ```
 
 No Console ECR, confirme `latest` nos três repositórios e anote os digests. Não
