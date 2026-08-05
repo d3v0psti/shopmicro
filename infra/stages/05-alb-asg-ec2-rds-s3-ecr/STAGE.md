@@ -1,6 +1,6 @@
 # Stage 05 — imagens independentes no Amazon ECR
 
-- Status: `PREPARADO — validação pendente`
+- Status: `VALIDADO — tag pendente de autorização`
 - Tag planejada: `shopmicro-aws-stage-05`
 - Local: imagens construídas pelo Docker Compose
 - AWS: três imagens privadas no ECR com tag `latest`
@@ -47,6 +47,5 @@ digest antes de tratar esse fluxo como produção.
 3. [AWS pelo Terraform](terraform/GUIA-TERRAFORM.md)
 4. [Validações](validacoes/VALIDACOES.md)
 
-O stage só será marcado como validado e receberá uma tag depois da confirmação
-manual do responsável pelo projeto. Criar e publicar a tag exigem autorizações
-separadas.
+Validação manual de Local, Console e Terraform confirmada pelo responsável pelo
+projeto. Criar e publicar a tag continuam exigindo autorizações separadas.

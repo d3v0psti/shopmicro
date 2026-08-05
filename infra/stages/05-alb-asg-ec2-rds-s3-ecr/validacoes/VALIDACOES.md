@@ -93,14 +93,14 @@ Confirme `uploads/ARQUIVO` no S3 privado.
 
 | Verificação | Local | Console | Terraform |
 |---|---|---|---|
-| Aplicação funcional | [ ] | [ ] | [ ] |
-| PostgreSQL 18 e uploads persistentes | [ ] | [ ] | [ ] |
-| Três repositórios ECR com `latest` | N/A | [ ] | [ ] |
-| EC2 realiza pull sem clone ou build | N/A | [ ] | [ ] |
-| IAM das EC2 permite pull, mas não push | N/A | [ ] | [ ] |
-| Duas EC2 e targets saudáveis | N/A | [ ] | [ ] |
-| Atualização independente do frontend | N/A | [ ] | [ ] |
-| ASG substitui as instâncias gradualmente | N/A | [ ] | [ ] |
-| RDS privado e objeto S3 privado | N/A | [ ] | [ ] |
-| Nenhum segredo em código ou logs | [ ] | [ ] | [ ] |
-| Recursos removidos e ECR preservado | N/A | [ ] | [ ] |
+| Aplicação funcional | [x] | [x] | [x] |
+| PostgreSQL 18 e uploads persistentes | [x] | [x] | [x] |
+| Três repositórios ECR com `latest` | N/A | [x] | [x] |
+| EC2 realiza pull sem clone ou build | N/A | [x] | [x] |
+| IAM das EC2 permite pull, mas não push | N/A | [x] | [x] |
+| Duas EC2 e targets saudáveis | N/A | [x] | [x] |
+| Atualização independente do frontend | N/A | [x] | [x] |
+| ASG substitui as instâncias gradualmente | N/A | [x] | [x] |
+| RDS privado e objeto S3 privado | N/A | [x] | [x] |
+| Nenhum segredo em código ou logs | [x] | [x] | [x] |
+| Recursos removidos e ECR preservado | N/A | [x] | [x] |
