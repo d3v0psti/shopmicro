@@ -1,0 +1,16 @@
+aws_region       = "us-east-1"
+project_name     = "shopmicro"
+environment      = "stage-05"
+marketplace_cidr = "0.0.0.0/0"
+# Abra https://checkip.amazonaws.com/ no navegador e copie o IPv4 exibido.
+# Substitua seu_ip pelo valor encontrado e mantenha o /32.
+admin_cidr          = "seu_ip/32"
+instance_type       = "t3.micro"
+root_volume_size    = 8
+backend_ecr_repository        = "shopmicro-backend"
+frontend_ecr_repository       = "shopmicro-frontend"
+frontend_admin_ecr_repository = "shopmicro-frontend-admin"
+db_instance_class   = "db.t4g.micro"
+db_allocated_storage = 20
+# Use true somente neste stage descartável; objetos serão apagados no destroy.
+force_destroy_bucket = true

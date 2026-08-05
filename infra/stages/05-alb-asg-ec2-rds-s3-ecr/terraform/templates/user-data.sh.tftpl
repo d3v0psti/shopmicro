@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+set -e
+
+exec > >(tee -a /var/log/shopmicro-aws-stage-05.log | logger -t shopmicro-aws-stage-05 -s 2>/dev/console) 2>&1
+
+dnf install -y docker
+systemctl enable --now docker
+systemctl enable --now amazon-ssm-agent
+
+DOCKER_COMPOSE_VERSION='v2.32.4'
+install -m 0755 -d /usr/local/lib/docker/cli-plugins
+curl -fsSL \
+  "https://github.com/docker/compose/releases/download/$${DOCKER_COMPOSE_VERSION}/docker-compose-linux-x86_64" \
+  -o /usr/local/lib/docker/cli-plugins/docker-compose
+chmod 0755 /usr/local/lib/docker/cli-plugins/docker-compose
+docker compose version
+aws --version
+
+install -m 0755 -d /opt/shopmicro/infra
+printf '%s' '${compose_base64}' | base64 -d > /opt/shopmicro/infra/compose.aws-stage-05.yaml
+
+RDS_PASSWORD="$(aws ssm get-parameter \
+  --region '${aws_region}' \
+  --name '${rds_password_parameter_name}' \
+  --with-decryption --query 'Parameter.Value' --output text)"
+JWT_SECRET="$(aws ssm get-parameter \
+  --region '${aws_region}' \
+  --name '${jwt_secret_parameter_name}' \
+  --with-decryption --query 'Parameter.Value' --output text)"
+
+aws ecr get-login-password --region '${aws_region}' | \
+  docker login --username AWS --password-stdin '${ecr_registry}'
+
+umask 077
+printf 'JWT_SECRET=%s\nRDS_HOST=%s\nRDS_PASSWORD=%s\nS3_BUCKET_NAME=%s\nAWS_REGION=%s\nECR_REGISTRY=%s\nBACKEND_IMAGE=%s\nFRONTEND_IMAGE=%s\nFRONTEND_ADMIN_IMAGE=%s\n' \
+  "$${JWT_SECRET}" '${rds_host}' "$${RDS_PASSWORD}" '${bucket_name}' '${aws_region}' \
+  '${ecr_registry}' '${backend_image}' '${frontend_image}' '${frontend_admin_image}' \
+  > /opt/shopmicro/infra/.env.aws-stage-05
+unset RDS_PASSWORD JWT_SECRET
+
+cd /opt/shopmicro/infra
+docker compose --env-file .env.aws-stage-05 -f compose.aws-stage-05.yaml pull
+docker compose --env-file .env.aws-stage-05 -f compose.aws-stage-05.yaml up --no-build -d
+
+for attempt in $(seq 1 90); do
+  if curl -fsS http://127.0.0.1/health/live >/dev/null; then
+    echo 'ShopMicro AWS Stage 05 iniciado com imagens do ECR.'
+    docker compose --env-file .env.aws-stage-05 -f compose.aws-stage-05.yaml ps
+    exit 0
+  fi
+  sleep 5
+done
+
+echo 'ERRO: aplicação não respondeu no prazo.'
+docker compose --env-file .env.aws-stage-05 -f compose.aws-stage-05.yaml ps
+docker compose --env-file .env.aws-stage-05 -f compose.aws-stage-05.yaml logs --tail 200
+exit 1
