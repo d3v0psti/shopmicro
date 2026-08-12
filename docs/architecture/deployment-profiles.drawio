@@ -1,0 +1,110 @@
+<mxfile host="Electron" agent="Codex">
+  <diagram id="deployment-profiles" name="Perfis de execução">
+    <mxGraphModel dx="1414" dy="841" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="800" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" parent="1" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=20;fontColor=#172033;" value="&lt;b&gt;ShopMicro • perfis de execução&lt;/b&gt;&lt;br&gt;Mesmo código e mesmas imagens Docker" vertex="1">
+          <mxGeometry height="55" width="650" x="50" y="25" as="geometry" />
+        </mxCell>
+        <mxCell id="app" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#172033;strokeColor=#172033;fontColor=#FFFFFF;fontSize=14;" value="&lt;b&gt;SHOPMICRO&lt;/b&gt;&lt;br&gt;frontend • frontend-admin • backend" vertex="1">
+          <mxGeometry height="75" width="470" x="450" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="local" parent="1" style="rounded=1;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;verticalAlign=top;spacingTop=18;fillColor=#FFFFFF;strokeColor=#0EA5E9;strokeWidth=2;fontColor=#172033;fontSize=16;fontStyle=1;" value="AMBIENTE LOCAL&lt;br&gt;sem dependência da AWS" vertex="1">
+          <mxGeometry height="465" width="605" x="55" y="235" as="geometry" />
+        </mxCell>
+        <mxCell id="compose" parent="local" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E0F2FE;strokeColor=#0EA5E9;strokeWidth=2;fontColor=#172033;fontSize=13;fontStyle=1;" value="Docker Compose" vertex="1">
+          <mxGeometry height="58" width="255" x="175" y="95" as="geometry" />
+        </mxCell>
+        <mxCell id="localapps" parent="local" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F1F5F9;strokeColor=#94A3B8;fontColor=#172033;fontSize=12;" value="frontend :80&lt;br&gt;frontend-admin :81&lt;br&gt;backend :8080" vertex="1">
+          <mxGeometry height="100" width="255" x="175" y="205" as="geometry" />
+        </mxCell>
+        <mxCell id="localdb" parent="local" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FDF4FF;strokeColor=#C026D3;fontColor=#172033;fontSize=12;" value="PostgreSQL 18&lt;br&gt;container" vertex="1">
+          <mxGeometry height="65" width="180" x="80" y="350" as="geometry" />
+        </mxCell>
+        <mxCell id="localstorage" parent="local" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F0FDF4;strokeColor=#65A30D;fontColor=#172033;fontSize=12;" value="Volume Docker&lt;br&gt;uploads" vertex="1">
+          <mxGeometry height="65" width="180" x="345" y="350" as="geometry" />
+        </mxCell>
+        <mxCell id="aws" parent="1" style="rounded=1;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;verticalAlign=top;spacingTop=18;fillColor=#FFFFFF;strokeColor=#ED7100;strokeWidth=2;fontColor=#172033;fontSize=16;fontStyle=1;" value="AMBIENTE AWS VALIDADO&lt;br&gt;serviços gerenciados" vertex="1">
+          <mxGeometry height="465" width="605" x="740" y="235" as="geometry" />
+        </mxCell>
+        <mxCell id="route53" parent="aws" style="sketch=0;outlineConnect=0;fontColor=#172033;fillColor=#8C4FFF;strokeColor=#FFFFFF;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=10;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.route_53;" value="Route 53&lt;br&gt;DNS" vertex="1">
+          <mxGeometry height="70" width="70" x="55" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="acm" parent="aws" style="sketch=0;outlineConnect=0;fontColor=#172033;fillColor=#DD344C;strokeColor=#FFFFFF;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=10;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.certificate_manager;" value="ACM&lt;br&gt;TLS" vertex="1">
+          <mxGeometry height="70" width="70" x="50" y="205" as="geometry" />
+        </mxCell>
+        <mxCell id="alb" parent="aws" style="sketch=0;outlineConnect=0;fontColor=#172033;fillColor=#8C4FFF;strokeColor=#FFFFFF;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=10;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.application_load_balancer;" value="ALB&lt;br&gt;HTTPS" vertex="1">
+          <mxGeometry height="70" width="70" x="280" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="ecr" parent="aws" style="sketch=0;outlineConnect=0;fontColor=#172033;fillColor=#ED7100;strokeColor=#FFFFFF;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=10;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.ecr;" value="ECR&lt;br&gt;imagens" vertex="1">
+          <mxGeometry height="70" width="70" x="455" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="ecs" parent="aws" style="sketch=0;outlineConnect=0;fontColor=#172033;fillColor=#ED7100;strokeColor=#FFFFFF;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=10;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.ecs;" value="Amazon ECS&lt;br&gt;3 Services sobre EC2" vertex="1">
+          <mxGeometry height="85" width="85" x="270" y="225" as="geometry" />
+        </mxCell>
+        <mxCell id="rds" parent="aws" style="sketch=0;outlineConnect=0;fontColor=#172033;fillColor=#C925D1;strokeColor=#FFFFFF;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=10;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.rds;" value="RDS PostgreSQL 18&lt;br&gt;privado" vertex="1">
+          <mxGeometry height="78" width="78" x="125" y="345" as="geometry" />
+        </mxCell>
+        <mxCell id="s3" parent="aws" style="sketch=0;outlineConnect=0;fontColor=#172033;fillColor=#7AA116;strokeColor=#FFFFFF;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=10;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.s3;" value="Amazon S3&lt;br&gt;uploads" vertex="1">
+          <mxGeometry height="78" width="78" x="405" y="345" as="geometry" />
+        </mxCell>
+        <mxCell id="app-local" edge="1" parent="1" source="app" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#64748B;strokeWidth=2;" target="compose">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="665" y="220" />
+              <mxPoint x="550" y="220" />
+              <mxPoint x="550" y="359" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="app-aws" edge="1" parent="1" source="app" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#64748B;strokeWidth=2;" target="route53">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="665" y="220" />
+              <mxPoint x="750" y="220" />
+              <mxPoint x="750" y="360" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="compose-apps" edge="1" parent="1" source="compose" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#64748B;strokeWidth=2;" target="localapps">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="apps-db" edge="1" parent="1" source="localapps" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#C026D3;strokeWidth=2;" target="localdb">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="apps-storage" edge="1" parent="1" source="localapps" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#65A30D;strokeWidth=2;" target="localstorage">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="route-alb" edge="1" parent="1" source="route53" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#8C4FFF;strokeWidth=2;" target="alb">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="acm-alb" edge="1" parent="1" source="acm" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#DD344C;strokeWidth=2;dashed=1;" target="alb">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="930" y="475" />
+              <mxPoint x="930" y="390" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="alb-ecs" edge="1" parent="1" source="alb" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#ED7100;strokeWidth=2;" target="ecs">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ecr-ecs" edge="1" parent="1" source="ecr" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#ED7100;strokeWidth=2;dashed=1;" target="ecs" value="pull">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1230" y="450" />
+              <mxPoint x="1052.5" y="450" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ecs-rds" edge="1" parent="1" source="ecs" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#C925D1;strokeWidth=2;" target="rds">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ecs-s3" edge="1" parent="1" source="ecs" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#65A30D;strokeWidth=2;" target="s3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

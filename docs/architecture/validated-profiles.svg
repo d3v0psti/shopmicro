@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="560" viewBox="0 0 1400 560" role="img" aria-labelledby="title description">
+  <title id="title">Cenários de implantação validados do ShopMicro</title>
+  <desc id="description">Evolução validada do ambiente local até a arquitetura AWS com ECS, Route 53 e HTTPS.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#94a3b8"/>
+    </marker>
+    <style>
+      .title{font:700 25px Arial,sans-serif;fill:#172033}.subtitle{font:14px Arial,sans-serif;fill:#64748b}
+      .number{font:700 13px Arial,sans-serif;fill:#fff}.heading{font:700 15px Arial,sans-serif;fill:#172033}
+      .text{font:12px Arial,sans-serif;fill:#475569}.arrow{stroke:#94a3b8;stroke-width:2;fill:none;marker-end:url(#arrow)}
+    </style>
+  </defs>
+  <rect width="1400" height="560" fill="#f8fafc"/>
+  <text x="55" y="48" class="title">ShopMicro — cenários de implantação validados</text>
+  <text x="55" y="74" class="subtitle">Evolução incremental com o mesmo código da aplicação</text>
+
+  <path d="M315 185 H365" class="arrow"/><path d="M650 185 H700" class="arrow"/><path d="M985 185 H1035" class="arrow"/>
+  <path d="M1175 250 V285 H225 V315" class="arrow"/>
+  <path d="M315 410 H365" class="arrow"/><path d="M650 410 H700" class="arrow"/><path d="M985 410 H1035" class="arrow"/>
+
+  <g transform="translate(45 115)">
+    <rect width="270" height="135" rx="15" fill="#fff" stroke="#0ea5e9" stroke-width="2"/>
+    <circle cx="28" cy="28" r="16" fill="#0ea5e9"/><text x="28" y="33" text-anchor="middle" class="number">1</text>
+    <text x="55" y="33" class="heading">Local</text>
+    <text x="22" y="68" class="text">Docker Compose</text><text x="22" y="89" class="text">PostgreSQL 18 em container</text>
+    <text x="22" y="110" class="text">Volume Docker para uploads</text>
+  </g>
+  <g transform="translate(380 115)">
+    <rect width="270" height="135" rx="15" fill="#fff" stroke="#ed7100" stroke-width="2"/>
+    <circle cx="28" cy="28" r="16" fill="#ed7100"/><text x="28" y="33" text-anchor="middle" class="number">2</text>
+    <text x="55" y="33" class="heading">EC2 básica</text>
+    <text x="22" y="68" class="text">Docker Compose em uma EC2</text><text x="22" y="89" class="text">PostgreSQL na instância</text>
+    <text x="22" y="110" class="text">Armazenamento local</text>
+  </g>
+  <g transform="translate(715 115)">
+    <rect width="270" height="135" rx="15" fill="#fff" stroke="#7aa116" stroke-width="2"/>
+    <circle cx="28" cy="28" r="16" fill="#7aa116"/><text x="28" y="33" text-anchor="middle" class="number">3</text>
+    <text x="55" y="33" class="heading">Amazon S3</text>
+    <text x="22" y="68" class="text">Aplicação e banco na EC2</text><text x="22" y="89" class="text">Uploads em bucket privado</text>
+    <text x="22" y="110" class="text">Arquivos fora da instância</text>
+  </g>
+  <g transform="translate(1050 115)">
+    <rect width="305" height="135" rx="15" fill="#fff" stroke="#c925d1" stroke-width="2"/>
+    <circle cx="28" cy="28" r="16" fill="#c925d1"/><text x="28" y="33" text-anchor="middle" class="number">4</text>
+    <text x="55" y="33" class="heading">RDS + S3</text>
+    <text x="22" y="68" class="text">Aplicação em uma EC2</text><text x="22" y="89" class="text">RDS PostgreSQL 18 privado</text>
+    <text x="22" y="110" class="text">Dados persistentes gerenciados</text>
+  </g>
+
+  <g transform="translate(45 340)">
+    <rect width="270" height="140" rx="15" fill="#fff" stroke="#8c4fff" stroke-width="2"/>
+    <circle cx="28" cy="28" r="16" fill="#8c4fff"/><text x="28" y="33" text-anchor="middle" class="number">5</text>
+    <text x="55" y="33" class="heading">ALB + ASG</text>
+    <text x="22" y="68" class="text">Duas EC2 em zonas diferentes</text><text x="22" y="89" class="text">Balanceamento de carga</text>
+    <text x="22" y="110" class="text">Substituição automática</text>
+  </g>
+  <g transform="translate(380 340)">
+    <rect width="270" height="140" rx="15" fill="#fff" stroke="#ed7100" stroke-width="2"/>
+    <circle cx="28" cy="28" r="16" fill="#ed7100"/><text x="28" y="33" text-anchor="middle" class="number">6</text>
+    <text x="55" y="33" class="heading">Amazon ECR</text>
+    <text x="22" y="68" class="text">Três imagens privadas</text><text x="22" y="89" class="text">Aplicações publicadas separadamente</text>
+    <text x="22" y="110" class="text">Inicialização sem build na EC2</text>
+  </g>
+  <g transform="translate(715 340)">
+    <rect width="270" height="140" rx="15" fill="#fff" stroke="#ed7100" stroke-width="2"/>
+    <circle cx="28" cy="28" r="16" fill="#ed7100"/><text x="28" y="33" text-anchor="middle" class="number">7</text>
+    <text x="55" y="33" class="heading">Amazon ECS sobre EC2</text>
+    <text x="22" y="68" class="text">Três ECS Services</text><text x="22" y="89" class="text">Tasks independentes</text>
+    <text x="22" y="110" class="text">Orquestração e disponibilidade</text>
+  </g>
+  <g transform="translate(1050 340)">
+    <rect width="305" height="140" rx="15" fill="#fff7ed" stroke="#232f3e" stroke-width="3"/>
+    <circle cx="28" cy="28" r="16" fill="#232f3e"/><text x="28" y="33" text-anchor="middle" class="number">8</text>
+    <text x="55" y="33" class="heading">Perfil AWS atual</text>
+    <text x="22" y="68" class="text">Route 53 + ACM + ALB HTTPS</text><text x="22" y="89" class="text">ECS + ECR + RDS + S3</text>
+    <text x="22" y="110" class="text">DNS próprio e acesso seguro</text>
+  </g>
+
+  <text x="700" y="530" text-anchor="middle" class="subtitle">Os cenários anteriores registram capacidades testadas; o perfil 8 representa a arquitetura AWS mais recente.</text>
+</svg>

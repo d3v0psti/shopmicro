@@ -15,6 +15,7 @@ infra/certs/*.crt
 # Sistema
 .DS_Store
 *.log
+*.drawio.bkp
 
 # Terraform
 **/.terraform/

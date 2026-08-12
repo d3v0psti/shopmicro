@@ -1,0 +1,94 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="760" viewBox="0 0 1400 760" role="img" aria-labelledby="title description">
+  <title id="title">Perfis de execução do ShopMicro</title>
+  <desc id="description">Comparação entre o ambiente local com Docker Compose e o ambiente AWS com ECS, RDS, S3, ECR, ALB, Route 53 e ACM.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#64748b"/>
+    </marker>
+    <style>
+      .title{font:700 26px Arial,sans-serif;fill:#172033}.subtitle{font:14px Arial,sans-serif;fill:#64748b}
+      .heading{font:700 18px Arial,sans-serif;fill:#172033}.label{font:700 14px Arial,sans-serif;fill:#172033}
+      .small{font:12px Arial,sans-serif;fill:#475569}.line{stroke:#64748b;stroke-width:2;fill:none;marker-end:url(#arrow)}
+      .dash{stroke:#ed7100;stroke-width:2;stroke-dasharray:7 6;fill:none;marker-end:url(#arrow)}
+    </style>
+  </defs>
+  <rect width="1400" height="760" fill="#f8fafc"/>
+  <text x="60" y="50" class="title">ShopMicro — perfis de execução</text>
+  <text x="60" y="76" class="subtitle">O mesmo código e as mesmas imagens Docker em ambientes diferentes</text>
+
+  <rect x="420" y="105" width="560" height="76" rx="14" fill="#172033"/>
+  <text x="700" y="137" text-anchor="middle" font-family="Arial" font-size="17" font-weight="700" fill="#fff">SHOPMICRO</text>
+  <text x="700" y="160" text-anchor="middle" font-family="Arial" font-size="13" fill="#cbd5e1">frontend • frontend-admin • backend</text>
+
+  <path d="M700 181 V215 H360 V245" class="line"/>
+  <path d="M700 215 H1040 V245" class="line"/>
+
+  <rect x="55" y="235" width="610" height="465" rx="18" fill="#fff" stroke="#0ea5e9" stroke-width="2"/>
+  <text x="85" y="275" class="heading">AMBIENTE LOCAL</text>
+  <text x="85" y="298" class="small">Desenvolvimento sem conta ou credenciais AWS</text>
+
+  <rect x="235" y="325" width="250" height="62" rx="12" fill="#e0f2fe" stroke="#0ea5e9" stroke-width="2"/>
+  <text x="360" y="352" text-anchor="middle" class="label">Docker Compose</text>
+  <text x="360" y="372" text-anchor="middle" class="small">orquestra os quatro containers</text>
+
+  <path d="M360 387 V420 H160 V450" class="line"/>
+  <path d="M360 420 V450" class="line"/>
+  <path d="M360 420 H560 V450" class="line"/>
+
+  <rect x="90" y="450" width="140" height="78" rx="12" fill="#f1f5f9" stroke="#94a3b8"/>
+  <text x="160" y="481" text-anchor="middle" class="label">Frontend</text>
+  <text x="160" y="503" text-anchor="middle" class="small">Nginx :80</text>
+  <rect x="290" y="450" width="140" height="78" rx="12" fill="#f1f5f9" stroke="#94a3b8"/>
+  <text x="360" y="481" text-anchor="middle" class="label">Admin</text>
+  <text x="360" y="503" text-anchor="middle" class="small">Nginx :81</text>
+  <rect x="490" y="450" width="140" height="78" rx="12" fill="#ede9fe" stroke="#8b5cf6"/>
+  <text x="560" y="481" text-anchor="middle" class="label">Backend</text>
+  <text x="560" y="503" text-anchor="middle" class="small">ASP.NET Core</text>
+
+  <path d="M560 528 V565 H450 V590" class="line"/>
+  <path d="M560 565 H590 V590" class="line"/>
+  <rect x="365" y="590" width="170" height="72" rx="12" fill="#fdf4ff" stroke="#c026d3"/>
+  <text x="450" y="620" text-anchor="middle" class="label">PostgreSQL 18</text>
+  <text x="450" y="642" text-anchor="middle" class="small">container</text>
+  <rect x="545" y="590" width="90" height="72" rx="12" fill="#f0fdf4" stroke="#65a30d"/>
+  <text x="590" y="620" text-anchor="middle" class="label">Volume</text>
+  <text x="590" y="642" text-anchor="middle" class="small">uploads</text>
+
+  <rect x="735" y="235" width="610" height="465" rx="18" fill="#fff" stroke="#ed7100" stroke-width="2"/>
+  <text x="765" y="275" class="heading">AMBIENTE AWS VALIDADO</text>
+  <text x="765" y="298" class="small">Serviços gerenciados e configuração por ambiente</text>
+
+  <rect x="775" y="325" width="150" height="62" rx="12" fill="#f5f0ff" stroke="#8c4fff" stroke-width="2"/>
+  <text x="850" y="351" text-anchor="middle" class="label">Route 53</text>
+  <text x="850" y="372" text-anchor="middle" class="small">DNS</text>
+  <rect x="955" y="325" width="150" height="62" rx="12" fill="#fff1f2" stroke="#dd344c" stroke-width="2"/>
+  <text x="1030" y="351" text-anchor="middle" class="label">ACM</text>
+  <text x="1030" y="372" text-anchor="middle" class="small">certificado TLS</text>
+  <rect x="1135" y="325" width="170" height="62" rx="12" fill="#fff7ed" stroke="#ed7100" stroke-width="2"/>
+  <text x="1220" y="351" text-anchor="middle" class="label">Amazon ECR</text>
+  <text x="1220" y="372" text-anchor="middle" class="small">imagens privadas</text>
+
+  <path d="M850 387 V420 H940 V450" class="line"/>
+  <path d="M1030 387 V420 H940 V450" class="line"/>
+  <rect x="840" y="450" width="200" height="72" rx="12" fill="#f5f0ff" stroke="#8c4fff" stroke-width="2"/>
+  <text x="940" y="479" text-anchor="middle" class="label">Application Load Balancer</text>
+  <text x="940" y="501" text-anchor="middle" class="small">HTTPS :443</text>
+
+  <path d="M940 522 V555 H1100 V580" class="line"/>
+  <path d="M1220 387 V545 H1175 V580" class="dash"/>
+  <rect x="1015" y="580" width="170" height="82" rx="12" fill="#fff4e5" stroke="#ed7100" stroke-width="2"/>
+  <text x="1100" y="609" text-anchor="middle" class="label">Amazon ECS</text>
+  <text x="1100" y="630" text-anchor="middle" class="small">3 Services sobre EC2</text>
+  <text x="1100" y="648" text-anchor="middle" class="small">múltiplas tasks</text>
+
+  <path d="M1015 621 H925" class="line"/>
+  <path d="M1185 621 H1260" class="line"/>
+  <rect x="760" y="585" width="165" height="72" rx="12" fill="#fdf4ff" stroke="#c026d3"/>
+  <text x="842" y="615" text-anchor="middle" class="label">RDS PostgreSQL 18</text>
+  <text x="842" y="637" text-anchor="middle" class="small">privado</text>
+  <rect x="1260" y="585" width="65" height="72" rx="12" fill="#f0fdf4" stroke="#65a30d"/>
+  <text x="1292" y="615" text-anchor="middle" class="label">S3</text>
+  <text x="1292" y="637" text-anchor="middle" class="small">uploads</text>
+
+  <text x="700" y="735" text-anchor="middle" class="small">Configuração define os serviços; o código da aplicação permanece o mesmo.</text>
+</svg>

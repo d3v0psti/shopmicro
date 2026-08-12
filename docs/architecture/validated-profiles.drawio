@@ -1,0 +1,63 @@
+<mxfile host="Electron" agent="Codex">
+  <diagram id="validated-profiles" name="Cenários validados">
+    <mxGraphModel dx="1414" dy="841" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="600" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" parent="1" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=20;fontColor=#172033;" value="&lt;b&gt;ShopMicro • cenários de implantação validados&lt;/b&gt;&lt;br&gt;Evolução incremental com o mesmo código" vertex="1">
+          <mxGeometry height="55" width="700" x="45" y="25" as="geometry" />
+        </mxCell>
+        <mxCell id="p1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#0EA5E9;strokeWidth=2;fontColor=#172033;fontSize=12;" value="&lt;b&gt;1 • Local&lt;/b&gt;&lt;br&gt;Docker Compose&lt;br&gt;PostgreSQL + volume" vertex="1">
+          <mxGeometry height="125" width="270" x="45" y="120" as="geometry" />
+        </mxCell>
+        <mxCell id="p2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#ED7100;strokeWidth=2;fontColor=#172033;fontSize=12;" value="&lt;b&gt;2 • EC2 básica&lt;/b&gt;&lt;br&gt;Compose + PostgreSQL&lt;br&gt;armazenamento local" vertex="1">
+          <mxGeometry height="125" width="270" x="380" y="120" as="geometry" />
+        </mxCell>
+        <mxCell id="p3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#7AA116;strokeWidth=2;fontColor=#172033;fontSize=12;" value="&lt;b&gt;3 • Amazon S3&lt;/b&gt;&lt;br&gt;uploads privados&lt;br&gt;fora da EC2" vertex="1">
+          <mxGeometry height="125" width="270" x="715" y="120" as="geometry" />
+        </mxCell>
+        <mxCell id="p4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#C925D1;strokeWidth=2;fontColor=#172033;fontSize=12;" value="&lt;b&gt;4 • RDS + S3&lt;/b&gt;&lt;br&gt;PostgreSQL 18 privado&lt;br&gt;dados gerenciados" vertex="1">
+          <mxGeometry height="125" width="305" x="1050" y="120" as="geometry" />
+        </mxCell>
+        <mxCell id="p5" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#8C4FFF;strokeWidth=2;fontColor=#172033;fontSize=12;" value="&lt;b&gt;5 • ALB + ASG&lt;/b&gt;&lt;br&gt;duas EC2&lt;br&gt;zonas diferentes" vertex="1">
+          <mxGeometry height="130" width="270" x="45" y="335" as="geometry" />
+        </mxCell>
+        <mxCell id="p6" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#ED7100;strokeWidth=2;fontColor=#172033;fontSize=12;" value="&lt;b&gt;6 • Amazon ECR&lt;/b&gt;&lt;br&gt;três imagens privadas&lt;br&gt;entrega independente" vertex="1">
+          <mxGeometry height="130" width="270" x="380" y="335" as="geometry" />
+        </mxCell>
+        <mxCell id="p7" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#ED7100;strokeWidth=2;fontColor=#172033;fontSize=12;" value="&lt;b&gt;7 • Amazon ECS&lt;/b&gt;&lt;br&gt;três Services sobre EC2&lt;br&gt;tasks independentes" vertex="1">
+          <mxGeometry height="130" width="270" x="715" y="335" as="geometry" />
+        </mxCell>
+        <mxCell id="p8" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF7ED;strokeColor=#232F3E;strokeWidth=3;fontColor=#172033;fontSize=12;" value="&lt;b&gt;8 • Perfil AWS atual&lt;/b&gt;&lt;br&gt;Route 53 + ACM + ALB&lt;br&gt;ECS + RDS + S3 + ECR" vertex="1">
+          <mxGeometry height="130" width="305" x="1050" y="335" as="geometry" />
+        </mxCell>
+        <mxCell id="e12" edge="1" parent="1" source="p1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#94A3B8;strokeWidth=2;" target="p2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e23" edge="1" parent="1" source="p2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#94A3B8;strokeWidth=2;" target="p3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e34" edge="1" parent="1" source="p3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#94A3B8;strokeWidth=2;" target="p4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e45" edge="1" parent="1" source="p4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#94A3B8;strokeWidth=2;" target="p5">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1202.5" y="290" />
+              <mxPoint x="180" y="290" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e56" edge="1" parent="1" source="p5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#94A3B8;strokeWidth=2;" target="p6">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e67" edge="1" parent="1" source="p6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#94A3B8;strokeWidth=2;" target="p7">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e78" edge="1" parent="1" source="p7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#94A3B8;strokeWidth=2;" target="p8">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

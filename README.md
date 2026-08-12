@@ -1,11 +1,12 @@
 # ShopMicro
 
-Marketplace criado com IA generativa para apoiar estudos de AWS, containers e
-arquitetura em nuvem.
+Projeto de marketplace usado para estudar AWS, containers e arquitetura em
+nuvem por meio de uma aplicação funcional.
 
-O projeto usa uma aplicação funcional para praticar serviços AWS pelo Console,
-sempre avaliando custo, segurança e desempenho. Requisitos e
-decisões são orientados pelo autor; a IA gera e refina código e documentação.
+Cada evolução é praticada primeiro no ambiente local e depois no Console AWS,
+sempre considerando custo, segurança e desempenho. O projeto foi construído
+com apoio de IA generativa, com requisitos, testes e decisões técnicas
+conduzidos pelo autor.
 
 ## Funcionalidades
 
@@ -23,7 +24,53 @@ decisões são orientados pelo autor; a IA gera e refina código e documentaçã
 - PostgreSQL 18
 - JWT com refresh token
 - Docker Compose
-- EC2, ECS, ECR, ALB, RDS, S3 e IAM
+- ECS sobre EC2, ECR, ALB, RDS, S3 e IAM
+- Route 53, ACM, Parameter Store e SSM Session Manager
+
+## Arquitetura local e AWS
+
+O ShopMicro utiliza o mesmo código e as mesmas imagens Docker nos dois
+ambientes. Banco, armazenamento e serviços de infraestrutura mudam por
+configuração, sem alterar as regras de negócio.
+
+[![Perfis de execução do ShopMicro](docs/architecture/deployment-profiles.svg)](docs/architecture/deployment-profiles.drawio)
+
+| Componente | Ambiente local | Ambiente AWS validado |
+|---|---|---|
+| Execução | Docker Compose | Amazon ECS sobre EC2 |
+| Backend | Container ASP.NET Core | ECS Service independente |
+| Interfaces | Dois containers Nginx | Dois ECS Services independentes |
+| Banco | PostgreSQL 18 em container | RDS PostgreSQL 18 privado |
+| Imagens de produtos | Volume Docker | Bucket S3 privado |
+| Imagens dos containers | Build local | Repositórios privados no ECR |
+| Entrada | `localhost:80` e `localhost:81` | Application Load Balancer |
+| DNS e HTTPS | Não necessários | Route 53 e certificado ACM |
+| Segredos | Variáveis locais | Parameter Store |
+| Permissões | Sem dependência de IAM | IAM Roles |
+| Administração | Docker local | SSM Session Manager, sem SSH público |
+
+## Cenários de implantação validados
+
+Além do ambiente local e da arquitetura AWS atual, a aplicação foi executada em
+configurações intermediárias. Cada cenário introduziu uma capacidade sem exigir
+uma versão diferente do código.
+
+[![Cenários validados na AWS](docs/architecture/validated-profiles.svg)](docs/architecture/validated-profiles.drawio)
+
+| Perfil | Aplicação | Banco | Arquivos | Capacidade validada |
+|---|---|---|---|---|
+| Local | Docker Compose | PostgreSQL em container | Volume Docker | desenvolvimento sem AWS |
+| EC2 básica | Docker Compose em uma EC2 | PostgreSQL na EC2 | Volume Docker | execução em máquina virtual |
+| Armazenamento externo | Docker Compose em uma EC2 | PostgreSQL na EC2 | Amazon S3 | arquivos fora da instância |
+| Dados gerenciados | Docker Compose em uma EC2 | Amazon RDS | Amazon S3 | banco e arquivos persistentes |
+| Múltiplas instâncias | ALB e ASG com duas EC2 | Amazon RDS | Amazon S3 | distribuição entre zonas |
+| Imagens centralizadas | ALB e ASG consumindo ECR | Amazon RDS | Amazon S3 | entrega por imagens independentes |
+| Orquestração | Amazon ECS sobre EC2 | Amazon RDS | Amazon S3 | Services e tasks independentes |
+| Acesso seguro atual | ECS, ALB e Route 53 | Amazon RDS | Amazon S3 | DNS próprio e HTTPS com ACM |
+
+Esses perfis representam cenários efetivamente testados. A última linha é a
+arquitetura AWS mais recente; as anteriores registram a portabilidade da
+aplicação e as decisões que levaram ao desenho atual.
 
 ## Execução local
 
@@ -65,63 +112,61 @@ docker compose down -v
 > PostgreSQL 18 utiliza o volume em `/var/lib/postgresql`. Volumes de versões
 > anteriores devem ser migrados ou recriados.
 
-## Evolução na AWS
+## Configuração por ambiente
 
-| Ambiente | Aplicação | Banco | Uploads |
-|---|---|---|---|
-| Local | Docker Compose local | PostgreSQL 18 em container | Volume Docker |
-| Stage 01 | EC2 com Docker Compose | PostgreSQL 18 na EC2 | Volume Docker na EC2 |
-| Stage 02 | EC2 com Docker Compose | PostgreSQL 18 na EC2 | Bucket S3 privado |
-| Stage 03 | EC2 com Docker Compose | RDS PostgreSQL 18 privado | Bucket S3 privado |
-| Stage 04 | ALB e ASG com duas EC2 em zonas diferentes | RDS PostgreSQL 18 privado | Bucket S3 privado |
-| Stage 05 | ALB e ASG consumindo três imagens ECR independentes | RDS PostgreSQL 18 privado | Bucket S3 privado |
-| Stage 06 | ECS sobre duas EC2 `t3.small`, com três Services | RDS PostgreSQL 18 privado | Bucket S3 privado |
+O backend seleciona o armazenamento por variável de ambiente.
 
-Cada stage adiciona um conceito sem quebrar a execução local:
+Local:
 
-1. Stage 01: aplicação, PostgreSQL e uploads na EC2.
-2. Stage 02: uploads transferidos para o S3.
-3. Stage 03: PostgreSQL transferido para o RDS.
-4. Stage 04: ALB e ASG com duas EC2 em zonas diferentes.
-5. Stage 05: imagens prontas e independentes no ECR.
-6. Stage 06: orquestração no ECS sobre EC2 e implantação independente por serviço.
-
-No Stage 06 existem três serviços implantáveis, mas o backend ainda concentra
-os domínios de negócio. Por isso, a solução é tratada como arquitetura orientada
-a serviços; microserviços surgirão com a separação de domínios, filas e workers.
-
-EC2 é administrada somente pelo Session Manager, sem SSH. A aplicação usa IAM
-Roles, sem Access Key ou Secret Key no código. Consulte os roteiros em
-[infra/stages](infra/stages/) e a [ordem de execução](infra/stages/GUIA-STAGES.md).
-
-O Terraform evolui separadamente no repositório genérico
-`d3v0psti/terraform-aws-platform`,
-usando as camadas fixas network, data, storage e compute, sem cópias por stage.
-
-Antes de executar um stage já concluído, atualize as tags e use a versão mais
-recente disponível para ele:
-
-```bash
-git fetch --tags
-git tag --list 'shopmicro-aws-stage-01*' --sort=-version:refname
+```env
+STORAGE_PROVIDER=Local
 ```
 
-O primeiro resultado é a versão mais recente, por exemplo
-`shopmicro-aws-stage-01.1`.
+AWS:
+
+```env
+STORAGE_PROVIDER=S3
+S3_BUCKET_NAME=nome-do-bucket
+AWS_REGION=região-escolhida-para-o-ambiente
+```
+
+PostgreSQL é utilizado nos dois ambientes. Apenas o endereço da conexão muda:
+
+```env
+# Local
+DB_CONNECTION_STRING=Host=postgres;Port=5432;Database=shopdb;...
+
+# AWS
+DB_CONNECTION_STRING=Host=endpoint-do-rds;Port=5432;Database=shopdb;...
+```
+
+Outras configurações importantes:
+
+- `JWT_SECRET` deve ser diferente e protegido em cada ambiente.
+- `CORS_ALLOWED_ORIGINS` restringe as origens aceitas pelo backend.
+- `BACKEND_UPSTREAM` informa aos containers Nginx como alcançar o backend.
+
+Credenciais AWS não são armazenadas no código. Na AWS, o backend utiliza IAM
+Role para acessar o S3, e os valores sensíveis são entregues pelo Parameter
+Store.
+
+Essa organização permite desenvolver sem uma conta AWS e promover os mesmos
+containers para os serviços gerenciados quando necessário.
 
 ## Estrutura
 
 ```text
 shopmicro/
 ├── backend/
+├── docs/
+│   └── architecture/
 ├── frontend/
 ├── frontend-admin/
 └── infra/
-    ├── compose.yaml
-    └── stages/
+    └── compose.yaml
 ```
 
 ## Próximos passos
 
 O projeto será ampliado com identidade administrativa, cache, filas, workers,
-eventos, observabilidade, domínio e HTTPS, preservando a execução local e na AWS.
+eventos, observabilidade e CI/CD, preservando a execução local e na AWS.
