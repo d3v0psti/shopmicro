@@ -18,7 +18,7 @@
 
   <rect x="420" y="105" width="560" height="76" rx="14" fill="#172033"/>
   <text x="700" y="137" text-anchor="middle" font-family="Arial" font-size="17" font-weight="700" fill="#fff">SHOPMICRO</text>
-  <text x="700" y="160" text-anchor="middle" font-family="Arial" font-size="13" fill="#cbd5e1">frontend • frontend-admin • backend</text>
+  <text x="700" y="160" text-anchor="middle" font-family="Arial" font-size="13" fill="#cbd5e1">shopmicro-frontend • shopmicro-frontend-admin • shopmicro-backend</text>
 
   <path d="M700 181 V215 H360 V245" class="line"/>
   <path d="M700 215 H1040 V245" class="line"/>

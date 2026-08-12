@@ -7,7 +7,7 @@
         <mxCell id="title" parent="1" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=20;fontColor=#172033;" value="&lt;b&gt;ShopMicro • perfis de execução&lt;/b&gt;&lt;br&gt;Mesmo código e mesmas imagens Docker" vertex="1">
           <mxGeometry height="55" width="650" x="50" y="25" as="geometry" />
         </mxCell>
-        <mxCell id="app" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#172033;strokeColor=#172033;fontColor=#FFFFFF;fontSize=14;" value="&lt;b&gt;SHOPMICRO&lt;/b&gt;&lt;br&gt;frontend • frontend-admin • backend" vertex="1">
+        <mxCell id="app" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#172033;strokeColor=#172033;fontColor=#FFFFFF;fontSize=14;" value="&lt;b&gt;SHOPMICRO&lt;/b&gt;&lt;br&gt;shopmicro-frontend • shopmicro-frontend-admin • shopmicro-backend" vertex="1">
           <mxGeometry height="75" width="470" x="450" y="50" as="geometry" />
         </mxCell>
         <mxCell id="local" parent="1" style="rounded=1;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;verticalAlign=top;spacingTop=18;fillColor=#FFFFFF;strokeColor=#0EA5E9;strokeWidth=2;fontColor=#172033;fontSize=16;fontStyle=1;" value="AMBIENTE LOCAL&lt;br&gt;sem dependência da AWS" vertex="1">
@@ -16,7 +16,7 @@
         <mxCell id="compose" parent="local" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E0F2FE;strokeColor=#0EA5E9;strokeWidth=2;fontColor=#172033;fontSize=13;fontStyle=1;" value="Docker Compose" vertex="1">
           <mxGeometry height="58" width="255" x="175" y="95" as="geometry" />
         </mxCell>
-        <mxCell id="localapps" parent="local" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F1F5F9;strokeColor=#94A3B8;fontColor=#172033;fontSize=12;" value="frontend :80&lt;br&gt;frontend-admin :81&lt;br&gt;backend :8080" vertex="1">
+        <mxCell id="localapps" parent="local" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F1F5F9;strokeColor=#94A3B8;fontColor=#172033;fontSize=12;" value="shopmicro-frontend :80&lt;br&gt;shopmicro-frontend-admin :81&lt;br&gt;shopmicro-backend :8080" vertex="1">
           <mxGeometry height="100" width="255" x="175" y="205" as="geometry" />
         </mxCell>
         <mxCell id="localdb" parent="local" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FDF4FF;strokeColor=#C026D3;fontColor=#172033;fontSize=12;" value="PostgreSQL 18&lt;br&gt;container" vertex="1">

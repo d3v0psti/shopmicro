@@ -17,9 +17,9 @@ services:
       retries: 10
       start_period: 10s
 
-  backend:
+  shopmicro-backend:
     build:
-      context: ../backend
+      context: ../shopmicro-backend
       dockerfile: Dockerfile
     restart: unless-stopped
     environment:
@@ -29,40 +29,43 @@ services:
       CORS_ALLOWED_ORIGINS: "*"
       ENABLE_SWAGGER: "true"
       STORAGE_PROVIDER: "Local"
+      ADMIN_BOOTSTRAP_EMAIL: "${ADMIN_BOOTSTRAP_EMAIL:-}"
+      ADMIN_BOOTSTRAP_PASSWORD: "${ADMIN_BOOTSTRAP_PASSWORD:-}"
+      ADMIN_BOOTSTRAP_FULL_NAME: "${ADMIN_BOOTSTRAP_FULL_NAME:-Administrador inicial}"
     ports:
       - "8080:8080"
     depends_on:
       postgres:
         condition: service_healthy
     volumes:
-      - backend_uploads:/app/uploads
+      - shopmicro_backend_uploads:/app/uploads
 
-  frontend:
+  shopmicro-frontend:
     build:
-      context: ../frontend
+      context: ../shopmicro-frontend
       dockerfile: Dockerfile
     restart: unless-stopped
     environment:
-      BACKEND_UPSTREAM: "http://backend:8080"
+      BACKEND_UPSTREAM: "http://shopmicro-backend:8080"
     ports:
       - "80:80"
     depends_on:
-      backend:
+      shopmicro-backend:
         condition: service_started
 
-  frontend-admin:
+  shopmicro-frontend-admin:
     build:
-      context: ../frontend-admin
+      context: ../shopmicro-frontend-admin
       dockerfile: Dockerfile
     restart: unless-stopped
     environment:
-      BACKEND_UPSTREAM: "http://backend:8080"
+      BACKEND_UPSTREAM: "http://shopmicro-backend:8080"
     ports:
       - "81:80"
     depends_on:
-      backend:
+      shopmicro-backend:
         condition: service_started
 
 volumes:
   postgres_data:
-  backend_uploads:
+  shopmicro_backend_uploads:

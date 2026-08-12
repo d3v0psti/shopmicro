@@ -4,8 +4,8 @@
 
 ShopMicro é um marketplace com:
 
-- Frontend e frontend-admin estáticos servidos por Nginx.
-- Backend ASP.NET Core 8 com Entity Framework Core.
+- `shopmicro-frontend` e `shopmicro-frontend-admin` estáticos servidos por Nginx.
+- `shopmicro-backend` em ASP.NET Core 8 com Entity Framework Core.
 - PostgreSQL 18.
 - Docker Compose local.
 - Uploads configuráveis para volume local ou bucket S3.
@@ -20,11 +20,15 @@ docker compose up --build
 ```
 
 ```bash
-dotnet build backend/src/Api/Api.csproj
+dotnet build shopmicro-backend/src/Api/Api.csproj
 ```
 
 Endpoints locais: marketplace `:80`, admin `:81`, backend `:8080` e PostgreSQL
 `:5432`. Health checks: `/health/live` e `/health/ready`.
+
+Identidades são separadas entre os prefixos `/api/marketplace` e
+`/api/administration`. Não volte a compartilhar tabelas, tokens ou endpoints
+de login entre esses contextos.
 
 ## Convenções
 
@@ -36,6 +40,7 @@ Endpoints locais: marketplace `:80`, admin `:81`, backend `:8080` e PostgreSQL
 - Mantenha rotas relativas `/api/...` entre frontend e backend.
 - Mudanças de API devem atualizar a documentação correspondente.
 - Considere o bootstrap e a carga inicial ao alterar o banco.
+- Altere o esquema somente por migrations do Entity Framework Core.
 - Ao usar mais de uma EC2, compartilhe segredos de autenticação e mantenha dados
   persistentes fora das instâncias.
 

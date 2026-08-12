@@ -1,6 +1,6 @@
 # .NET
-backend/**/bin/
-backend/**/obj/
+shopmicro-backend/**/bin/
+shopmicro-backend/**/obj/
 
 # Node (caso volte a existir alguma ferramenta de build no frontend)
 node_modules/
@@ -8,6 +8,7 @@ node_modules/
 # Segredos e ambiente local — nunca commitar
 .env
 .env.*
+!.env.example
 !.env.*.example
 infra/certs/*.pem
 infra/certs/*.crt

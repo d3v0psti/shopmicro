@@ -34,6 +34,8 @@ Requisitos: Docker Engine e Docker Compose v2.
 
 ```bash
 cd infra
+cp .env.example .env
+# Edite .env e defina uma senha administrativa forte.
 docker compose up --build
 ```
 
@@ -44,14 +46,10 @@ docker compose up --build
 | Swagger | http://localhost:8080/swagger |
 | PostgreSQL | localhost:5432 |
 
-Acesso administrativo inicial:
-
-```text
-E-mail: admin@admin.com
-Senha: 123456
-```
-
-Altere essa senha depois do primeiro acesso e não utilize dados sensíveis.
+Na primeira execução, `ADMIN_BOOTSTRAP_EMAIL` e
+`ADMIN_BOOTSTRAP_PASSWORD` criam a conta administrativa inicial. As variáveis
+são ignoradas depois que uma conta administrativa já existe. O arquivo `.env`
+não é versionado.
 
 ```bash
 # Parar preservando os dados
@@ -103,6 +101,8 @@ DB_CONNECTION_STRING=Host=endpoint-do-rds;Port=5432;Database=shopdb;...
 ```
 
 - `JWT_SECRET` deve ser diferente e protegido em cada ambiente.
+- `ADMIN_BOOTSTRAP_EMAIL` e `ADMIN_BOOTSTRAP_PASSWORD` são usados somente para
+  criar a primeira conta administrativa.
 - `CORS_ALLOWED_ORIGINS` restringe as origens aceitas pelo backend.
 - `BACKEND_UPSTREAM` informa aos containers Nginx como alcançar o backend.
 
@@ -143,6 +143,8 @@ aplicação e as decisões que levaram ao desenho atual.
 | ALB com regras por host e caminho | Compartilhar uma entrada entre as interfaces e a API |
 | SSM no lugar de SSH | Administrar as instâncias sem expor a porta 22 |
 | Route 53 e ACM | Usar DNS próprio, HTTPS e certificado gerenciado |
+| Identidades separadas | Isolar contas e sessões do marketplace das contas administrativas |
+| Migrations do EF Core | Evoluir o PostgreSQL local e o RDS preservando dados existentes |
 
 Fluxo principal de uma requisição na AWS:
 
@@ -166,6 +168,8 @@ Usuário → Route 53 → ALB HTTPS → regra por host e caminho → ECS Service
 - Roteamento separado para marketplace, painel administrativo e API.
 - DNS próprio e redirecionamento de HTTP para HTTPS.
 - Administração das instâncias EC2 somente pelo SSM Session Manager.
+- Separação entre contas, tokens e endpoints do marketplace e da administração.
+- Migration dos usuários existentes sem perda dos perfis cadastrados.
 
 ## Segurança aplicada
 
@@ -177,6 +181,17 @@ Usuário → Route 53 → ALB HTTPS → regra por host e caminho → ECS Service
 - HTTPS terminado no Application Load Balancer.
 - Painel administrativo publicado por domínio próprio, sem exposição da porta
   externa 81 na AWS.
+- Tabelas `marketplace_accounts` e `administrative_accounts` independentes.
+- Policies JWT exigindo papel e escopo de identidade.
+- Refresh tokens separados por contexto e armazenados em cookies `HttpOnly`.
+
+Validação automatizada da fronteira de identidade:
+
+```bash
+SHOPMICRO_TEST_ADMIN_EMAIL='seu-admin' \
+SHOPMICRO_TEST_ADMIN_PASSWORD='sua-senha' \
+./tests/identity-boundary.sh
+```
 
 ## Limitações atuais
 
@@ -195,16 +210,17 @@ uma configuração pronta para produção:
 
 ```text
 shopmicro/
-├── backend/
+├── shopmicro-backend/
 ├── docs/
 │   └── architecture/
-├── frontend/
-├── frontend-admin/
+├── shopmicro-frontend/
+├── shopmicro-frontend-admin/
 └── infra/
     └── compose.yaml
 ```
 
 ## Próximos passos
 
-O projeto será ampliado com identidade administrativa, cache, filas, workers,
-eventos, observabilidade e CI/CD, preservando a execução local e na AWS.
+O projeto será ampliado com testes automatizados adicionais, cache, filas,
+workers, eventos, observabilidade e CI/CD, preservando a execução local e na
+AWS.
