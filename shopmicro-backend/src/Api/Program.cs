@@ -60,7 +60,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddHealthChecks()
     .AddNpgSql(connectionString, name: "postgres");
 
-var jwtSecret = Environment.GetEnvironmentVariable("JWT_SECRET") ?? "shopmicro_dev_secret_12345";
+var jwtSecret = SecurityService.GetRequiredJwtSecret();
 var signingKey = new SymmetricSecurityKey(SecurityService.GetSigningKeyBytes(jwtSecret));
 
 builder.Services.AddAuthentication(options =>

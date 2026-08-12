@@ -35,7 +35,29 @@ Requisitos: Docker Engine e Docker Compose v2.
 ```bash
 cd infra
 cp .env.example .env
-# Edite .env e defina uma senha administrativa forte.
+```
+
+### Gerar o segredo JWT
+
+Como Docker já é um requisito do projeto, use o mesmo comando no Linux, macOS
+ou Windows com Docker Desktop:
+
+```bash
+docker run --rm alpine/openssl rand -base64 48
+```
+
+Copie somente o valor gerado para o arquivo `infra/.env`:
+
+```env
+JWT_SECRET=valor_gerado
+```
+
+Não reutilize o mesmo segredo em ambientes diferentes nem envie o `.env` para
+o Git.
+
+Depois de preencher os valores obrigatórios do `.env`, inicie a aplicação:
+
+```bash
 docker compose up --build
 ```
 
@@ -49,7 +71,8 @@ docker compose up --build
 Na primeira execução, `ADMIN_BOOTSTRAP_EMAIL` e
 `ADMIN_BOOTSTRAP_PASSWORD` criam a conta administrativa inicial. As variáveis
 são ignoradas depois que uma conta administrativa já existe. O arquivo `.env`
-não é versionado.
+centraliza toda a configuração local e não é versionado. O
+`infra/.env.example` documenta os valores necessários sem armazenar segredos.
 
 ```bash
 # Parar preservando os dados
@@ -100,7 +123,9 @@ AWS_REGION=região-escolhida-para-o-ambiente
 DB_CONNECTION_STRING=Host=endpoint-do-rds;Port=5432;Database=shopdb;...
 ```
 
-- `JWT_SECRET` deve ser diferente e protegido em cada ambiente.
+- `JWT_SECRET` é obrigatório, deve possuir pelo menos 32 bytes e ser diferente
+  em cada ambiente. Na AWS, entregue o valor ao backend pelo Parameter Store
+  `SecureString` ou Secrets Manager.
 - `ADMIN_BOOTSTRAP_EMAIL` e `ADMIN_BOOTSTRAP_PASSWORD` são usados somente para
   criar a primeira conta administrativa.
 - `CORS_ALLOWED_ORIGINS` restringe as origens aceitas pelo backend.
