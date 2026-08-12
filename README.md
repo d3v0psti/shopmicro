@@ -1,260 +1,108 @@
-# ShopMicro
+# ShopMicro — portfólio de arquitetura AWS
 
-ShopMicro é um projeto de estudo e portfólio criado para praticar containers,
-serviços AWS e decisões de arquitetura em nuvem por meio de um marketplace
-funcional.
+ShopMicro é uma carga de trabalho de marketplace usada para estudar a evolução
+de um ambiente local em Docker Compose até uma arquitetura distribuída na AWS.
 
-A aplicação funciona localmente com Docker Compose e também foi implantada e
-validada na AWS, sempre considerando custo, segurança e desempenho. O projeto
-foi construído com apoio de IA generativa, com requisitos, testes e decisões
-técnicas conduzidos pelo autor.
+O foco é arquitetura de soluções e engenharia de cloud. A aplicação continua
+funcionando localmente enquanto novos serviços são incorporados e validados na
+AWS, sempre considerando custo, segurança e desempenho.
 
-## Funcionalidades
+O projeto foi construído com apoio de IA generativa. Requisitos, testes e
+decisões arquiteturais foram conduzidos pelo autor.
 
-- Catálogo, busca, categorias e carrinho
-- Cadastro e autenticação de clientes
-- Checkout, consulta e cancelamento de pedidos
-- Painel administrativo
-- Gestão de produtos, pedidos, clientes e administradores
-- Upload de imagens localmente ou no S3
+## Arquitetura atual
 
-## Tecnologias
+Na AWS, marketplace, painel administrativo e backend executam como serviços
+independentes no Amazon ECS sobre EC2. O ALB distribui o tráfego HTTPS, o RDS
+mantém os dados e o S3 armazena as imagens dos produtos.
 
-- HTML, CSS, JavaScript e Nginx
-- ASP.NET Core 8 e Entity Framework Core
-- PostgreSQL 18
-- JWT com refresh token
-- Docker Compose
-- ECS sobre EC2, ECR, ALB, RDS, S3 e IAM
-- Route 53, ACM, Parameter Store e SSM Session Manager
+[![Ambiente local e arquitetura AWS](docs/architecture/deployment-profiles.svg)](docs/architecture/deployment-profiles.drawio)
 
-## Execução local
+| Área | Estrutura validada |
+|---|---|
+| Rede | VPC, sub-redes em zonas distintas e Security Groups |
+| Computação | EC2, Auto Scaling Group e ECS Capacity Provider |
+| Containers | Três ECS Services e imagens privadas no ECR |
+| Entrada | Application Load Balancer e Target Groups |
+| Dados | RDS PostgreSQL 18 privado |
+| Arquivos | Bucket S3 privado |
+| DNS e HTTPS | Route 53 e certificado ACM |
+| Segurança | IAM Roles e Parameter Store |
+| Administração | SSM Session Manager, sem SSH público |
+
+## Evolução validada
+
+O ambiente local permanece como base para desenvolvimento e testes. A tabela
+registra somente capacidades que já funcionaram localmente e foram validadas na
+AWS.
+
+[![Evolução da arquitetura](docs/architecture/validated-profiles.svg)](docs/architecture/validated-profiles.drawio)
+
+| Evolução | Ambiente local | AWS |
+|---|---|---|
+| Base | Aplicações e PostgreSQL 18 no Docker Compose | Docker Compose em uma EC2 |
+| Arquivos | Volume Docker | Amazon S3 privado |
+| Banco | PostgreSQL 18 em container | Amazon RDS PostgreSQL 18 |
+| Disponibilidade | Uma execução local | Duas EC2, ALB e Auto Scaling Group |
+| Imagens Docker | Build local | Três repositórios no Amazon ECR |
+| Orquestração | Docker Compose | Três serviços no Amazon ECS sobre EC2 |
+| Acesso | `localhost` com HTTP | Route 53, ACM e HTTPS no ALB |
+
+## Conhecimentos praticados
+
+- Distribuição da carga entre zonas de disponibilidade.
+- Persistência externa à camada computacional com RDS e S3.
+- Balanceamento e roteamento com ALB e Target Groups.
+- Orquestração de containers com ECS sobre EC2.
+- Controle de acesso com IAM Roles e Security Groups.
+- Segredos no Parameter Store.
+- Administração das EC2 pelo SSM Session Manager.
+- DNS e HTTPS com Route 53 e ACM.
+- Diagnóstico por logs, eventos e health checks.
+
+## Carga de trabalho
+
+O ShopMicro possui marketplace, painel administrativo e backend. A carga inclui
+catálogo, autenticação, pedidos, PostgreSQL 18 e upload de imagens, permitindo
+validar tráfego, persistência, armazenamento e segurança.
+
+No ambiente local, tudo é executado pelo Docker Compose. Na AWS, banco e
+armazenamento são direcionados para RDS e S3 por configuração.
+
+## Executar localmente
 
 Requisitos: Docker Engine e Docker Compose v2.
 
 ```bash
 cd infra
 cp .env.example .env
-```
-
-### Gerar o segredo JWT
-
-Como Docker já é um requisito do projeto, use o mesmo comando no Linux, macOS
-ou Windows com Docker Desktop:
-
-```bash
-docker run --rm alpine/openssl rand -base64 48
-```
-
-Copie somente o valor gerado para o arquivo `infra/.env`:
-
-```env
-JWT_SECRET=valor_gerado
-```
-
-Não reutilize o mesmo segredo em ambientes diferentes nem envie o `.env` para
-o Git.
-
-Depois de preencher os valores obrigatórios do `.env`, inicie a aplicação:
-
-```bash
+# Preencha os campos obrigatórios do .env
 docker compose up --build
 ```
 
-| Serviço | Endereço |
+| Serviço | Endereço padrão |
 |---|---|
 | Marketplace | http://localhost |
 | Painel administrativo | http://localhost:81 |
-| Swagger | http://localhost:8080/swagger |
+| API e Swagger | http://localhost:8080/swagger |
 | PostgreSQL | localhost:5432 |
 
-Na primeira execução, `ADMIN_BOOTSTRAP_EMAIL` e
-`ADMIN_BOOTSTRAP_PASSWORD` criam a conta administrativa inicial. As variáveis
-são ignoradas depois que uma conta administrativa já existe. O arquivo `.env`
-centraliza toda a configuração local e não é versionado. O
-`infra/.env.example` documenta os valores necessários sem armazenar segredos.
+Consulte o [guia de execução local](docs/local-execution.md).
 
-```bash
-# Parar preservando os dados
-docker compose down
+## Documentação
 
-# Parar e remover banco e uploads locais
-docker compose down -v
-```
+- [Diagramas da arquitetura](docs/architecture/)
+- [Modelo de dados](docs/database/README.md)
+- [Execução local](docs/local-execution.md)
 
-> PostgreSQL 18 utiliza o volume em `/var/lib/postgresql`. Volumes de versões
-> anteriores devem ser migrados ou recriados.
+## Escopo atual
 
-## Arquitetura local e AWS
-
-O ShopMicro utiliza o mesmo código e as mesmas imagens Docker nos dois
-ambientes. Banco, armazenamento e serviços de infraestrutura mudam por
-configuração, sem alterar as regras de negócio.
-
-[![Perfis de execução do ShopMicro](docs/architecture/deployment-profiles.svg)](docs/architecture/deployment-profiles.drawio)
-
-| Componente | Ambiente local | Ambiente AWS validado |
-|---|---|---|
-| Execução | Docker Compose | Amazon ECS sobre EC2 |
-| Backend | Container ASP.NET Core | ECS Service independente |
-| Interfaces | Dois containers Nginx | Dois ECS Services independentes |
-| Banco | PostgreSQL 18 em container | RDS PostgreSQL 18 privado |
-| Imagens de produtos | Volume Docker | Bucket S3 privado |
-| Imagens dos containers | Build local | Repositórios privados no ECR |
-| Entrada | `localhost:80` e `localhost:81` | Application Load Balancer |
-| DNS e HTTPS | Não necessários | Route 53 e certificado ACM |
-| Segredos | Variáveis locais | Parameter Store |
-| Permissões | Sem dependência de IAM | IAM Roles |
-| Administração | Docker local | SSM Session Manager, sem SSH público |
-
-### Configuração por ambiente
-
-O backend seleciona os serviços por variáveis de ambiente:
-
-```env
-# Local
-STORAGE_PROVIDER=Local
-DB_CONNECTION_STRING=Host=postgres;Port=5432;Database=shopdb;...
-
-# AWS
-STORAGE_PROVIDER=S3
-S3_BUCKET_NAME=nome-do-bucket
-AWS_REGION=região-escolhida-para-o-ambiente
-DB_CONNECTION_STRING=Host=endpoint-do-rds;Port=5432;Database=shopdb;...
-```
-
-- `JWT_SECRET` é obrigatório, deve possuir pelo menos 32 bytes e ser diferente
-  em cada ambiente. Na AWS, entregue o valor ao backend pelo Parameter Store
-  `SecureString` ou Secrets Manager.
-- `ADMIN_BOOTSTRAP_EMAIL` e `ADMIN_BOOTSTRAP_PASSWORD` são usados somente para
-  criar a primeira conta administrativa.
-- `CORS_ALLOWED_ORIGINS` restringe as origens aceitas pelo backend.
-- `BACKEND_UPSTREAM` informa aos containers Nginx como alcançar o backend.
-
-Na AWS, credenciais não ficam no código: IAM Roles autorizam o acesso ao S3 e
-o Parameter Store entrega os valores sensíveis.
-
-## Cenários de implantação validados
-
-Além do ambiente local e da arquitetura AWS atual, a aplicação foi executada em
-configurações intermediárias. Cada cenário introduziu uma capacidade sem exigir
-uma versão diferente do código.
-
-[![Cenários validados na AWS](docs/architecture/validated-profiles.svg)](docs/architecture/validated-profiles.drawio)
-
-| Perfil | Aplicação | Banco | Arquivos | Capacidade validada |
-|---|---|---|---|---|
-| Local | Docker Compose | PostgreSQL em container | Volume Docker | desenvolvimento sem AWS |
-| EC2 básica | Docker Compose em uma EC2 | PostgreSQL na EC2 | Volume Docker | execução em máquina virtual |
-| Armazenamento externo | Docker Compose em uma EC2 | PostgreSQL na EC2 | Amazon S3 | arquivos fora da instância |
-| Dados gerenciados | Docker Compose em uma EC2 | Amazon RDS | Amazon S3 | banco e arquivos persistentes |
-| Múltiplas instâncias | ALB e ASG com duas EC2 | Amazon RDS | Amazon S3 | distribuição entre zonas |
-| Imagens centralizadas | ALB e ASG consumindo ECR | Amazon RDS | Amazon S3 | entrega por imagens independentes |
-| Orquestração | Amazon ECS sobre EC2 | Amazon RDS | Amazon S3 | Services e tasks independentes |
-| Acesso seguro atual | ECS, ALB e Route 53 | Amazon RDS | Amazon S3 | DNS próprio e HTTPS com ACM |
-
-Esses perfis representam cenários efetivamente testados. A última linha é a
-arquitetura AWS mais recente; as anteriores registram a portabilidade da
-aplicação e as decisões que levaram ao desenho atual.
-
-## Decisões de arquitetura
-
-| Decisão | Motivo |
-|---|---|
-| PostgreSQL local e RDS na AWS | Preservar o mesmo banco nos dois ambientes |
-| Volume local e S3 na AWS | Simplificar o desenvolvimento e externalizar arquivos na nuvem |
-| ECS sobre EC2 | Praticar cluster, Capacity Provider, ASG e capacidade computacional |
-| Três ECS Services | Implantar frontend, painel administrativo e backend separadamente |
-| ALB com regras por host e caminho | Compartilhar uma entrada entre as interfaces e a API |
-| SSM no lugar de SSH | Administrar as instâncias sem expor a porta 22 |
-| Route 53 e ACM | Usar DNS próprio, HTTPS e certificado gerenciado |
-| Identidades separadas | Isolar contas e sessões do marketplace das contas administrativas |
-| Migrations do EF Core | Evoluir o PostgreSQL local e o RDS preservando dados existentes |
-
-Fluxo principal de uma requisição na AWS:
-
-```text
-Usuário → Route 53 → ALB HTTPS → regra por host e caminho → ECS Service
-                                                             │
-                                                          backend
-                                                        ┌────┴────┐
-                                                        RDS       S3
-```
-
-## Validações realizadas
-
-- Execução completa no Docker Compose local.
-- Cadastro e persistência de produtos no PostgreSQL.
-- Upload de imagens em volume local e no Amazon S3.
-- Conexão privada entre o backend no ECS e o RDS.
-- Distribuição e substituição de tasks pelo ECS.
-- Pull independente das três imagens pelo Amazon ECR.
-- Health checks do ALB e dos ECS Services.
-- Roteamento separado para marketplace, painel administrativo e API.
-- DNS próprio e redirecionamento de HTTP para HTTPS.
-- Administração das instâncias EC2 somente pelo SSM Session Manager.
-- Separação entre contas, tokens e endpoints do marketplace e da administração.
-- Migration dos usuários existentes sem perda dos perfis cadastrados.
-
-## Segurança aplicada
-
-- RDS sem acesso público.
-- Bucket S3 privado e acessado pelo backend por IAM Role.
-- Security Groups com origem em outros Security Groups quando aplicável.
-- Segredos entregues às tasks pelo Parameter Store.
-- EC2 sem SSH público e administradas pelo SSM Session Manager.
-- HTTPS terminado no Application Load Balancer.
-- Painel administrativo publicado por domínio próprio, sem exposição da porta
-  externa 81 na AWS.
-- Tabelas `marketplace_accounts` e `administrative_accounts` independentes.
-- Policies JWT exigindo papel e escopo de identidade.
-- Refresh tokens separados por contexto e armazenados em cookies `HttpOnly`.
-
-Validação automatizada da fronteira de identidade:
-
-```bash
-SHOPMICRO_TEST_ADMIN_EMAIL='seu-admin' \
-SHOPMICRO_TEST_ADMIN_PASSWORD='sua-senha' \
-./tests/identity-boundary.sh
-```
-
-## Limitações atuais
-
-O ambiente AWS foi dimensionado para estudo e validação arquitetural, não como
-uma configuração pronta para produção:
+Esta é uma arquitetura de estudo e demonstração, não uma configuração pronta
+para produção:
 
 - RDS em Single-AZ.
 - Cluster ECS com instâncias de pequeno porte.
-- Imagens do ECR ainda publicadas com a tag mutável `latest`.
+- Imagens publicadas com a tag `latest`.
 - Deployments executados manualmente.
-- Sem autoscaling baseado em métricas da aplicação.
-- Observabilidade limitada a logs e health checks.
-- Cache, filas, workers e CI/CD ainda não implementados.
-
-## Estrutura
-
-```text
-shopmicro/
-├── shopmicro-backend/
-├── docs/
-│   ├── architecture/
-│   └── database/
-├── shopmicro-frontend/
-├── shopmicro-frontend-admin/
-└── infra/
-    └── compose.yaml
-```
-
-## Modelo de dados
-
-O PostgreSQL separa contas e sessões do marketplace das identidades
-administrativas. Pedidos e itens preservam snapshots para manter o histórico
-mesmo depois de alterações em contas ou produtos.
-
-Consulte a [documentação e o diagrama do banco](docs/database/README.md).
-
-## Próximos passos
-
-O projeto será ampliado com testes automatizados adicionais, cache, filas,
-workers, eventos, observabilidade e CI/CD, preservando a execução local e na
-AWS.
+- Sem autoscaling baseado em métricas da carga de trabalho.
+- Observabilidade baseada em logs e health checks.
