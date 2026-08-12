@@ -1,4 +1,0 @@
--- Este script é opcional: o backend já cria e popula as tabelas
--- automaticamente na inicialização (EnsureCreated + seed em Program.cs).
--- Use este arquivo apenas se quiser rodar algum script adicional de setup
--- do banco antes da aplicação subir.

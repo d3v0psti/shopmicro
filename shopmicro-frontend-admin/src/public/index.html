@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%230f172a'/%3E%3Ctext x='32' y='39' text-anchor='middle' font-family='Arial' font-size='22' font-weight='700' fill='%23fbbf24'%3ESM%3C/text%3E%3C/svg%3E">
+  <title>ShopMicro — Operações</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="header">
+    <div class="header-container">
+      <h1 class="logo"><span>SM</span> ShopMicro</h1>
+      <div class="header-actions">
+        <span class="hint">Seller Central: produtos, usuários e configurações</span>
+        <div class="user-actions hidden" id="admin-user-actions">
+          <span id="admin-user-email"></span>
+          <button id="logout-button" class="btn-secondary">Sair</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <section id="admin-login-section" class="admin-login-section">
+    <div class="login-card">
+      <h2>Login do Admin</h2>
+      <form id="login-form" class="admin-form">
+        <div class="form-group">
+          <label for="login-email">E-mail</label>
+          <input type="email" id="login-email" required>
+        </div>
+        <div class="form-group">
+          <label for="login-password">Senha</label>
+          <input type="password" id="login-password" required>
+        </div>
+        <button type="submit" id="login-button" class="btn-primary">Entrar</button>
+      </form>
+    </div>
+  </section>
+
+  <main id="admin-app-section" class="admin-container hidden">
+    <aside class="admin-menu">
+      <div class="menu-header">
+        <h2>Área do Admin</h2>
+        <p>Organize o catálogo, revise usuários e controle acesso.</p>
+      </div>
+      <div class="menu-section">
+        <h3 class="menu-section-title">Painel</h3>
+        <button type="button" class="menu-button active" data-tab="products-section">Produtos</button>
+        <button type="button" class="menu-button" data-tab="orders-section">Pedidos</button>
+        <button type="button" class="menu-button" data-tab="customers-section">Clientes do Marketplace</button>
+        <button type="button" class="menu-button" data-tab="admins-section">Equipe Administrativa</button>
+        <button type="button" class="menu-button" data-tab="password-section">Minha senha</button>
+      </div>
+    </aside>
+
+    <section class="admin-content">
+      <section id="products-section" class="admin-tab-section">
+        <div class="section-header product-form-header">
+          <div>
+            <h2>Cadastro de Produto</h2>
+            <p class="section-description">Preencha os dados do item para adicioná-lo ao catálogo.</p>
+          </div>
+        </div>
+
+        <div id="product-form-panel" class="product-form-panel">
+          <form id="product-form" class="admin-form">
+          <div class="form-group">
+            <label for="product-name">Nome do Produto *</label>
+            <input type="text" id="product-name" required>
+          </div>
+
+          <div class="form-group">
+            <label for="product-description">Descrição</label>
+            <textarea id="product-description" rows="4"></textarea>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="product-price">Preço (R$) *</label>
+              <input type="number" id="product-price" min="0" step="0.01" required>
+            </div>
+            <div class="form-group">
+              <label for="product-stock">Estoque *</label>
+              <input type="number" id="product-stock" min="0" step="1" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="product-category">Categoria *</label>
+            <input type="text" id="product-category" list="category-suggestions" required>
+            <datalist id="category-suggestions"></datalist>
+          </div>
+
+          <div class="form-group">
+            <label for="product-image">Imagem do Produto</label>
+            <input type="file" id="product-image" accept="image/*">
+            <small class="hint-text">Será enviado localmente para o backend. Ao editar, deixe vazio para manter a imagem atual.</small>
+          </div>
+
+          <div class="form-group">
+            <label for="product-image-url">URL da Imagem</label>
+            <input type="url" id="product-image-url" placeholder="https://example.com/imagem.jpg">
+            <small class="hint-text">Use URL ou arquivo local. Arquivo local tem prioridade.</small>
+          </div>
+
+          <button type="submit" class="btn-primary">Salvar Produto</button>
+          </form>
+
+          <div id="preview-card" class="preview-card hidden">
+            <h3>Pré-visualização</h3>
+            <img id="preview-image" src="" alt="Pré-visualização" />
+            <p id="preview-name"></p>
+            <p id="preview-price"></p>
+            <p id="preview-stock"></p>
+            <p id="preview-category"></p>
+          </div>
+        </div>
+
+        <div class="product-list-section">
+          <div class="product-filters">
+            <div class="filters-row">
+              <div class="filter-item">
+                <label for="product-search">Buscar produto</label>
+                <input id="product-search" class="filter-input" type="text" placeholder="Nome, categoria ou descrição">
+              </div>
+              <div class="filter-item">
+                <label>Categorias</label>
+                <div id="category-pill-list" class="category-pills"></div>
+              </div>
+            </div>
+          </div>
+          <div class="section-header">
+            <div>
+              <h2>Produtos Cadastrados</h2>
+              <p class="section-description">Lista compacta com filtros, paginação e acesso rápido para editar ou remover itens.</p>
+            </div>
+            <div id="product-list-summary" class="product-list-summary"></div>
+          </div>
+          <div id="product-list" class="product-table"></div>
+          <div class="pagination-controls hidden" id="product-pagination">
+            <button type="button" id="prev-page" class="btn-secondary">Anterior</button>
+            <span id="page-info"></span>
+            <button type="button" id="next-page" class="btn-secondary">Próximo</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="orders-section" class="admin-tab-section hidden">
+        <div class="section-header">
+          <div>
+            <h2>Pedidos</h2>
+            <p class="section-description">Acompanhe as compras recebidas e o status de cada atendimento.</p>
+          </div>
+          <button type="button" id="refresh-orders" class="btn-secondary">Atualizar lista</button>
+        </div>
+        <div class="orders-panel">
+          <div id="order-list" class="order-list"><p class="empty-msg">Carregue os pedidos para começar.</p></div>
+        </div>
+      </section>
+
+      <section id="customers-section" class="admin-tab-section hidden">
+        <div class="section-header">
+          <div>
+            <span class="account-type-badge customer">Marketplace</span>
+            <h2>Clientes do Marketplace</h2>
+            <p class="section-description">Contas usadas para comprar produtos, acompanhar pedidos e manter dados de entrega na loja.</p>
+          </div>
+        </div>
+
+        <div class="user-management-grid">
+          <form id="user-register-form" class="admin-form">
+            <h3>Criar cliente do marketplace</h3>
+            <div class="form-group">
+              <label for="user-email">E-mail *</label>
+              <input type="email" id="user-email" required>
+            </div>
+            <div class="form-group">
+              <label for="user-fullname">Nome completo *</label>
+              <input type="text" id="user-fullname" required>
+            </div>
+            <div class="form-group">
+              <label for="user-password">Senha *</label>
+              <input type="password" id="user-password" required>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="user-cpf">CPF</label>
+                <input type="text" id="user-cpf">
+              </div>
+              <div class="form-group">
+                <label for="user-phone">Telefone</label>
+                <input type="text" id="user-phone">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="user-cep">CEP</label>
+                <input type="text" id="user-cep">
+              </div>
+              <div class="form-group">
+                <label for="user-address">Endereço</label>
+                <input type="text" id="user-address">
+              </div>
+            </div>
+            <button type="submit" class="btn-primary">Criar cliente</button>
+          </form>
+
+          <div class="user-table-section admin-form">
+            <h3>Clientes cadastrados na loja</h3>
+            <div id="user-list" class="user-table"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="admins-section" class="admin-tab-section hidden">
+        <div class="section-header">
+          <div>
+            <span class="account-type-badge admin">Acesso interno</span>
+            <h2>Equipe Administrativa</h2>
+            <p class="section-description">Contas com acesso ao Seller Central para administrar catálogo, clientes e operação.</p>
+          </div>
+        </div>
+
+        <div class="admin-access-warning">
+          <strong>Acesso privilegiado</strong>
+          <span>Crie estas contas somente para pessoas autorizadas a operar o painel administrativo.</span>
+        </div>
+
+        <div class="user-management-grid">
+          <form id="admin-register-form" class="admin-form">
+            <h3>Adicionar membro da equipe</h3>
+            <div class="form-group">
+              <label for="admin-email">E-mail corporativo *</label>
+              <input type="email" id="admin-email" required>
+            </div>
+            <div class="form-group">
+              <label for="admin-fullname">Nome completo *</label>
+              <input type="text" id="admin-fullname" required>
+            </div>
+            <div class="form-group">
+              <label for="admin-password">Senha inicial *</label>
+              <input type="password" id="admin-password" minlength="6" required>
+            </div>
+            <button type="submit" class="btn-primary">Criar administrador</button>
+          </form>
+
+          <div class="user-table-section admin-form">
+            <h3>Administradores do Seller Central</h3>
+            <div id="admin-list" class="user-table"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="password-section" class="admin-tab-section hidden">
+        <div class="section-header">
+          <h2>Alterar minha senha</h2>
+          <p class="section-description">Use este formulário para atualizar a senha do administrador atual.</p>
+        </div>
+
+        <form id="change-password-form" class="admin-form">
+          <div class="form-group">
+            <label for="current-password">Senha atual *</label>
+            <input type="password" id="current-password" required>
+          </div>
+          <div class="form-group">
+            <label for="new-password">Nova senha *</label>
+            <input type="password" id="new-password" required>
+          </div>
+          <button type="submit" class="btn-primary">Atualizar senha</button>
+        </form>
+      </section>
+    </section>
+  </main>
+
+  <div id="toast-container" class="toast-container"></div>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,48 @@
+server {
+    listen 80;
+    server_name localhost;
+
+    root /usr/share/nginx/html;
+    index index.html index.htm;
+
+    # Verificação simples do Nginx local.
+    location /health/live {
+        access_log off;
+        return 200 'ok';
+        add_header Content-Type text/plain;
+    }
+
+    location /health/ready {
+        access_log off;
+        return 200 'ok';
+        add_header Content-Type text/plain;
+    }
+
+    # Rota principal: se for a página, tenta achar o arquivo ou cai no index.html
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    # Arquivos estáticos (CSS, JS, imagens)
+    location ~* \.(css|js|ico|png|jpg|jpeg|gif|svg|woff|woff2|ttf|eot)$ {
+        try_files $uri =404;
+        expires 1d;
+        access_log off;
+    }
+
+    # Proxy reverso para o backend no Docker Compose.
+    location /api/ {
+        proxy_pass ${BACKEND_UPSTREAM};
+
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+
+    location ^~ /uploads/ {
+        proxy_pass ${BACKEND_UPSTREAM};
+        proxy_set_header Host $host;
+    }
+}

@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%230f172a'/%3E%3Ctext x='32' y='39' text-anchor='middle' font-family='Arial' font-size='22' font-weight='700' fill='%23fbbf24'%3ESM%3C/text%3E%3C/svg%3E">
+  <title>ShopMicro — ofertas, tecnologia e praticidade</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Header / Navbar -->
+  <header class="header">
+    <div class="header-container">
+      <h1 class="logo"><span class="logo-mark">SM</span><span class="logo-word">ShopMicro</span><small>Marketplace</small></h1>
+      
+      <div class="search-box">
+        <input type="text" id="search-input" placeholder="Busque por produtos e categorias" aria-label="Buscar produtos">
+      </div>
+
+      <div class="header-actions">
+        <button id="btn-user-profile" class="btn-profile-link hidden">
+          <span class="profile-avatar">●</span><span id="user-display"></span>
+        </button>
+        <button id="btn-open-login" class="btn-secondary">Entrar</button>
+        <button id="btn-open-cart" class="cart-summary">
+          <span class="cart-icon">▱</span><span class="cart-label"><span id="cart-count">0</span> itens</span><strong id="cart-total">R$ 0,00</strong>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Banner Promocional -->
+  <section class="hero-banner">
+    <div class="hero-content">
+      <span class="hero-kicker">TECNOLOGIA PARA O SEU DIA</span>
+      <h2>Escolhas inteligentes.<br>Preços que fazem sentido.</h2>
+      <p>Produtos selecionados, compra segura e entrega descomplicada. Use <strong>SHOP10</strong> e ganhe 10% de desconto.</p>
+      <div class="hero-benefits" aria-label="Benefícios da loja">
+        <span>Compra protegida</span>
+        <span>Entrega para todo o Brasil</span>
+        <span>Pagamento seguro</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Conteúdo Principal -->
+  <main class="store-container">
+    
+    <!-- Vitrine de Produtos -->
+    <section class="products-section">
+      <div class="section-header">
+        <div><span class="section-kicker">EXPLORE A LOJA</span><h2>Produtos em destaque</h2></div>
+        <span id="product-count" class="badge-count">0 produtos</span>
+      </div>
+      
+      <div id="products-list" class="products-grid">
+        <p class="loading">Carregando produtos...</p>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Carrinho e Checkout — Drawer lateral (como Mercado Livre / Americanas):
+       fica escondido até o cliente clicar no ícone do carrinho no header. -->
+  <div id="cart-overlay" class="cart-overlay hidden"></div>
+  <aside id="cart-drawer" class="cart-section cart-drawer">
+    <div class="cart-drawer-heading">
+      <div><span class="drawer-kicker">SUA COMPRA</span><h2>Meu carrinho</h2><p id="cart-drawer-summary">Revise seus itens antes de finalizar.</p></div>
+      <button id="btn-close-cart" class="modal-close cart-drawer-close" aria-label="Fechar carrinho">✕</button>
+    </div>
+
+      
+      <!-- Stepper de Progresso -->
+      <div class="checkout-stepper">
+        <div id="step-btn-1" class="step active">
+          <span class="step-num">1</span>
+          <span class="step-label">Carrinho</span>
+        </div>
+        <div class="step-line"></div>
+        <div id="step-btn-2" class="step">
+          <span class="step-num">2</span>
+          <span class="step-label">Entrega e Pagamento</span>
+        </div>
+      </div>
+
+      <!-- ETAPA 1: ITENS DO CARRINHO -->
+      <div id="cart-step-1" class="cart-step-content">
+        <div class="cart-header">
+          <h3>Itens selecionados</h3>
+          <button class="btn-clear-cart" onclick="clearCart()" title="Esvaziar Carrinho">Esvaziar</button>
+        </div>
+        
+        <div id="cart-items" class="cart-items-list">
+          <!-- Renderizado via JS -->
+        </div>
+
+        <div class="cart-options-box">
+          <div class="coupon-box">
+            <input type="text" id="coupon-code" placeholder="Cupom (ex: SHOP10)">
+            <button id="btn-apply-coupon" class="btn-small">Aplicar</button>
+          </div>
+          
+          <div class="shipping-box">
+            <input type="text" id="shipping-cep" maxlength="8" placeholder="CEP para frete">
+            <button id="btn-calc-shipping" class="btn-small">OK</button>
+          </div>
+          <p id="shipping-info" class="shipping-info"></p>
+        </div>
+
+        <div class="cart-summary-details">
+          <div class="summary-line"><span>Subtotal:</span> <span id="subtotal-val">R$ 0,00</span></div>
+          <div class="summary-line"><span>Desconto:</span> <span id="discount-val" class="discount-text">- R$ 0,00</span></div>
+          <div class="summary-line"><span>Frete:</span> <span id="shipping-val">R$ 0,00</span></div>
+          <div class="summary-line total"><span>Total:</span> <span id="total-val">R$ 0,00</span></div>
+        </div>
+
+        <button id="btn-go-step2" class="btn-primary-large">Continuar para Comprar ➔</button>
+      </div>
+
+      <!-- ETAPA 2: DADOS DO COMPRADOR E PAGAMENTO -->
+      <div id="cart-step-2" class="cart-step-content hidden">
+        <div class="cart-header">
+          <h3>Dados de Envio e Pagamento</h3>
+          <button class="btn-back-step" id="btn-back-step1">← Alterar Carrinho</button>
+        </div>
+
+        <div id="autofill-alert" class="autofill-alert hidden">
+          <span>⚡ Dados do perfil preenchidos!</span>
+          <button type="button" id="btn-edit-from-checkout" class="btn-link-small">✏️ Editar Perfil</button>
+        </div>
+
+        <form id="checkout-form" class="checkout-form">
+          <div class="form-group">
+            <label for="customer-name">Nome Completo *</label>
+            <input type="text" id="customer-name" placeholder="Ex: João Silva" required>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="customer-cpf">CPF *</label>
+              <input type="text" id="customer-cpf" placeholder="000.000.000-00" required>
+            </div>
+            <div class="form-group">
+              <label for="customer-phone">Telefone / WhatsApp *</label>
+              <input type="tel" id="customer-phone" placeholder="(11) 99999-9999" required>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="customer-email">E-mail para Confirmação *</label>
+            <input type="email" id="customer-email" placeholder="seu@email.com" required>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="customer-cep">CEP *</label>
+              <input type="text" id="customer-cep" maxlength="8" placeholder="00000-000" required>
+            </div>
+            <div class="form-group">
+              <label for="customer-address">Endereço e Nº *</label>
+              <input type="text" id="customer-address" placeholder="Rua, Número, Bairro" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="payment-method">Forma de Pagamento *</label>
+            <select id="payment-method" required>
+              <option value="pix">⚡ Pix (Aprovação Imediata)</option>
+              <option value="credit">💳 Cartão de Crédito</option>
+              <option value="boleto">📄 Boleto Bancário</option>
+            </select>
+          </div>
+
+          <div class="final-checkout-summary">
+            <h4>📋 Resumo do Pedido</h4>
+            <div id="checkout-items-summary" class="mini-items-list"></div>
+            <div class="mini-summary-line">
+              <span>Total Final:</span>
+              <strong id="step2-total-val">R$ 0,00</strong>
+            </div>
+          </div>
+
+          <button type="submit" id="btn-checkout" class="btn-success">🔒 Confirmar e Finalizar Compra</button>
+        </form>
+      </div>
+
+    </aside>
+
+  <!-- Modal Auth (Entrar com E-mail e Senha) -->
+  <div id="auth-modal" class="modal-overlay hidden">
+    <div class="modal-card">
+      <button id="btn-close-modal" class="modal-close">✕</button>
+
+      <!-- Formulário de Login -->
+      <form id="login-form" class="auth-form">
+        <h3>Acesse sua Conta</h3>
+        <p style="font-size: 0.8rem; color: #64748b; margin-bottom: 0.5rem;">Informe seu e-mail e senha cadastrados para prosseguir.</p>
+        
+        <div class="form-group">
+          <label for="login-email">E-mail *</label>
+          <input type="email" id="login-email" placeholder="seu@email.com" required>
+        </div>
+        <div class="form-group">
+          <label for="login-password">Senha *</label>
+          <input type="password" id="login-password" placeholder="Digite sua senha" required>
+        </div>
+        
+        <button type="submit" class="btn-primary">Entrar e Continuar</button>
+        
+        <div class="auth-switch-text">
+          Ainda não tem conta? <a href="#" id="link-to-register">Cadastre-se aqui</a>
+        </div>
+      </form>
+
+      <!-- Formulário de Cadastro -->
+      <form id="register-form" class="auth-form hidden">
+        <h3>Cadastro Rápido</h3>
+        <p style="font-size: 0.8rem; color: #64748b; margin-bottom: 0.5rem;">Preencha os dados abaixo para criar sua conta.</p>
+        
+        <div class="form-group">
+          <label for="reg-name">Nome Completo *</label>
+          <input type="text" id="reg-name" placeholder="Ex: João Silva" required>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="reg-email">E-mail (Seu Login) *</label>
+            <input type="email" id="reg-email" placeholder="joao@email.com" required>
+          </div>
+          <div class="form-group">
+            <label for="reg-password">Senha *</label>
+            <input type="password" id="reg-password" placeholder="******" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="reg-cpf">CPF *</label>
+            <input type="text" id="reg-cpf" placeholder="000.000.000-00" required>
+          </div>
+          <div class="form-group">
+            <label for="reg-phone">Telefone / WhatsApp *</label>
+            <input type="tel" id="reg-phone" placeholder="(11) 99999-9999" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="reg-cep">CEP *</label>
+            <input type="text" id="reg-cep" maxlength="8" placeholder="00000000" required>
+          </div>
+          <div class="form-group">
+            <label for="reg-address">Endereço e Nº *</label>
+            <input type="text" id="reg-address" placeholder="Rua, Número, Bairro" required>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-primary">Cadastrar e Continuar</button>
+        
+        <div class="auth-switch-text">
+          Já tem conta? <a href="#" id="link-to-login">Fazer login</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal de Edição de Perfil -->
+  <div id="profile-modal" class="modal-overlay hidden">
+    <div class="modal-card profile-modal-card">
+      <button id="btn-close-profile-modal" class="modal-close">✕</button>
+
+      <span class="modal-kicker">MINHA CONTA</span>
+      <h3>Editar perfil</h3>
+      <p class="modal-description">Mantenha seus dados de entrega atualizados.</p>
+
+      <form id="edit-profile-form" class="auth-form">
+        <div class="form-group">
+          <label for="edit-name">Nome Completo *</label>
+          <input type="text" id="edit-name" required>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="edit-email">E-mail *</label>
+            <input type="email" id="edit-email" required>
+          </div>
+          <div class="form-group">
+            <label for="edit-phone">Telefone *</label>
+            <input type="tel" id="edit-phone" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="edit-cpf">CPF *</label>
+          <input type="text" id="edit-cpf" required>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="edit-cep">CEP *</label>
+            <input type="text" id="edit-cep" maxlength="8" required>
+          </div>
+          <div class="form-group">
+            <label for="edit-address">Endereço e Nº *</label>
+            <input type="text" id="edit-address" required>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-primary">💾 Salvar Alterações</button>
+      </form>
+
+      <!-- Botão para ver pedidos -->
+      <button type="button" id="btn-view-orders" class="profile-secondary-action">
+        Ver meus pedidos
+      </button>
+
+      <!-- Botão para Deletar Conta -->
+      <button type="button" id="btn-delete-account" class="profile-danger-action">
+        Excluir minha conta
+      </button>
+    </div>
+  </div>
+
+  <!-- Modal de Meus Pedidos -->
+  <div id="orders-modal" class="modal-overlay hidden">
+    <div class="modal-card orders-modal-card">
+      <button id="btn-close-orders-modal" class="modal-close">✕</button>
+      <span class="modal-kicker">MINHAS COMPRAS</span>
+      <h3>Meus pedidos</h3>
+      <p class="modal-description">
+        Pedidos pendentes ou confirmados podem ser cancelados por aqui. Pedidos já enviados não podem mais ser cancelados.
+      </p>
+      <div id="orders-list" class="orders-list">
+        <p class="loading">Carregando pedidos...</p>
+      </div>
+    </div>
+  </div>
+
+<!-- Modal de Confirmação de Exclusão de Conta -->
+  <div id="delete-confirm-modal" class="modal-overlay hidden">
+    <div class="modal-card delete-confirm-card">
+      <div class="danger-symbol">!</div>
+      <h3>Excluir Conta</h3>
+      <p class="modal-description">
+        Tem certeza absoluta que deseja deletar sua conta? Esta ação apagará seus dados do banco e não poderá ser desfeita.
+      </p>
+      <div class="modal-actions">
+        <button type="button" id="btn-cancel-delete" class="modal-cancel">Cancelar</button>
+        <button type="button" id="btn-confirm-delete" class="modal-danger">Excluir</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
