@@ -12,6 +12,25 @@ public static class SecurityService
     private const int KeySize = 32;
     private const int Iterations = 120_000;
 
+    public static string GetRequiredJwtSecret()
+    {
+        var secret = Environment.GetEnvironmentVariable("JWT_SECRET");
+
+        if (string.IsNullOrWhiteSpace(secret))
+        {
+            throw new InvalidOperationException(
+                "JWT_SECRET não configurado. Defina um segredo aleatório com pelo menos 32 bytes.");
+        }
+
+        if (Encoding.UTF8.GetByteCount(secret) < 32)
+        {
+            throw new InvalidOperationException(
+                "JWT_SECRET inválido. O segredo deve possuir pelo menos 32 bytes.");
+        }
+
+        return secret;
+    }
+
     public static string HashPassword(string password)
     {
         using var rng = RandomNumberGenerator.Create();

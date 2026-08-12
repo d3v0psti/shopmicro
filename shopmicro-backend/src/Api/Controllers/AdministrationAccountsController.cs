@@ -221,7 +221,7 @@ public sealed class AdministrationAccountsController : ControllerBase
 
     private bool IsCurrentAccount(string email) => string.Equals(CurrentEmail(), email, StringComparison.OrdinalIgnoreCase);
     private string? CurrentEmail() => User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue(JwtRegisteredClaimNames.Sub);
-    private static string JwtSecret() => Environment.GetEnvironmentVariable("JWT_SECRET") ?? "shopmicro_dev_secret_12345";
+    private static string JwtSecret() => SecurityService.GetRequiredJwtSecret();
     private static CookieOptions RefreshCookieOptions() => new()
     {
         HttpOnly = true,
