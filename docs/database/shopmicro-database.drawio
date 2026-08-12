@@ -1,0 +1,68 @@
+<mxfile host="app.diagrams.net" modified="2026-08-12T02:00:00.000Z" agent="Codex" version="26.0.16">
+  <diagram id="shopmicro-database" name="Modelo de dados">
+    <mxGraphModel dx="1422" dy="794" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="900" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="title" value="SHOPMICRO · MODELO DE DADOS" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=24;fontStyle=1;fontColor=#0F172A;" vertex="1" parent="1">
+          <mxGeometry x="70" y="35" width="500" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="subtitle" value="PostgreSQL 18 · identidades isoladas · histórico preservado por snapshots" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=13;fontColor=#64748B;" vertex="1" parent="1">
+          <mxGeometry x="70" y="75" width="650" height="30" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="identityBox" value="IDENTIDADES E SESSÕES" style="swimlane;html=1;startSize=34;rounded=1;arcSize=12;fillColor=#F8FAFC;strokeColor=#CBD5E1;fontColor=#475569;fontStyle=1;fontSize=12;horizontal=1;" vertex="1" parent="1">
+          <mxGeometry x="70" y="130" width="660" height="590" as="geometry"/>
+        </mxCell>
+        <mxCell id="marketplace" value="&lt;b&gt;marketplace_accounts&lt;/b&gt;&lt;br&gt;&lt;br&gt;PK  Id&lt;br&gt;UQ  Email&lt;br&gt;PasswordHash&lt;br&gt;FullName&lt;br&gt;Cpf · Phone&lt;br&gt;Cep · Address" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=14;fillColor=#ECFDF5;strokeColor=#10B981;strokeWidth=2;fontColor=#064E3B;fontSize=13;" vertex="1" parent="identityBox">
+          <mxGeometry x="35" y="65" width="265" height="205" as="geometry"/>
+        </mxCell>
+        <mxCell id="marketplaceTokens" value="&lt;b&gt;marketplace_refresh_tokens&lt;/b&gt;&lt;br&gt;&lt;br&gt;PK  Id&lt;br&gt;FK  MarketplaceAccountId&lt;br&gt;TokenHash&lt;br&gt;ExpiresAt · Revoked&lt;br&gt;CreatedAt" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=14;fillColor=#F0FDF4;strokeColor=#34D399;fontColor=#065F46;fontSize=13;" vertex="1" parent="identityBox">
+          <mxGeometry x="360" y="65" width="265" height="185" as="geometry"/>
+        </mxCell>
+        <mxCell id="admin" value="&lt;b&gt;administrative_accounts&lt;/b&gt;&lt;br&gt;&lt;br&gt;PK  Id&lt;br&gt;UQ  Email&lt;br&gt;PasswordHash&lt;br&gt;FullName" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=14;fillColor=#EFF6FF;strokeColor=#3B82F6;strokeWidth=2;fontColor=#1E3A8A;fontSize=13;" vertex="1" parent="identityBox">
+          <mxGeometry x="35" y="330" width="265" height="165" as="geometry"/>
+        </mxCell>
+        <mxCell id="adminTokens" value="&lt;b&gt;administrative_refresh_tokens&lt;/b&gt;&lt;br&gt;&lt;br&gt;PK  Id&lt;br&gt;FK  AdministrativeAccountId&lt;br&gt;TokenHash&lt;br&gt;ExpiresAt · Revoked&lt;br&gt;CreatedAt" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=14;fillColor=#EFF6FF;strokeColor=#60A5FA;fontColor=#1E40AF;fontSize=13;" vertex="1" parent="identityBox">
+          <mxGeometry x="360" y="330" width="265" height="185" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="domainBox" value="MARKETPLACE" style="swimlane;html=1;startSize=34;rounded=1;arcSize=12;fillColor=#F8FAFC;strokeColor=#CBD5E1;fontColor=#475569;fontStyle=1;fontSize=12;horizontal=1;" vertex="1" parent="1">
+          <mxGeometry x="790" y="130" width="730" height="590" as="geometry"/>
+        </mxCell>
+        <mxCell id="products" value="&lt;b&gt;products&lt;/b&gt;&lt;br&gt;&lt;br&gt;PK  Id&lt;br&gt;Name · Description&lt;br&gt;Price · Category&lt;br&gt;StockQuantity&lt;br&gt;ImageUrl · CreatedAt" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=14;fillColor=#FFF7ED;strokeColor=#F97316;strokeWidth=2;fontColor=#7C2D12;fontSize=13;" vertex="1" parent="domainBox">
+          <mxGeometry x="35" y="70" width="250" height="185" as="geometry"/>
+        </mxCell>
+        <mxCell id="orders" value="&lt;b&gt;orders&lt;/b&gt;&lt;br&gt;&lt;br&gt;PK  Id&lt;br&gt;CustomerEmail&lt;br&gt;CustomerName · dados pessoais&lt;br&gt;PaymentMethod · Status&lt;br&gt;TotalAmount · CreatedAt" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=14;fillColor=#FEFCE8;strokeColor=#EAB308;strokeWidth=2;fontColor=#713F12;fontSize=13;" vertex="1" parent="domainBox">
+          <mxGeometry x="430" y="70" width="265" height="205" as="geometry"/>
+        </mxCell>
+        <mxCell id="orderItems" value="&lt;b&gt;order_items&lt;/b&gt;&lt;br&gt;&lt;br&gt;PK  Id&lt;br&gt;FK  OrderId&lt;br&gt;ProductId&lt;br&gt;ProductName · UnitPrice&lt;br&gt;Quantity" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=14;fillColor=#FFFBEB;strokeColor=#F59E0B;fontColor=#78350F;fontSize=13;" vertex="1" parent="domainBox">
+          <mxGeometry x="240" y="345" width="265" height="185" as="geometry"/>
+        </mxCell>
+        <mxCell id="snapshotNote" value="Linhas tracejadas = referência histórica sem chave estrangeira" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#CBD5E1;dashed=1;fontColor=#64748B;fontSize=12;" vertex="1" parent="domainBox">
+          <mxGeometry x="400" y="450" width="285" height="55" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="edgeMarketplaceToken" value="1  ·  N" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=ERmany;startArrow=ERone;strokeColor=#10B981;strokeWidth=2;fontColor=#047857;" edge="1" parent="identityBox" source="marketplace" target="marketplaceTokens">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edgeAdminToken" value="1  ·  N" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=ERmany;startArrow=ERone;strokeColor=#3B82F6;strokeWidth=2;fontColor=#1D4ED8;" edge="1" parent="identityBox" source="admin" target="adminTokens">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edgeOrderItems" value="1  ·  N" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=ERmany;startArrow=ERone;strokeColor=#EAB308;strokeWidth=2;fontColor=#A16207;" edge="1" parent="domainBox" source="orders" target="orderItems">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edgeProductSnapshot" value="snapshot" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;dashPattern=6 6;endArrow=open;strokeColor=#94A3B8;fontColor=#64748B;" edge="1" parent="domainBox" source="products" target="orderItems">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edgeCustomerSnapshot" value="snapshot por e-mail" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;dashPattern=6 6;endArrow=open;strokeColor=#94A3B8;fontColor=#64748B;" edge="1" parent="1" source="marketplace" target="orders">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="footer" value="O esquema evolui por migrations do Entity Framework Core · nunca por alteração manual no RDS" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontColor=#64748B;" vertex="1" parent="1">
+          <mxGeometry x="460" y="760" width="680" height="30" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

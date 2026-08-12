@@ -212,12 +212,21 @@ uma configuração pronta para produção:
 shopmicro/
 ├── shopmicro-backend/
 ├── docs/
-│   └── architecture/
+│   ├── architecture/
+│   └── database/
 ├── shopmicro-frontend/
 ├── shopmicro-frontend-admin/
 └── infra/
     └── compose.yaml
 ```
+
+## Modelo de dados
+
+O PostgreSQL separa contas e sessões do marketplace das identidades
+administrativas. Pedidos e itens preservam snapshots para manter o histórico
+mesmo depois de alterações em contas ou produtos.
+
+Consulte a [documentação e o diagrama do banco](docs/database/README.md).
 
 ## Próximos passos
 
